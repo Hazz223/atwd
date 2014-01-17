@@ -1,0 +1,3 @@
+ErrorDocument 404 /htaccessTest/errors/404_message.php
+RewriteEngine On
+RewriteRule ^htaccessTest/test\.php$ /htaccessTest/phpinfo\.php$ [L,NC]
