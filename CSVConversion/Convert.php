@@ -17,7 +17,7 @@
 
             $input = "data.csv";
             $dataArray = array();
-            $regionArray = array();
+            $regionDataArray = array();
             $row = 0;
 
             if (($handle = fopen($input, "r")) !== FALSE) {
@@ -91,21 +91,18 @@
                                     $columnCount ++;
                                 }
                             }
-
-
-
-
+                            
                             $areaTitles[] = $c;
                             $regionDictionary[] = $rowData;
                         } else {
-
-                            // in here we work out what is the region, and then add countys to it. 
-
+                            
                             $regionLocation = count($regionDictionary) - 1;
                             $regionTitle = $areaTitles[$regionLocation];
                             $regionData = $regionDictionary[$regionLocation];
-
-                            $region = new Region($regionTitle, $regionData);
+                            
+                            $test = new ArrayObject($regionData);
+                            
+                            $region = new Region($regionTitle, $test);
 
                             unset($regionDictionary[4]);
 
@@ -121,14 +118,14 @@
 
 
                             foreach ($region->getCounties() as $county) {
-                                echo $county->getName() . "</br>";
+                                //echo $county->getName() . "</br>";
                             }
-                            echo "----end of area ---- </br>";
+                           // echo "----end of area ---- </br>";
 
                             $regionDictionary = array();
                             $areaTitles = array();
                             
-                            $regionArray = $region; // This now contains every region, with every county, with all the data!
+                            $regionDataArray[] = $region; // This now contains every region, with every county, with all the data!
                         }
                     }
 
@@ -140,7 +137,38 @@
                 
                 // Now that we have all the data store in objects, i now need to convert this to an XML file, with a schema. 
                 // Yay!
+                                
+                // http://stackoverflow.com/questions/2038535/php-create-new-xml-file-and-write-data-to-it
+                echo "data: ";
+                $xml = new DOMDocument();
+                // Base
+                $base = $xml->createElement("CrimeStats");
                 
+                //Area
+                $area = $xml->createElement("Area");
+                $area->setAttribute("name", "test");
+                //Area totals
+                $areaTotals = $xml->createElement("AreaTotals");
+                // Need a foreach look for crime
+                foreach($regionDataArray as $r){
+                    
+                    $regionStatData = $r->getStats();
+                    foreach($regionStatData as $s){
+                        var_dump ($s);
+                        echo $s;
+                    }
+//                    $crime = $xml->createElement("Crime");
+//                    $crime->setAttribute("Type", $r->getName());
+//                    $areaTotals->appendChild($crime);
+                }
+                
+                
+                $area->appendChild($areaTotals);
+                
+                $base->appendChild($area);
+                $xml->appendChild($base); 
+                
+                //$xml->save("xmltest.xml");
             }
             ?>
         </p>

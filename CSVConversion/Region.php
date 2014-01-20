@@ -11,7 +11,7 @@
  *
  * @author Harry
  */
-require '/Interfaces/ProvinceInterface.php';
+require 'ProvinceInterface.php';
 
 class Region implements ProvinceInterface {
 
@@ -19,7 +19,7 @@ class Region implements ProvinceInterface {
 
     function __construct($name, $data) {
         $this->name = $name;
-        $this->data = $data;
+        $this->data = new ArrayObject($data);
         $this->countyList = array();
     }
 
