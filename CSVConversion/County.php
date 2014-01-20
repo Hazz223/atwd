@@ -15,7 +15,7 @@
 class County implements ProvinceInterface {
 
     private $name, $data;
-
+    
     function __construct($name, $data) {
         $this->name = $name;
         $this->data = $data;

@@ -15,12 +15,13 @@ require 'ProvinceInterface.php';
 
 class Region implements ProvinceInterface {
 
-    private $name, $data, $countyList;
+    private $name, $data = array(), $countyList, $headers = array();
 
-    function __construct($name, $data) {
+    function __construct($name, $data, $headers) {
         $this->name = $name;
         $this->data = new ArrayObject($data);
         $this->countyList = array();
+        $this->headers = $headers;
     }
 
     public function setName($name) {
@@ -38,13 +39,21 @@ class Region implements ProvinceInterface {
     public function setStats($stat) {
         $this->data = $stat;
     }
-    
-    public function addCounty($county){
+
+    public function addCounty($county) {
         $this->countyList[] = $county;
     }
-   
-    public function getCounties(){
+
+    public function getCounties() {
         return $this->countyList;
+    }
+
+    public function getHeaders() {
+        return $this->headers;
+    }
+
+    public function setHeaders($headers) {
+        $this->headers = $headers;
     }
 
 }

@@ -49,12 +49,12 @@
                 echo $documentTitle . "</br>";
                 echo $country . "</br>";
 
-                $titleArray = array();
-
+                $headerArray = array();
+                // get all the headers and remove spaces!
                 foreach ($titles as $t) {
 
                     if (strcmp($t, "")) {
-                        $titleArray[] = $t;
+                        $headerArray[] = $t;
                     }
                 }
 
@@ -91,18 +91,16 @@
                                     $columnCount ++;
                                 }
                             }
-                            
+
                             $areaTitles[] = $c;
                             $regionDictionary[] = $rowData;
                         } else {
-                            
+
                             $regionLocation = count($regionDictionary) - 1;
                             $regionTitle = $areaTitles[$regionLocation];
-                            $regionData = $regionDictionary[$regionLocation];
-                            
-                            $test = new ArrayObject($regionData);
-                            
-                            $region = new Region($regionTitle, $test);
+                            $regionData = $regionDictionary[$regionLocation]; // i think I'll also need to pass in the list of headers.
+
+                            $region = new Region($regionTitle, $regionData, $headerArray);
 
                             unset($regionDictionary[4]);
 
@@ -110,7 +108,6 @@
                             $loopCount = 0;
 
                             foreach ($regionDictionary as $county) {
-
                                 $county = new County($areaTitles[$loopCount], $county);
                                 $region->addCounty($county);
                                 $loopCount++;
@@ -120,11 +117,11 @@
                             foreach ($region->getCounties() as $county) {
                                 //echo $county->getName() . "</br>";
                             }
-                           // echo "----end of area ---- </br>";
+                            // echo "----end of area ---- </br>";
 
                             $regionDictionary = array();
                             $areaTitles = array();
-                            
+
                             $regionDataArray[] = $region; // This now contains every region, with every county, with all the data!
                         }
                     }
@@ -133,42 +130,93 @@
                 }
 
                 fclose($handle);
-                
-                
+
+
                 // Now that we have all the data store in objects, i now need to convert this to an XML file, with a schema. 
                 // Yay!
-                                
                 // http://stackoverflow.com/questions/2038535/php-create-new-xml-file-and-write-data-to-it
                 echo "data: ";
                 $xml = new DOMDocument();
                 // Base
                 $base = $xml->createElement("CrimeStats");
-                
+
                 //Area
-                $area = $xml->createElement("Area");
-                $area->setAttribute("name", "test");
+                
+                //$area->setAttribute("name", "test");
                 //Area totals
-                $areaTotals = $xml->createElement("AreaTotals");
-                // Need a foreach look for crime
-                foreach($regionDataArray as $r){
+                //$areaTotals = $xml->createElement("AreaTotals");
+                
+                $regionNodeArray = array();
+                foreach ($regionDataArray as $r) {
                     
-                    $regionStatData = $r->getStats();
-                    foreach($regionStatData as $s){
-                        var_dump ($s);
-                        echo $s;
+                    $hasEngland = ($r->getName() != "ENGLAND");
+                    
+                    
+                    if (!$hasEngland) {
+                        // region contains each county.
+                        $regionStatData = $r->getStats(); // gets it's own stats.
+
+                        $regionCountyStats = $r->getCounties(); // gets it's inner counties data
+                        // foreach in the counties list, we need to create a county node, then have the list of crimes within it.
+
+                        $regionNode = $xml->createElement("Region");
+                        $regionNode->setAttribute("Name", $r->getName());
+                        
+                        $titleCount = 0;
+                        foreach ($regionCountyStats as $countyInfo) { // all county information for this one region
+                            $county = $xml->createElement("County");
+                            
+                            $county->setAttribute("Name", $countyInfo->getName());
+                            
+                            foreach ($countyInfo->getStats() as $crimeData) {
+                                $crime = $xml->createElement("Crime");
+                                $crime->setAttribute("Type", $headerArray[$titleCount]);
+                                $textData = $xml->createTextNode($crimeData);
+                                $crime->appendChild($textData);
+                                $county->appendChild($crime);
+                                $titleCount ++;
+                            }
+                            $regionNode->appendChild($county);
+                            $titleCount = 0;
+                        }
+
+                        $titleCount = 0;
+
+//                        foreach ($regionStatData as $s) {
+//                            $crime = $xml->createElement("Crime");
+//                            $crime->setAttribute("Type", $headerArray[$titleCount]);
+//                            $textData = $xml->createTextNode($s);
+//                            $crime->appendChild($textData);
+//                            $areaTotals->appendChild($crime);
+//
+//                            $titleCount++;
+//                        }
+                        
+                        // an array of nodes, which are regions. So we save them into an array, then at the bottom we create an area and then append each to this?
+                        
+
+                        $regionNodeArray[] = $regionNode;
+                    } else {
+                       
+                        echo "test";
+                        $area = $xml->createElement("Area");                  
+                        //$area->appendChild($regionNode);
+                        $area->setAttribute("Name", $r->getName());
+                        foreach($regionNodeArray as $node){
+                            $area->appendChild($node);
+                        }
+                        $base->appendChild($area);
+                        
+                        $regionNodeArray = array();
                     }
-//                    $crime = $xml->createElement("Crime");
-//                    $crime->setAttribute("Type", $r->getName());
-//                    $areaTotals->appendChild($crime);
                 }
+
+                //$area->appendChild($areaTotals);
+
                 
-                
-                $area->appendChild($areaTotals);
-                
-                $base->appendChild($area);
-                $xml->appendChild($base); 
-                
-                //$xml->save("xmltest.xml");
+                $xml->appendChild($base);
+
+                $xml->save("xmltest.xml");
             }
             ?>
         </p>

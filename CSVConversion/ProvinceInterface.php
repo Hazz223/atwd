@@ -13,7 +13,6 @@
  */
 
 interface ProvinceInterface {
-    public function __construct($name, $stats);
     public function setName($name);
     public function getName();
     public function getStats();
