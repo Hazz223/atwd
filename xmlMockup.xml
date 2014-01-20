@@ -1,0 +1,34 @@
+<CrimeStats>
+	<Area name="England">
+		<AreaTotals>
+			<crime name="Total recorded crime - including fraud">3,344,716 </crime>
+		</AreaTotals>
+		<Region name="North East Region">
+			<crime name="Total recorded crime - including fraud">
+				<county name="Cleveland">39,522</county>
+				<total>138,982</total>
+			</crime>
+			<crime name="Violence against the person">
+				<county name="Cleveland">39,522</county>
+				<county name="Durham">39,522</county>
+				<county name="Northumbria">39,522</county>
+				<total>138,982</total>
+			</crime>
+		</Region>
+		<Region name="North West Region">
+			<crime name="Total recorded crime - including fraud">
+				<county name="Cheshire">39,522</county>
+				<total>138,982</total>
+			</crime> 
+			<crime name="Violence against the person">
+				<county name="Cheshire">39,522</county>
+				<county name="Cumbria">39,522</county>
+				<county name="Greater Manchester">39,522</county>
+				<total>138,982</total>
+			</crime>
+		</Region>
+	</Area>
+	<Area name="Wales">
+	</Area>
+</CrimeStats>
+			
