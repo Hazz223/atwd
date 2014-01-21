@@ -12,8 +12,8 @@
              * To change this template file, choose Tools | Templates
              * and open the template in the editor.
              */
-            require_once 'Region.php';
-            require_once 'County.php';
+            require_once '../Entities/Region.php';
+            require_once '../Entities/County.php';
 
             $input = "data.csv";
             $dataArray = array();
@@ -285,12 +285,9 @@
                     }
                 }
 
-                //$area->appendChild($areaTotals);
-
-
                 $xml->appendChild($base);
 
-                $xml->save("xmltest.xml");
+                $xml->save("../Data/CrimeStats.xml");
             }
             ?>
         </p>

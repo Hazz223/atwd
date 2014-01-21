@@ -1,0 +1,4 @@
+ErrorDocument 404 /htaccessTest/errors/404_message.php
+RewriteEngine On
+RewriteRule ^crimes/6-2013/(xml|json) /awtd/Controllers/GetRequest\.php
+RewriteRule ^crimes/6-2013/([a-z]*)/(xml|json) /awtd/Controllers/GetRequest?region=$1\.php
