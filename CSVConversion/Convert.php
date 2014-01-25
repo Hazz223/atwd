@@ -12,8 +12,8 @@
              * To change this template file, choose Tools | Templates
              * and open the template in the editor.
              */
-            require_once '../Entities/Region.php';
-            require_once '../Entities/County.php';
+            require_once 'Entities/Region.php';
+            require_once 'Entities/County.php';
 
             $input = "data.csv";
             $dataArray = array();
@@ -45,14 +45,9 @@
                 $excludingFraudTitle = $titles[1];
                 $includingFraud = $titles[2];
                 $victimBased = $titles[2];
-
-                echo $documentTitle . "</br>";
-                echo $country . "</br>";
-
                 $headerArray = array();
                 // get all the headers and remove spaces!
                 foreach ($titles as $t) {
-
                     if (strcmp($t, "")) {
                         $headerArray[] = $t;
                     }
@@ -61,20 +56,19 @@
                 $regionArray = array();
 
                 foreach ($dataArray as $row) {
-                    $regionArray[] = $row[0];
+                    $regionArray[] = $row[0]; // this gets every name
                 }
+               
 
                 $currentRow = 0;
                 $regionDictionary = array();
                 $areaTitles = array();
-                foreach ($regionArray as $c) {
-
+                foreach ($regionArray as $c) { 
                     if ($currentRow > 5 && $currentRow < 76) {
 
                         $cData = $dataArray[$currentRow];
                         $countyData = array();
                         foreach ($cData as $cD) {
-                            //echo $cD;
                             if (strcmp($cD, "")) {
                                 $countyData[] = $cD;
                             }
@@ -84,7 +78,7 @@
                             $columnCount = 1;
                             $rowData = array();
                             foreach ($titles as $title) {
-                                if (strcmp($title, "")) {
+                                if (strcmp($title, "")) { // getting the data for each row and each item
 
                                     $rowData[$title] = $countyData[$columnCount];
 
@@ -95,16 +89,16 @@
                             $areaTitles[] = $c;
                             $regionDictionary[] = $rowData;
                         } else {
-
+                            // This should now add that item as a region
                             $regionLocation = count($regionDictionary) - 1;
                             $regionTitle = $areaTitles[$regionLocation];
-                            $regionData = $regionDictionary[$regionLocation]; // i think I'll also need to pass in the list of headers.
+                            echo $regionTitle."</br>"; // so that's correct.
+                            $regionData = $regionDictionary[$regionLocation];
 
                             $region = new Region($regionTitle, $regionData, $headerArray);
 
-                            unset($regionDictionary[4]);
+                            unset($regionDictionary[$regionLocation]);
 
-                            echo $region->getName() . "</br>";
                             $loopCount = 0;
 
                             foreach ($regionDictionary as $county) {
@@ -113,11 +107,9 @@
                                 $loopCount++;
                             }
 
-
                             foreach ($region->getCounties() as $county) {
-                                //echo $county->getName() . "</br>";
+                                //echo $county->getName() . "</br>"; // some how, North East Region is becoming a county...
                             }
-                            // echo "----end of area ---- </br>";
 
                             $regionDictionary = array();
                             $areaTitles = array();
@@ -140,20 +132,17 @@
                 // Base
                 $base = $xml->createElement("CrimeStats");
 
-                //Area
-                //$area->setAttribute("name", "test");
-                //Area totals
-                //$areaTotals = $xml->createElement("AreaTotals");
-
                 $regionNodeArray = array();
                 $beenEngland = false;
 
                 foreach ($regionDataArray as $r) {
+
+                    //echo var_dump($r->getCounties()) . "</br>";
                     $hasEngland = ($r->getName() != "ENGLAND");
 
                     if ($hasEngland && !$beenEngland) { // if england hasn't occured yet. Once it has, then we need to cycle round again.
                         // region contains each county.
-                        $regionStatData = $r->getStats(); // gets it's own stats.
+                       
 
                         $regionCountyStats = $r->getCounties(); // gets it's inner counties data
                         // foreach in the counties list, we need to create a county node, then have the list of crimes within it.
@@ -179,18 +168,22 @@
                         }
 
                         $titleCount = 0;
+                        
+                        $regionStatData = $r->getStats(); // gets it's own stats.
+                        $totalNode = $xml->createElement("RegionTotals");
 
-//                        foreach ($regionStatData as $s) {
-//                            $crime = $xml->createElement("Crime");
-//                            $crime->setAttribute("Type", $headerArray[$titleCount]);
-//                            $textData = $xml->createTextNode($s);
-//                            $crime->appendChild($textData);
-//                            $areaTotals->appendChild($crime);
-//
-//                            $titleCount++;
-//                        }
-                        // an array of nodes, which are regions. So we save them into an array, then at the bottom we create an area and then append each to this?
+                        foreach ($regionStatData as $rData) {
+                            $crime = $xml->createElement("Crime");
+                            $crime->setAttribute("Type", $headerArray[$titleCount]);
+                            $textData = $xml->createTextNode($rData);
+                            $crime->appendChild($textData);
+                            $totalNode->appendChild($crime);
+                            $titleCount ++;
+                        }
+                        
+                        $regionNode->appendChild($totalNode);
 
+                        $titleCount = 0;
 
                         $regionNodeArray[] = $regionNode;
                     } else {
@@ -202,9 +195,9 @@
                             foreach ($regionNodeArray as $node) {
                                 $area->appendChild($node);
                             }
-                            
+
                             $totals = $xml->createElement("Totals");
-                            
+
                             $regionTotalData = $r->getStats();
                             $titleCount = 0;
                             foreach ($regionTotalData as $rd) {
@@ -226,14 +219,14 @@
                             $beenEngland = true;
                         } else {
                             // Basicaly wales and the rest, as these are regions. 
-                            echo $r->getName();
+                            //echo $r->getName();
 
                             $regionStatData = $r->getStats(); // get stats for region
 
                             $regionCountyStats = $r->getCounties();
                             $regionNode = $xml->createElement("Region");
                             $regionNode->setAttribute("Name", $r->getName());
-                            
+
                             $titleCount = 0;
                             foreach ($regionCountyStats as $countyInfo) { // all county information for this one region
                                 $county = $xml->createElement("County");
@@ -254,7 +247,7 @@
                             }
 
                             $titleCount = 0;
-                            
+
                             $area = $xml->createElement("Area");
                             //$area->appendChild($regionNode);
                             $area->setAttribute("Name", $r->getName());
@@ -264,9 +257,9 @@
 
                             $regionTotalData = $r->getStats();
                             $titleCount = 0;
-                            
+
                             $totals = $xml->createElement("Totals");
-                            
+
                             foreach ($regionTotalData as $rd) {
                                 $areaTotals = $xml->createElement("AreaTotal");
                                 $areaTotals->setAttribute("Name", $headerArray[$titleCount]);

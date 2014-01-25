@@ -11,7 +11,7 @@
  *
  * @author Harry
  */
-require 'ProvinceInterface.php';
+require_once 'ProvinceInterface.php';
 
 class Region implements ProvinceInterface {
 
