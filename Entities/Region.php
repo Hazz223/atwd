@@ -43,7 +43,7 @@ class Region {
     }
     
     public function getCrimeStatByName($name){
-        return $this->totals[$name];// so this does work?
+        return $this->totals[$name];
         
     }
 }
