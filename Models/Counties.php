@@ -11,6 +11,20 @@
  *
  * @author Harry
  */
+
+require_once 'CrimeStatsWrapper.php';
+require_once '../Entities/County.php';
+
 class Counties {
-    // Code in here to actually update the xml
+    
+    private $xml, $crimeData;
+
+    function __construct() {
+        $this->crimeData = new CrimeStatsWrapper();
+        $this->xml = $this->crimeData->getCrimeXML(); // sets the 'database'        
+    }
+    
+    public function GetCountyByName($name){
+        // Returns a county by name
+    }
 }
