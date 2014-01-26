@@ -61,8 +61,8 @@ class Regions {
         foreach ($regions as $region) {
             $regionName = $region->getAttribute("Name");
 
-            if ($regionName == $name) {
-                return $this->_createRegionOnNode($region, $name);
+            if (strtolower($regionName) == strtolower($name)) {
+                return $this->_createRegionOnNode($region, $regionName);
             }
         }
     }
