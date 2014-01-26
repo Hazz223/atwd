@@ -7,71 +7,91 @@
 // don't actually need to worry about if it is either xml or json. I can throw an error in this instead. 
 // Need to use Regex to point it to this file. 
 // It should look in this get request file. I should then break this down, and then return the correct information.
+require_once '../Models/Areas.php';
+require_once '../Models/Regions.php';
+require_once '../Models/Counties.php';
+$areasModel = new Areas();
+$regionsModel = new Regions();
+$countiesModel = new Counties();
+
+header("Content-type: text/xml");
+$responseXML = new DOMDocument();
+$base = $responseXML->createElement("reponse");
+
+$base->setAttribute("timestamp", date("YmdHi"));
+$crime = $responseXML->createElement("crime");
+$crime->setAttribute("year", "6-2013");
 
 if (isset($_GET["region"])) {
-    // If it's set, we need to search for this information within the xml. At which point we then need to check what comes back  
-    echo $_GET["region"];
-} else {
-    require_once '../Models/Areas.php';
-    require_once '../Models/Regions.php';
-    $areasModel = new Areas();
-    $regionModel = new Regions();
-    $areas = $areasModel->GetAreas();
-    $regions = $regionModel->GetRegions();
-    
-    $test = $regionModel->GetRegionByName("West Midlands Region");
-   // echo $test->getCrimeStatByName("Total recorded crime - excluding fraud");
-   
-        foreach($regions as $region){
-             echo $region->getCrimeStatByName("Total recorded crime - excluding fraud");
-             var_dump($region); // wales  doesn't have any totals.. Fucking brill
+
+    // need to watch out for the term region, and the term Region. His request doesn't have it, while some parts of my xml does. Wonderful
+
+    $region = $regionsModel->GetRegionByName(str_replace("_", " ", $_GET["region"])); // southwest doesn't seem to exis?
+
+    $regionNode = $responseXML->createElement("region");
+    $regionNode->setAttribute("id", $region->getName());
+    $regionNode->setAttribute("total", $region->getCrimeStatByName("Total recorded crime - including fraud"));
+
+    foreach ($region->getCountyNames() as $countyName) {
+        $county = $countiesModel->GetCountyByName($countyName);
+        $countyNode = $responseXML->createElement("area");
+        $countyNode->setAttribute("id", $county->getName());
+        $countyNode->setAttribute("total", $county->getCrimeStatByName("Total recorded crime - including fraud"));
+
+        $regionNode->appendChild($countyNode);
     }
 
+    $crime->appendChild($regionNode);
+} else {
 
-    // to start with, we will do it in here
-    // start with the xml
-//    
-//    <response timestamp="xxxxxxxxxx">
-//  <crimes year="6-2013">
-//   <region id="North East" total="138982" />
-//   <region id="North West" total="444423" />
-//   ...
-//   ...
-//   <national id="British Transport Police" total="51968" />
-//   <national id="Action Fraud" total="150389" />
-//   <england total="3344716" />
-//   <wales total="173614" />
-// </crimes>
-//</response>
+    $areas = $areasModel->GetAreas();
+    $regions = $regionsModel->GetRegions();
 
-    
-//    header("Content-type: text/xml"); 
-//    $responseXML = new DOMDocument();
-//
-//
-//    $base = $responseXML->createElement("reponse");
-//    $base->setAttribute("timestamp", date("YmdHi"));
-//    
-//    
-//    $crime = $responseXML->createElement("crime");
-//    $crime->setAttribute("year", "6-2013");
-//    
-//    
-//    foreach($regions as $region){
-//        $regionNode = $responseXML->createElement("region");
-//        $regionNode->setAttribute("id", $region->getName());
-//        $regionNode->setAttribute("total", $region->getCrimeStatByName("Total recorded crime - excluding fraud")); // this doesn't work yet... woo
-//        $crime->appendChild($regionNode);
-//    }
-//    
-//    $base->appendChild($crime);
-//    
-//    
-//    $responseXML->appendChild($base); 
-//    echo $responseXML->saveXML();
-    
-    
+    foreach ($regions as $region) {
+        $regionNode = $responseXML->createElement("region");
+        $regionNode->setAttribute("id", $region->getName());
+        $regionNode->setAttribute("total", $region->getCrimeStatByName("Total recorded crime - excluding fraud")); // this doesn't work yet... woo
+        $crime->appendChild($regionNode);
+    }
+
+    $areaArray = array();
+
+    foreach ($areas as $area) {
+        $areaStats = $area->getCrimeStatByName("Total recorded crime - including fraud");
+
+        $name = $area->getName();
+        if (($name == "ENGLAND") || ($name == "WALES")) {
+            $areaNode = $responseXML->createElement(strtolower($name));
+            $areaNode->setAttribute("total", $areaStats);
+
+            $areaArray[$name] = $areaNode;
+        }
+
+        if ($name == "British Transport Police") {
+            $areaNode = $responseXML->createElement("national");
+            $areaNode->setAttribute("id", $name);
+            $areaNode->setAttribute("total", $areaStats);
+            $areaArray[$name] = $areaNode;
+        }
+
+        if ($name == "Action Fraud1") {
+            $areaNode = $responseXML->createElement("national");
+            $areaNode->setAttribute("id", "Action Fraud");
+            $areaNode->setAttribute("total", $areaStats);
+            $areaArray[$name] = $areaNode;
+        }
+    }
+
+    // due to the formatting, i had to put it in this order. Pain in the ass reall.
+    $crime->appendChild($areaArray["British Transport Police"]);
+    $crime->appendChild($areaArray["Action Fraud1"]);
+    $crime->appendChild($areaArray["ENGLAND"]);
+    $crime->appendChild($areaArray["WALES"]);
 }
+
+$base->appendChild($crime);
+$responseXML->appendChild($base);
+echo $responseXML->saveXML();
 ?>
 
 
