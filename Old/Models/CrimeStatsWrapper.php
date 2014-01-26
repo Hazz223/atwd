@@ -72,6 +72,6 @@ class CrimeStatsWrapper {
         return $dataArray;
     }
     
-   x
+   
 
 }
