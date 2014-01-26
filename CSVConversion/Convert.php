@@ -233,7 +233,7 @@
                                 $titleCount = 0;
                                 foreach($stats as $stat){
                                     $crime = $xml->createElement("Crime");
-                                    $crime->setAttribute("Name", $headerArray[$titleCount]);
+                                    $crime->setAttribute("Type", $headerArray[$titleCount]);
                                     $textData = $xml->createTextNode($stat);
                                     $crime->appendChild($textData);
                                     $regionTotal->appendChild($crime);
