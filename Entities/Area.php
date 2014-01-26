@@ -45,11 +45,8 @@ class Area {
     }
 
     public function getCrimeStatByName($name) {
-        foreach ($this->totals as $key => $value) {
-            if ($key == $name) {
-                return $value;
-            }
-        }
+        return $this->totals[$name];
+        
     }
 
 }
