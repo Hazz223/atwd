@@ -31,4 +31,75 @@
 	<Area name="Wales">
 	</Area>
 </CrimeStats>
+
+
+
+^^^ not correct!
+
+This should be a little closer. And will require a total project restart. Fucking brilliant. 
+
+<CrimeStats>
+	<Country name="England">
+		<Region name="London Region">
+			<Area name="Metropolitan Police">
+				<CrimeCatagory name="Total recorded crime - excluding fraud" total="406,098"/>
+				<CrimeCatagory name="Violence against the person" total="12318">
+					<Crime name="Homicide">99</Crime>
+					<Crime name="Violence with injury">56,496</Crime>
+				</CrimeCatagory>	
+			</Area>
+			<Area name="London, City of">
+			</Area>
+			<RegionTotals> <!-- this then stores each of the totals for the entire region -->
+				<CrimeCatagory name="Total recorded crime - excluding fraud" total="406,098"/>
+				<CrimeCatagory name="Violence against the person" total="12318">
+					<Crime name="Homicide">99</Crime>
+					<Crime name="Violence with injury">56,496</Crime>
+				</CrimeCatagory>
+			</RegionTotals>
+		</Region>
+		<CountryStats>
+			<CrimeType name="Victim-based crime">
+					<CrimeCatagory name="Total recorded crime - excluding fraud" total="406,098"/>
+					<CrimeCatagory name="Violence against the person" total="12318">
+						<Crime name="Homicide">99</Crime>
+						<Crime name="Violence with injury">56,496</Crime>
+					</CrimeCatagory>	
+				</CrimeType>
+		</CountryStats>
+	</Country>
+	<Country name="Wales">
+		<Region name="London Region">
+			<Area name="Metropolitan Police">
+				<CrimeType name="Victim-based crime">
+					<CrimeCatagory name="Total recorded crime - excluding fraud" total="406,098"/>
+					<CrimeCatagory name="Violence against the person" total="12318">
+						<Crime name="Homicide">99</Crime>
+						<Crime name="Violence with injury">56,496</Crime>
+					</CrimeCatagory>	
+				</CrimeType>
+			</Area>
+			<Area name="London, City of">
+			</Area>
+			<RegionTotals> <!-- this then stores each of the totals for the entire region -->
+				<CrimeType name="Victim-based crime">
+					<CrimeCatagory name="Total recorded crime - excluding fraud" total="406,098"/>
+					<CrimeCatagory name="Violence against the person" total="12318">
+						<Crime name="Homicide">99</Crime>
+						<Crime name="Violence with injury">56,496</Crime>
+					</CrimeCatagory>
+				</CrimeType>
+			</RegionTotals>
+		</Region>
+	</Country>
+	<FurtherStatistics name="British Transport Police">
+		<CrimeType name="Victim-based crime">
+			<CrimeCatagory name="Total recorded crime - excluding fraud" total="406,098"/>
+			<CrimeCatagory name="Violence against the person" total="12318">
+				<Crime name="Homicide">99</Crime>
+				<Crime name="Violence with injury">56,496</Crime>
+			</CrimeCatagory>
+		</CrimeType>
+	</FurtherStatistics>
+</CrimeStats>
 			
