@@ -3,15 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/F:/Development/AdvancedWebDev/Entities/County.php</file>
             <file>file:/F:/Development/AdvancedWebDev/Entities/Region.php</file>
-            <file>file:/F:/Development/AdvancedWebDev/Controllers/GetRequest.php</file>
-            <file>file:/F:/Development/AdvancedWebDev/.htaccess</file>
-            <file>file:/F:/Development/AdvancedWebDev/Entities/Area.php</file>
-            <file>file:/F:/Development/AdvancedWebDev/Models/Counties.php</file>
-            <file>file:/F:/Development/AdvancedWebDev/Models/Regions.php</file>
-            <file>file:/F:/Development/AdvancedWebDev/Models/Areas.php</file>
-            <file>file:/F:/Development/AdvancedWebDev/CSVConversion/Convert.php</file>
+            <file>file:/F:/Development/AdvancedWebDev/Models/RegionsModel.php</file>
+            <file>file:/F:/Development/AdvancedWebDev/Controllers/GetRequestController.php</file>
         </group>
     </open-files>
 </project-private>

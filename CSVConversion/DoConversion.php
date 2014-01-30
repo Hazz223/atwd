@@ -267,7 +267,9 @@ if (($handle = fopen($input, "r")) !== FALSE) {
     $rootNode->appendChild($actionFraudNode);
 
     $doc->appendChild($rootNode);
-
+    
+    $doc->save("../Data/CrimeStats.xml");
+    
     header("Content-type: text/xml");
     echo $doc->saveXML();
 }

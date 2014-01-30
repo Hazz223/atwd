@@ -12,38 +12,39 @@
  * @author Harry
  */
 class Region {
-    private $name, $totals, $countyNames = array();
+    private $total, $name, $country, $areaNames = array();
     
+    public function getTotal() {
+        return $this->total;
+    }
+
     public function getName() {
         return $this->name;
     }
 
-    public function getTotals() {
-        return $this->totals;
+    public function getCountry() {
+        return $this->country;
     }
 
-    public function getCountyNames() {
-        return $this->countyNames;
+    public function getAreaNames() {
+        return $this->areaNames;
+    }
+
+    public function setTotal($total) {
+        $this->total = $total;
     }
 
     public function setName($name) {
         $this->name = $name;
     }
 
-    public function setTotals($totals) {
-        $this->totals = $totals;
+    public function setCountry($country) {
+        $this->country = $country;
     }
 
-    public function setCountyNames($countyNames) {
-        $this->countyNames = $countyNames;
+    public function setAreaNames($areaNames) {
+        $this->areaNames = $areaNames;
     }
 
-    public function addCountyName($name){
-        $this->countyNames[] = $name;
-    }
-    
-    public function getCrimeStatByName($name){
-        return $this->totals[$name];
-        
-    }
+
 }
