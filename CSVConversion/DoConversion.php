@@ -75,11 +75,11 @@ if (($handle = fopen($input, "r")) !== FALSE) {
 
                         $totalWithCrime = $doc->createElement("CrimeCatagory");
                         $totalWithCrime->setAttribute("name", $crimeHeadersArray[0]);
-                        $totalWithCrime->setAttribute("total", $row[1]);
+                        $totalWithCrime->setAttribute("total",  str_replace(",", "", $row[1]));
 
                         $totalWithoutCrime = $doc->createElement("CrimeCatagory");
                         $totalWithoutCrime->setAttribute("name", $crimeHeadersArray[1]);
-                        $totalWithoutCrime->setAttribute("total", $row[2]);
+                        $totalWithoutCrime->setAttribute("total", str_replace(",", "", $row[2]));
 
                         $crimeTypeTotal->appendChild($totalWithCrime);
                         $crimeTypeTotal->appendChild($totalWithoutCrime);
@@ -100,13 +100,13 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                             if (TitleInArray($titlesArray[$titleCount], $catagoryArray)) { // basically checks if it a new catagory
                                 $newCatagoryNode = $doc->createElement("CrimeCatagory");
                                 $newCatagoryNode->setAttribute("name", $titlesArray[$titleCount]);
-                                $newCatagoryNode->setAttribute("total", $data);
+                                $newCatagoryNode->setAttribute("total",  str_replace(",", "", $data));
                                 $catagoryNode = $newCatagoryNode;
                             } else {
                                 if ($catagoryNode != null) {
                                     $crime = $doc->createElement("Crime"); // for the two totals
                                     $crime->setAttribute("name", $titlesArray[$titleCount]);
-                                    $text = $doc->createTextNode($data);
+                                    $text = $doc->createTextNode(str_replace(",", "", $data));
                                     $crime->appendChild($text);
 
                                     $catagoryNode->appendChild($crime);
@@ -127,13 +127,13 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                             if (TitleInArray($titlesArray[$titleCount], $catagoryArray)) { // basically checks if it a new catagory
                                 $newCatagoryNode = $doc->createElement("CrimeCatagory");
                                 $newCatagoryNode->setAttribute("name", $titlesArray[$titleCount]);
-                                $newCatagoryNode->setAttribute("total", $data);
+                                $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
                                 $catagoryNode = $newCatagoryNode;
                             } else {
                                 if ($catagoryNode != null) {
                                     $crime = $doc->createElement("Crime"); // for the two totals
                                     $crime->setAttribute("name", $titlesArray[$titleCount]);
-                                    $text = $doc->createTextNode($data);
+                                    $text = $doc->createTextNode(str_replace(",", "", $data));
                                     $crime->appendChild($text);
 
                                     $catagoryNode->appendChild($crime);
@@ -166,11 +166,11 @@ if (($handle = fopen($input, "r")) !== FALSE) {
 
                         $totalWithCrime = $doc->createElement("CrimeCatagory");
                         $totalWithCrime->setAttribute("name", $crimeHeadersArray[0]);
-                        $totalWithCrime->setAttribute("total", $row[1]);
+                        $totalWithCrime->setAttribute("total", str_replace(",", "", $row[1]));
 
                         $totalWithoutCrime = $doc->createElement("CrimeCatagory");
                         $totalWithoutCrime->setAttribute("name", $crimeHeadersArray[1]);
-                        $totalWithoutCrime->setAttribute("total", $row[2]);
+                        $totalWithoutCrime->setAttribute("total",str_replace(",", "", $row[2]));
 
                         $crimeTypeTotal->appendChild($totalWithCrime);
                         $crimeTypeTotal->appendChild($totalWithoutCrime);
@@ -190,13 +190,13 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                             if (TitleInArray($titlesArray[$titleCount], $catagoryArray)) { // basically checks if it a new catagory
                                 $newCatagoryNode = $doc->createElement("CrimeCatagory");
                                 $newCatagoryNode->setAttribute("name", $titlesArray[$titleCount]);
-                                $newCatagoryNode->setAttribute("total", $data);
+                                $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
                                 $catagoryNode = $newCatagoryNode;
                             } else {
                                 if ($catagoryNode != null) {
                                     $crime = $doc->createElement("Crime"); // for the two totals
                                     $crime->setAttribute("name", $titlesArray[$titleCount]);
-                                    $text = $doc->createTextNode($data);
+                                    $text = $doc->createTextNode(str_replace(",", "", $data));
                                     $crime->appendChild($text);
 
                                     $catagoryNode->appendChild($crime);
@@ -216,13 +216,13 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                             if (TitleInArray($titlesArray[$titleCount], $catagoryArray)) { // basically checks if it a new catagory
                                 $newCatagoryNode = $doc->createElement("CrimeCatagory");
                                 $newCatagoryNode->setAttribute("name", $titlesArray[$titleCount]);
-                                $newCatagoryNode->setAttribute("total", $data);
+                                $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
                                 $catagoryNode = $newCatagoryNode;
                             } else {
                                 if ($catagoryNode != null) {
                                     $crime = $doc->createElement("Crime"); // for the two totals
                                     $crime->setAttribute("name", $titlesArray[$titleCount]);
-                                    $text = $doc->createTextNode($data);
+                                    $text = $doc->createTextNode(str_replace(",", "", $data));
                                     $crime->appendChild($text);
 
                                     $catagoryNode->appendChild($crime);
