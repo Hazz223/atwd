@@ -11,10 +11,11 @@ if(isset($_GET["region"])){
     
     $regionModel = new RegionsModel();
     
-    $regions = $regionModel->getAllRegions();
+    $regions = $regionModel->getAllRegions(); // gets all regions correctly.
     
     foreach($regions as $region){
-        var_dump($region);
+       var_dump($region); 
+       
     }
 }
 

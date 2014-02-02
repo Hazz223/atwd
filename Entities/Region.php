@@ -45,6 +45,10 @@ class Region {
     public function setAreaNames($areaNames) {
         $this->areaNames = $areaNames;
     }
+    
+    public function addAreaName($areaName){
+        $this->areaNames[] = $areaName;
+    }
 
 
 }

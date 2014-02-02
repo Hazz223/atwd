@@ -29,61 +29,72 @@ class RegionsModel {
 
         $countries = $this->xml->getElementsByTagName("Country");
 
-        foreach ($countries as $country) {
-
-            $regions = $country->getElementsByTagName("Region");
+        foreach ($countries as $country) { // somehow this leaves out wales!
             $countryName = $country->getAttribute("name");
+            $regions = $country->getElementsByTagName("Region");
+            // Need to do a check for wales, due to the different way I've built it. I blame the CSV
 
-            foreach ($regions as $region) {
-                $newRegion = new Region();
-
-                $regionName = $region->getAttribute("name");
-                $newRegion->setName($regionName);
-                $newRegion->setCountry($countryName); // set country
-
-
-                
-                //$totalNode = $xpath->query("area//CrimeCatagory [@name='Total recorded crime - including fraud']", $region); // this now works! Huzzar!
-                // What i need to do is access this data per area. Then add it up really. 
-                
-                $total = 0;
-                
-                $xpath = new DOMXpath($this->xml);
-                $areas = $region->getElementsByTagName("area"); // area no areas getting through?
-
-                foreach ($areas as $area) {
+            if ($countryName === "WALES") {
+                foreach ($regions as $region) {
+                    $newRegion = new Region();
+                    $regionName = $region->getAttribute("name");
+                    $newRegion->setName($regionName);
+                    $newRegion->setCountry($countryName);
                     
-                    echo $area->getAttribute("name"); // is finding areas
+                    $newRegion->setTotal($this->_getWalesRegionTotal($region));
                     
-                    $totalNode = $xpath->query("//@name='Total recorded crime - including fraud'");
                     
-                    var_dump($totalNode->item(0));
-                    
-                    foreach($totalNode as $tn) {
-                        
-                        echo "test";
-//                        $total + $tn->getAttribute("total"); // this ruins the whole bloody thing... lame!
-//                        //$total = $total + 1;
-//                        break;
-                    }
+                    $newRegionList[] = $newRegion;
                 }
+                
+            } else {
+                foreach ($regions as $region) {
+                    $newRegion = new Region();
+                    $regionName = $region->getAttribute("name");
+                    $newRegion->setName($regionName);
+                    $newRegion->setCountry($countryName); // set country
+                    //$totalNode = $xpath->query("area//CrimeCatagory [@name='Total recorded crime - including fraud']", $region); // this now works! Huzzar!
+                    $newRegion->setAreaNames($this->_populateAreaNames($region));
+                    $newRegion->setTotal($this->_getEnglishRegionTotal($region));
 
-
-
-
-
-
-                $newRegion->setTotal($total);
-
-
-
-
-
-                $newRegionList[] = $newRegion;
+                    $newRegionList[] = $newRegion;
+                }
             }
         }
 
         return $newRegionList;
+    }
+   
+    private function _getEnglishRegionTotal($region) {
+        $xpath = new DOMXpath($this->xml);
+        $areas = $region->getElementsByTagName("area");
+
+        $regionTotal = 0;
+        foreach ($areas as $area) {
+            $totalNode = $xpath->query("CrimeType/CrimeCatagory [@name='Total recorded crime - including fraud']", $area)->item(0);
+
+            $regionTotal = $regionTotal + intval($totalNode->getAttribute("total"));
+        }
+
+        return $regionTotal;
+    }
+    
+    private function _getWalesRegionTotal($region){
+        $xpath = new DOMXpath($this->xml);
+        $totalNode = $xpath->query("CrimeType/CrimeCatagory [@name='Total recorded crime - including fraud']", $region)->item(0);
+        return intval($totalNode->getAttribute("total"));
+    }
+
+    private function _populateAreaNames($region) {
+        $areaNames = array();
+        $areas = $region->getElementsByTagName("area");
+
+        foreach ($areas as $area) {
+
+            $areaNames[] = $area->getAttribute("name");
+        }
+
+        return $areaNames;
     }
 
 }
