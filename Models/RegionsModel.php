@@ -51,6 +51,9 @@ class RegionsModel {
                 foreach ($regions as $region) {
                     $newRegion = new Region();
                     $regionName = $region->getAttribute("name");
+                    
+                    $regionName = str_replace("Region", "", $regionName);
+                    
                     $newRegion->setName($regionName);
                     $newRegion->setCountry($countryName); // set country
                     //$totalNode = $xpath->query("area//CrimeCatagory [@name='Total recorded crime - including fraud']", $region); // this now works! Huzzar!
