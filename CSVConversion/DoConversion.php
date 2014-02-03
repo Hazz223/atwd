@@ -56,7 +56,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                     if ($dataArray[$rowCount + 1][0] === "") {
                         if ($row[0] != "ENGLAND") {
                             $regionNode = $doc->createElement("Region");
-                            $regionNode->setAttribute("name", $row[0]);
+                            $regionNode->setAttribute("name", str_replace(" Region", "",$row[0]));
 
                             foreach ($areaArray as $area) {
                                 $regionNode->appendChild($area);
@@ -316,13 +316,13 @@ function PopulateCrimeData($array, $node, $doc, $titleCount, $titlesArray, $cata
         if (TitleInArray($titlesArray[$titleCount], $catagoryArray)) {
             $newCatagoryNode = $doc->createElement("CrimeCatagory");
             $newCatagoryNode->setAttribute("name", $titlesArray[$titleCount]);
-            $newCatagoryNode->setAttribute("total", $data);
+            $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
             $catagoryNode = $newCatagoryNode;
         } else {
             if ($catagoryNode != null) {
                 $crime = $doc->createElement("Crime");
                 $crime->setAttribute("name", $titlesArray[$titleCount]);
-                $text = $doc->createTextNode($data);
+                $text = $doc->createTextNode(str_replace(",", "", $data));
                 $crime->appendChild($text);
 
                 $catagoryNode->appendChild($crime);
@@ -343,11 +343,11 @@ function CreateFurtherStatisticsNode($furtherStatsNode, $crimeHeadersArray, $tit
 
     $totalWithCrime = $doc->createElement("CrimeCatagory");
     $totalWithCrime->setAttribute("name", $crimeHeadersArray[0]);
-    $totalWithCrime->setAttribute("total", $row[1]);
+    $totalWithCrime->setAttribute("total", str_replace(",", "", $row[1]));
 
     $totalWithoutCrime = $doc->createElement("CrimeCatagory");
     $totalWithoutCrime->setAttribute("name", $crimeHeadersArray[1]);
-    $totalWithoutCrime->setAttribute("total", $row[2]);
+    $totalWithoutCrime->setAttribute("total", str_replace(",", "", $row[2]));
 
     $crimeTypeTotal->appendChild($totalWithCrime);
     $crimeTypeTotal->appendChild($totalWithoutCrime);
