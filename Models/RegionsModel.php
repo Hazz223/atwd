@@ -16,11 +16,11 @@ require_once '../Entities/Region.php';
 
 class RegionsModel {
 
-    private $xml;
+    private $xml, $dataAccess;
 
     function __construct() {
-        $dataAccess = new DataAccess();
-        $this->xml = $dataAccess->getCrimeXML(); // gives me access to the xml
+        $this->dataAccess = new DataAccess();
+        $this->xml = $this->dataAccess->getCrimeXML(); // gives me access to the xml
     }
 
     public function getAllRegions() {
@@ -40,20 +40,19 @@ class RegionsModel {
                     $regionName = $region->getAttribute("name");
                     $newRegion->setName($regionName);
                     $newRegion->setCountry($countryName);
-                    
+
                     $newRegion->setTotal($this->_getWalesRegionTotal($region));
-                    
-                    
+
+
                     $newRegionList[] = $newRegion;
                 }
-                
             } else {
                 foreach ($regions as $region) {
                     $newRegion = new Region();
                     $regionName = $region->getAttribute("name");
-                    
+
                     $regionName = str_replace("Region", "", $regionName);
-                    
+
                     $newRegion->setName($regionName);
                     $newRegion->setCountry($countryName); // set country
                     //$totalNode = $xpath->query("area//CrimeCatagory [@name='Total recorded crime - including fraud']", $region); // this now works! Huzzar!
@@ -67,7 +66,36 @@ class RegionsModel {
 
         return $newRegionList;
     }
-   
+
+    public function getRegionByName($name) {
+        // need to clean up the name.
+        $name = str_replace("_", " ", $name);
+
+        $xpath = new DOMXpath($this->xml);
+        $region = $xpath->query("Country/Region [@name='" . $name . "']")->item(0); // this screws up on Welsh
+
+        $newRegion = new Region();
+        $countryName = $region->parentNode->getAttribute("name");
+        $newRegion->setCountry($countryName);
+        $newRegion->setName($region->getAttribute("name"));
+
+        $areas = $region->getElementsByTagName("area");
+
+        foreach ($areas as $area) {
+            $newRegion->addAreaName($area->getAttribute("name"));
+        }
+
+        if ($countryName === "ENGLAND") {
+            $newRegion->setTotal($this->_getEnglishRegionTotal($region));
+        } else {
+            $newRegion->setTotal($this->_getWalesRegionTotal($region));
+        }
+
+        return $newRegion;
+    }
+    
+
+
     private function _getEnglishRegionTotal($region) {
         $xpath = new DOMXpath($this->xml);
         $areas = $region->getElementsByTagName("area");
@@ -81,8 +109,8 @@ class RegionsModel {
 
         return $regionTotal;
     }
-    
-    private function _getWalesRegionTotal($region){
+
+    private function _getWalesRegionTotal($region) {
         $xpath = new DOMXpath($this->xml);
         $totalNode = $xpath->query("CrimeType/CrimeCatagory [@name='Total recorded crime - including fraud']", $region)->item(0);
         return intval($totalNode->getAttribute("total"));
@@ -99,5 +127,5 @@ class RegionsModel {
 
         return $areaNames;
     }
-
+   
 }
