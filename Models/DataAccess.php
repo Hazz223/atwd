@@ -23,4 +23,8 @@ class DataAccess {
     public function getCrimeXML() {
         return $this->xml;
     }
+    
+    public function saveData($xml){
+        $xml->save("../Data/CrimeStats.xml");
+    }
 }
