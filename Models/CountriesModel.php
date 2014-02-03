@@ -18,7 +18,7 @@ class CountriesModel {
         $this->xml = $dataAccess->getCrimeXML(); // gives me access to the xml
     }
     
-    function GetAllCounties(){
+    function getAllCounties(){
         $regionModel = new RegionsModel();
         
         $allRegions = $regionModel->GetAllRegions();
