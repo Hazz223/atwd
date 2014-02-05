@@ -1,22 +1,17 @@
 <?php
 
-
-// echo "This will put something."
-
-// I need to get the change - which will be stored as number and region
-// I need to get the region, or area, and then update the value. Wonderful... 
-// Looks as though we can actually only update the totals. Pain in the arse, but that's life. 
-// Only areas and special cases can be updated, such as wales... Fooking brilliant.
-// Do i create a crime model that deals with this?
-// I can update a crime based on a name, and a value instead. This should save me from confusion and code??
-
+// This only works with areas
+// This doesn't work with wales.
 
 require_once '../Models/AreasModel.php';
 $area = $_GET["area"];
 $data =  $_GET["data"];
 $areasModel = new AreasModel();
 
-$results = $areasModel->UpdateAreaTotal($area, $data);
+$results = $areasModel->UpdateAreaTotal($area, $data); // That's because it's areas are classed as regions, not areas. Wonderful.
+// Perhapes a rewrite so that wales has a region of wales within it, and within those are areas?
+
+// So wales is also a region and a country. Just to make shit real confusing!
 
 $oldArea = $results[0];
 $newArea = $results[1];

@@ -32,35 +32,19 @@ class RegionsModel {
         foreach ($countries as $country) { // somehow this leaves out wales!
             $countryName = $country->getAttribute("name");
             $regions = $country->getElementsByTagName("Region");
-            // Need to do a check for wales, due to the different way I've built it. I blame the CSV
 
-            if ($countryName === "WALES") {
-                foreach ($regions as $region) {
-                    $newRegion = new Region();
-                    $regionName = $region->getAttribute("name");
-                    $newRegion->setName($regionName);
-                    $newRegion->setCountry($countryName);
+            foreach ($regions as $region) {
+                $newRegion = new Region();
+                $regionName = $region->getAttribute("name");
 
-                    $newRegion->setTotal($this->_getWalesRegionTotal($region));
+                $regionName = str_replace("Region", "", $regionName);
 
+                $newRegion->setName($regionName);
+                $newRegion->setCountry($countryName);
+                $newRegion->setAreaNames($this->_populateAreaNames($region));
+                $newRegion->setTotal($this->_getEnglishRegionTotal($region));
 
-                    $newRegionList[] = $newRegion;
-                }
-            } else {
-                foreach ($regions as $region) {
-                    $newRegion = new Region();
-                    $regionName = $region->getAttribute("name");
-
-                    $regionName = str_replace("Region", "", $regionName);
-
-                    $newRegion->setName($regionName);
-                    $newRegion->setCountry($countryName); // set country
-                    //$totalNode = $xpath->query("area//CrimeCatagory [@name='Total recorded crime - including fraud']", $region); // this now works! Huzzar!
-                    $newRegion->setAreaNames($this->_populateAreaNames($region));
-                    $newRegion->setTotal($this->_getEnglishRegionTotal($region));
-
-                    $newRegionList[] = $newRegion;
-                }
+                $newRegionList[] = $newRegion;
             }
         }
 
@@ -93,8 +77,6 @@ class RegionsModel {
 
         return $newRegion;
     }
-    
-
 
     private function _getEnglishRegionTotal($region) {
         $xpath = new DOMXpath($this->xml);
@@ -127,5 +109,5 @@ class RegionsModel {
 
         return $areaNames;
     }
-   
+
 }

@@ -152,12 +152,18 @@ if (($handle = fopen($input, "r")) !== FALSE) {
 
                 if ($rowCount > 65 && $rowCount < 70) { // WALES SECTION
                     if ($dataArray[$rowCount + 1][0] === "") {
+                        
+                        $walesRegionNode = $doc->createElement("Region");
+                        $walesRegionNode->setAttribute("name", "WALES");
                         foreach ($areaArray as $area) {
-                            $walesNode->appendChild($area);
+                            $walesRegionNode->appendChild($area);
                         }
+                        
+                        $walesNode->appendChild($walesRegionNode);
+                        
                         $areaArray = array();
                     } else {
-                        $regionNode = $doc->createElement("Region");
+                        $regionNode = $doc->createElement("area");
                         $regionNode->setAttribute("name", $row[0]);
                         $areaArray[] = $regionNode;
 

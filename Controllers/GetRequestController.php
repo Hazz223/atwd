@@ -23,18 +23,16 @@ $crime->setAttribute("year", "6-2013");
 if (isset($_GET["region"])) {
     $givenRegionName = $_GET["region"];
     // Need to check for Action Fraud/Transport
-    
+
     if (strtolower($givenRegionName) === "british_transport_police" || strtolower($givenRegionName) === "action_fraud") {
         $obj = $fStatsModel->getFurtherStatisticsByName($givenRegionName); // gets the object. We then do something similar to the below.
-        
         // This needs to be all chanegd, as this comes through as a region... Apprently?!
-        
+
         $furtehrStatNode = $responseXML->createElement("national");
         $furtehrStatNode->setAttribute("id", $furtherStat->getName());
         $furtehrStatNode->setAttribute("total", $furtherStat->getTotal());
-        
+
         $crime->appendChild($furtehrStatNode);
-        
     } else {
         $region = $regionModel->getRegionByName($givenRegionName);
 
@@ -59,7 +57,6 @@ if (isset($_GET["region"])) {
     }
 } else {
 
-    // this is now done for XML. Woo!
     $regions = $regionModel->getAllRegions();
     $countries = $countryModel->getAllCounties();
     $fStats = $fStatsModel->getAllFurtherStatistics();
@@ -68,11 +65,13 @@ if (isset($_GET["region"])) {
 
     foreach ($regions as $region) {
         $name = $region->getName();
-        $regionNode = $responseXML->createElement("region");
-        $regionNode->setAttribute("id", $name);
+        if ($name != "WALES") {
+            $regionNode = $responseXML->createElement("region");
+            $regionNode->setAttribute("id", $name);
 
-        $regionNode->setAttribute("total", $region->getTotal());
-        $crime->appendChild($regionNode);
+            $regionNode->setAttribute("total", $region->getTotal());
+            $crime->appendChild($regionNode);
+        }
     }
 
     foreach ($countries as $country) {
