@@ -53,10 +53,9 @@ class RegionsModel {
 
     public function getRegionByName($name) {
         // need to clean up the name.
-        $name = str_replace("_", " ", $name);
 
-        $xpath = new DOMXpath($this->xml);
-        $region = $xpath->query("Country/Region [@name='" . $name . "']")->item(0); // this screws up on Welsh
+
+        $region = $this->_getRegionNodeByName($name);
 
         $newRegion = new Region();
         $countryName = $region->parentNode->getAttribute("name");
@@ -76,6 +75,37 @@ class RegionsModel {
         }
 
         return $newRegion;
+    }
+
+    public function addAreaToRegion($areaObj) {
+        $newAreaNode = $this->xml->createElement("area");
+        $newAreaNode->setAttribute("name", $areaObj->getName());
+
+        $regionNode = $this->_getRegionNodeByName($areaObj->getRegionName());
+        
+        
+        // do this stuff in teh area model instead - maybe make a wrapper later
+//        $crimeCatagoryArray = $areaObj->getCrimeData();
+//
+//        if (isset($crimeCatagoryArray)) {
+//
+//            foreach ($crimeCatagoryArray as $crimeCat) {
+//
+//                $newCrimeCatNode = $this->xml->createElement("CrimeCatagory");
+//                $newCrimeCatNode->setAttribute("name", $crimeCat->getName());
+//                $newCrimeCatNode->setAttribute("type", $crimeCat->getCrimeType());
+//                $newCrimeCatNode->setAttribute("total", $crimeCat->getTotal());
+//                $crimeData = $crimeCat->getCrimeList();
+//
+//                $newCrimeCatNode = $this->_createCrimeNodes($crimeData, $newCrimeCatNode);
+//
+//                $newAreaNode->appendChild($newCrimeCatNode);
+//            }
+//        }
+
+        $regionNode->appendChild($newAreaNode);
+
+        $this->dataAccess->saveData($this->xml);
     }
 
     private function _getEnglishRegionTotal($region) {
@@ -108,6 +138,28 @@ class RegionsModel {
         }
 
         return $areaNames;
+    }
+
+    private function _getRegionNodeByName($regionName) {
+        $name = str_replace("_", " ", $regionName);
+        $xpath = new DOMXpath($this->xml);
+        $regionNode = $xpath->query("Country/Region [@name='" . $name . "']")->item(0);
+        return $regionNode;
+    }
+
+    private function _createCrimeNodes($crimeData, $newCrimeCatNode) {
+        if (isset($crimeData)) {
+            foreach ($crimeData as $crime) {
+                $newCrimeNode = $this->xml->createElement("Crime");
+                $newCrimeNode->setAttribute("name", $crime->getName());
+                $text = $this->xml->createTextNode($crime->getValue());
+                $newCrimeNode->appendChild($text);
+
+                $newCrimeCatNode->appendChild($newCrimeNode);
+            }
+        }
+        
+        return $newCrimeCatNode;
     }
 
 }

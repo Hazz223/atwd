@@ -14,7 +14,7 @@ $results = $areasModel->UpdateAreaTotal($area, $data); // That's because it's ar
 // So wales is also a region and a country. Just to make shit real confusing!
 
 $oldArea = $results[0];
-$newArea = $results[1];
+$newAreaName = $results[1];
 
 $responseXML = new DOMDocument();
 $base = $responseXML->createElement("reponse");
@@ -26,7 +26,7 @@ $regionNode = $responseXML->createElement("region");
 
 $regionNode->setAttribute("id", $oldArea->getName());
 $regionNode->setAttribute("previous", $oldArea->getTotal());
-$regionNode->setAttribute("total", $newArea->getTotal());
+$regionNode->setAttribute("total", $newAreaName->getTotal());
 
 $crime->appendChild($regionNode);
 header("Content-type: text/xml");

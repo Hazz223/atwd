@@ -20,14 +20,17 @@ if (($handle = fopen($input, "r")) !== FALSE) {
 
     $titlesArray = RemoveEmptyArraySlots($dataArray[4]);
 
-    // Go through it row by row? And create the correct xml based on that?
+
+    // need to pass it the tital array, the crime headers, and the catagory array.
+    // from here we should be able to fashion the config xml, which will allow us
+    // Also create the abrivated ones.
+    CreateConfigXML($titlesArray, $catagoryArray, $crimeHeadersArray);
 
     $doc = new DOMDocument();
 
     $rootNode = $doc->createElement("CrimeStats");
 
     $englandRow = $dataArray[63]; // this gets england nicely 
-    //var_dump($englandRow); // all the row data
 
     $englandNode = $doc->createElement("Country");
     $englandNode->setAttribute("name", "ENGLAND");
@@ -56,7 +59,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                     if ($dataArray[$rowCount + 1][0] === "") {
                         if ($row[0] != "ENGLAND") {
                             $regionNode = $doc->createElement("Region");
-                            $regionNode->setAttribute("name", str_replace(" Region", "",$row[0]));
+                            $regionNode->setAttribute("name", str_replace(" Region", "", $row[0]));
 
                             foreach ($areaArray as $area) {
                                 $regionNode->appendChild($area);
@@ -75,21 +78,16 @@ if (($handle = fopen($input, "r")) !== FALSE) {
 
                         $totalWithCrime = $doc->createElement("CrimeCatagory");
                         $totalWithCrime->setAttribute("name", $crimeHeadersArray[0]);
-                        $totalWithCrime->setAttribute("total",  str_replace(",", "", $row[1]));
+                        $totalWithCrime->setAttribute("type", "Totals");
+                        $totalWithCrime->setAttribute("total", str_replace(",", "", $row[1]));
 
                         $totalWithoutCrime = $doc->createElement("CrimeCatagory");
                         $totalWithoutCrime->setAttribute("name", $crimeHeadersArray[1]);
+                        $totalWithoutCrime->setAttribute("type", "Totals");
                         $totalWithoutCrime->setAttribute("total", str_replace(",", "", $row[2]));
 
-                        $crimeTypeTotal->appendChild($totalWithCrime);
-                        $crimeTypeTotal->appendChild($totalWithoutCrime);
-
-                        $areaNode->appendChild($crimeTypeTotal);
-                        // Above catagories done. 
-                        // I could just create each catagory as it is?
-
-                        $crimeTypeVictim = $doc->createElement("CrimeType"); // for the two totals
-                        $crimeTypeVictim->setAttribute("name", $crimeHeadersArray[2]);
+                        $areaNode->appendChild($totalWithCrime);
+                        $areaNode->appendChild($totalWithoutCrime);
 
                         // now need to loop through each of these ones to get the infomration required
                         $victimArray = ExtractItemsFromArrayBetweenBounds(3, 18, $row);
@@ -100,33 +98,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                             if (TitleInArray($titlesArray[$titleCount], $catagoryArray)) { // basically checks if it a new catagory
                                 $newCatagoryNode = $doc->createElement("CrimeCatagory");
                                 $newCatagoryNode->setAttribute("name", $titlesArray[$titleCount]);
-                                $newCatagoryNode->setAttribute("total",  str_replace(",", "", $data));
-                                $catagoryNode = $newCatagoryNode;
-                            } else {
-                                if ($catagoryNode != null) {
-                                    $crime = $doc->createElement("Crime"); // for the two totals
-                                    $crime->setAttribute("name", $titlesArray[$titleCount]);
-                                    $text = $doc->createTextNode(str_replace(",", "", $data));
-                                    $crime->appendChild($text);
-
-                                    $catagoryNode->appendChild($crime);
-                                }
-                            }
-                            $crimeTypeVictim->appendChild($catagoryNode);
-                            $titleCount++;
-                        }
-
-
-                        $crimeTypeFraud = $doc->createElement("CrimeType"); // for the two totals
-                        $crimeTypeFraud->setAttribute("name", $crimeHeadersArray[3]);
-
-                        $fraudArray = ExtractItemsFromArrayBetweenBounds(19, 24, $row);
-                        $catagoryNode = null;
-                        foreach ($fraudArray as $data) {
-                            // Works fine for victim stuff
-                            if (TitleInArray($titlesArray[$titleCount], $catagoryArray)) { // basically checks if it a new catagory
-                                $newCatagoryNode = $doc->createElement("CrimeCatagory");
-                                $newCatagoryNode->setAttribute("name", $titlesArray[$titleCount]);
+                                $newCatagoryNode->setAttribute("Type", $crimeHeadersArray[2]);
                                 $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
                                 $catagoryNode = $newCatagoryNode;
                             } else {
@@ -139,49 +111,70 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                                     $catagoryNode->appendChild($crime);
                                 }
                             }
-                            $crimeTypeFraud->appendChild($catagoryNode);
+                            $areaNode->appendChild($catagoryNode);
                             $titleCount++;
                         }
 
+                        $fraudArray = ExtractItemsFromArrayBetweenBounds(19, 24, $row);
+                        $catagoryNode = null;
+                        foreach ($fraudArray as $data) {
+                            // Works fine for victim stuff
+                            if (TitleInArray($titlesArray[$titleCount], $catagoryArray)) { // basically checks if it a new catagory
+                                $newCatagoryNode = $doc->createElement("CrimeCatagory");
+                                $newCatagoryNode->setAttribute("name", $titlesArray[$titleCount]);
+                                $newCatagoryNode->setAttribute("Type", $crimeHeadersArray[3]);
+                                $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
 
+                                $catagoryNode = $newCatagoryNode;
+                            } else {
+                                if ($catagoryNode != null) {
+                                    $crime = $doc->createElement("Crime"); // for the two totals
+                                    $crime->setAttribute("name", $titlesArray[$titleCount]);
+                                    $text = $doc->createTextNode(str_replace(",", "", $data));
+                                    $crime->appendChild($text);
 
-                        $areaNode->appendChild($crimeTypeVictim);
-                        $areaNode->appendChild($crimeTypeFraud);
+                                    $catagoryNode->appendChild($crime);
+                                }
+                            }
+                            $areaNode->appendChild($catagoryNode);
+                            $titleCount++;
+                        }
                     }
                 }
 
                 if ($rowCount > 65 && $rowCount < 70) { // WALES SECTION
                     if ($dataArray[$rowCount + 1][0] === "") {
-                        
+
                         $walesRegionNode = $doc->createElement("Region");
                         $walesRegionNode->setAttribute("name", "WALES");
                         foreach ($areaArray as $area) {
                             $walesRegionNode->appendChild($area);
                         }
-                        
+
                         $walesNode->appendChild($walesRegionNode);
-                        
+
                         $areaArray = array();
                     } else {
-                        $regionNode = $doc->createElement("area");
-                        $regionNode->setAttribute("name", $row[0]);
-                        $areaArray[] = $regionNode;
+                        $areaNode = $doc->createElement("area");
+                        $areaNode->setAttribute("name", $row[0]);
+                        $areaArray[] = $areaNode;
 
                         $crimeTypeTotal = $doc->createElement("CrimeType"); // for the two totals
                         $crimeTypeTotal->setAttribute("name", "Totals");
 
                         $totalWithCrime = $doc->createElement("CrimeCatagory");
                         $totalWithCrime->setAttribute("name", $crimeHeadersArray[0]);
+                        $totalWithCrime->setAttribute("type", "Totals");
                         $totalWithCrime->setAttribute("total", str_replace(",", "", $row[1]));
 
                         $totalWithoutCrime = $doc->createElement("CrimeCatagory");
                         $totalWithoutCrime->setAttribute("name", $crimeHeadersArray[1]);
-                        $totalWithoutCrime->setAttribute("total",str_replace(",", "", $row[2]));
+                        $totalWithoutCrime->setAttribute("type", "Totals");
+                        $totalWithoutCrime->setAttribute("total", str_replace(",", "", $row[2]));
 
-                        $crimeTypeTotal->appendChild($totalWithCrime);
-                        $crimeTypeTotal->appendChild($totalWithoutCrime);
+                        $areaNode->appendChild($totalWithCrime);
+                        $areaNode->appendChild($totalWithoutCrime);
 
-                        $regionNode->appendChild($crimeTypeTotal);
                         // Above catagories done. 
                         // I could just create each catagory as it is?
 
@@ -196,6 +189,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                             if (TitleInArray($titlesArray[$titleCount], $catagoryArray)) { // basically checks if it a new catagory
                                 $newCatagoryNode = $doc->createElement("CrimeCatagory");
                                 $newCatagoryNode->setAttribute("name", $titlesArray[$titleCount]);
+                                $newCatagoryNode->setAttribute("Type", $crimeHeadersArray[2]);
                                 $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
                                 $catagoryNode = $newCatagoryNode;
                             } else {
@@ -208,7 +202,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                                     $catagoryNode->appendChild($crime);
                                 }
                             }
-                            $crimeTypeVictim->appendChild($catagoryNode);
+                            $areaNode->appendChild($catagoryNode);
                             $titleCount++;
                         }
 
@@ -218,10 +212,10 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                         $fraudArray = ExtractItemsFromArrayBetweenBounds(19, 24, $row);
                         $catagoryNode = null;
                         foreach ($fraudArray as $data) {
-                            // Works fine for victim stuff
                             if (TitleInArray($titlesArray[$titleCount], $catagoryArray)) { // basically checks if it a new catagory
                                 $newCatagoryNode = $doc->createElement("CrimeCatagory");
                                 $newCatagoryNode->setAttribute("name", $titlesArray[$titleCount]);
+                                $newCatagoryNode->setAttribute("Type", $crimeHeadersArray[3]);
                                 $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
                                 $catagoryNode = $newCatagoryNode;
                             } else {
@@ -234,33 +228,20 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                                     $catagoryNode->appendChild($crime);
                                 }
                             }
-                            $crimeTypeFraud->appendChild($catagoryNode);
+                            $areaNode->appendChild($catagoryNode);
                             $titleCount++;
                         }
-
-                        $regionNode->appendChild($crimeTypeVictim);
-                        $regionNode->appendChild($crimeTypeFraud);
                     }
                 }
 
                 if ($rowCount == 71) { // if Transport Police
                     $britishTrasportNode = CreateFurtherStatisticsNode(
-                            $britishTrasportNode, 
-                            $crimeHeadersArray, 
-                            $titlesArray, 
-                            $catagoryArray, 
-                            $doc, 
-                            $row);
+                            $britishTrasportNode, $crimeHeadersArray, $titlesArray, $catagoryArray, $doc, $row);
                 }
 
                 if ($rowCount == 73) { // Action fraud
                     $actionFraudNode = CreateFurtherStatisticsNode(
-                            $actionFraudNode, 
-                            $crimeHeadersArray, 
-                            $titlesArray, 
-                            $catagoryArray, 
-                            $doc, 
-                            $row);
+                            $actionFraudNode, $crimeHeadersArray, $titlesArray, $catagoryArray, $doc, $row);
                 }
             }
         }
@@ -273,11 +254,11 @@ if (($handle = fopen($input, "r")) !== FALSE) {
     $rootNode->appendChild($actionFraudNode);
 
     $doc->appendChild($rootNode);
-    
-    $doc->save("../Data/CrimeStats.xml");
-    
+
+    //$doc->save("../Data/CrimeStats.xml");
+
     header("Content-type: text/xml");
-    echo $doc->saveXML();
+    //echo $doc->saveXML();
 }
 
 function RemoveEmptyArraySlots($array) {
@@ -316,13 +297,14 @@ function TitleInArray($needle, $heystack) {
     return false;
 }
 
-function PopulateCrimeData($array, $node, $doc, $titleCount, $titlesArray, $catagoryArray) {
+function PopulateCrimeData($array, $node, $doc, $titleCount, $titlesArray, $catagoryArray, $type) {
     $catagoryNode = null;
     foreach ($array as $data) {
         if (TitleInArray($titlesArray[$titleCount], $catagoryArray)) {
             $newCatagoryNode = $doc->createElement("CrimeCatagory");
             $newCatagoryNode->setAttribute("name", $titlesArray[$titleCount]);
             $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
+            $newCatagoryNode->setAttribute("type", $type);
             $catagoryNode = $newCatagoryNode;
         } else {
             if ($catagoryNode != null) {
@@ -349,10 +331,12 @@ function CreateFurtherStatisticsNode($furtherStatsNode, $crimeHeadersArray, $tit
 
     $totalWithCrime = $doc->createElement("CrimeCatagory");
     $totalWithCrime->setAttribute("name", $crimeHeadersArray[0]);
+    $totalWithCrime->setAttribute("type", "Totals");
     $totalWithCrime->setAttribute("total", str_replace(",", "", $row[1]));
 
     $totalWithoutCrime = $doc->createElement("CrimeCatagory");
     $totalWithoutCrime->setAttribute("name", $crimeHeadersArray[1]);
+    $totalWithoutCrime->setAttribute("type", "Totals");
     $totalWithoutCrime->setAttribute("total", str_replace(",", "", $row[2]));
 
     $crimeTypeTotal->appendChild($totalWithCrime);
@@ -361,13 +345,13 @@ function CreateFurtherStatisticsNode($furtherStatsNode, $crimeHeadersArray, $tit
     $victimArray = ExtractItemsFromArrayBetweenBounds(3, 18, $row);
     $crimeTypeVictimEmpty = $doc->createElement("CrimeType"); // for the two totals
     $crimeTypeVictimEmpty->setAttribute("name", $crimeHeadersArray[2]);
-    $crimeTypeVictimFilled = PopulateCrimeData($victimArray, $crimeTypeVictimEmpty, $doc, 0, $titlesArray, $catagoryArray);
+    $crimeTypeVictimFilled = PopulateCrimeData($victimArray, $crimeTypeVictimEmpty, $doc, 0, $titlesArray, $catagoryArray, $crimeHeadersArray[2]);
 
     // Frad etc
     $fraudArray = ExtractItemsFromArrayBetweenBounds(19, 24, $row);  // I have no idea why this doesn't work...
     $crimeTypeFraudEmpty = $doc->createElement("CrimeType"); // for the two totals
     $crimeTypeFraudEmpty->setAttribute("name", $crimeHeadersArray[3]);
-    $crimeTypeFraudFilled = PopulateCrimeData($fraudArray, $crimeTypeFraudEmpty, $doc, 16, $titlesArray, $catagoryArray);
+    $crimeTypeFraudFilled = PopulateCrimeData($fraudArray, $crimeTypeFraudEmpty, $doc, 16, $titlesArray, $catagoryArray, $crimeHeadersArray[3]);
 
 
     // Append nodes
@@ -376,4 +360,76 @@ function CreateFurtherStatisticsNode($furtherStatsNode, $crimeHeadersArray, $tit
     $furtherStatsNode->appendChild($crimeTypeFraudFilled);
 
     return $furtherStatsNode;
+}
+
+function CreateConfigXML($titlesArray, $catagoryArray, $crimeHeadersArray) {
+    $doc = new DOMDocument();
+
+    $rootNode = $doc->createElement("Config");
+
+    $abrivNode = $doc->createElement("CrimeAbriviations");
+    $catagory = "";
+    $crimeType = $crimeHeadersArray[2];
+    foreach ($titlesArray as $title) {
+        $nameNode = $doc->createElement("Crime");
+        $nameNode->setAttribute("name", $title);
+        
+        if($title === "Drug offences"){
+            $crimeType = $crimeHeadersArray[3];
+        }
+        
+        $nameNode->setAttribute("abrivated", getAbriviatedName($title));
+        
+        if (TitleInArray($title, $catagoryArray)) {
+            $catagory = $title;
+            $nameNode->setAttribute("crimecatagory", $title);
+            $nameNode->setAttribute("type", $crimeType);
+            $nameNode->setAttribute("iscrimecatagory", "true");
+        } else {
+            $nameNode->setAttribute("crimecatagory", $catagory);
+            $nameNode->setAttribute("type", $crimeType);
+            $nameNode->setAttribute("iscrimecatagory", "false");
+        }
+        
+        $abrivNode->appendChild($nameNode);
+    }
+    $rootNode->appendChild($abrivNode);
+    $doc->appendChild($rootNode);
+    echo $doc->saveXML();
+    $doc->save("../Config/CrimeConfig.xml");
+}
+
+function getAbriviatedName($name) {
+    
+    $acronym = "";
+    
+    $brokenName = explode(" ", $name);
+    
+    $length = count($brokenName);
+    
+    if($length == 1){
+        $acronym = $brokenName[0][0].$brokenName[0][1].$brokenName[0][1];
+    }
+    
+    if($length > 1){
+        $count = 0;
+        foreach($brokenName as $word){
+            if($count > 3){
+                break;
+            }
+            if(isset($word[0])){
+                // need to check for without
+                if($word=== "without"){
+                    $acronym .= "wo";
+                }
+                else{
+                    $acronym .= $word[0];
+                }
+                
+                $count++;
+            }  
+        }
+    }
+    
+    return strtolower($acronym);
 }
