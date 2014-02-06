@@ -3,3 +3,4 @@ RewriteEngine On
 RewriteRule ^crimes/6-2013/(xml|json) /awtd/Controllers/GetRequestController\.php
 RewriteRule ^crimes/6-2013/([a-zA-Z_]*)/(xml|json) /awtd/Controllers/GetRequestController?region=$1
 RewriteRule ^crimes/6-2013/put/([a-zA-Z_]*):([0-9]*)/(xml|json) /awtd/Controllers/PutRequestController?area=$1&data=$2
+RewriteRule ^crimes/6-2013/post/([a-zA-Z_]*)/([a-zA-Z_]*)/(([a-zA-Z_]*):([0-9]*-))*([a-zA-Z_]*):([0-9]*)/(xml|json) /awtd/Controllers/PostRequestController?
