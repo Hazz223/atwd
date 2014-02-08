@@ -21,7 +21,7 @@ class DataAccess {
         $this->xml->load(DataAccess::xmlFile);
     }
 
-    private static function GetInstance(){ // Should change it so there is only one XML item.
+    public static function GetInstance(){ // Should change it so there is only one XML item.
         if(self::$instance === null){
             self::$instance = new DataAccess();
         }
@@ -32,8 +32,7 @@ class DataAccess {
         return $this->xml;
     }
     
-    public function saveData($xml){
-        $xml->save(DataAccess::xmlFile);
+    public function saveXML(){
+        $this->xml->save(DataAccess::xmlFile);
     }
-    
 }

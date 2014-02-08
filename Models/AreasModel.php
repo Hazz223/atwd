@@ -23,8 +23,7 @@ class AreasModel {
     const totalNoFraudTitle = "Total recorded crime - excluding fraud";
     
     function __construct() {
-        $this->dataAccess = new DataAccess();
-        $this->xml = DataAccess::GetInstance();
+        //$this->dataAccess = new DataAccess();
     }
 
     public function getAreaByName($name) {
@@ -41,7 +40,7 @@ class AreasModel {
             $crimeDataArray[] = $this->_createCrimeCatagoryObject($crimeCat);
         }
 
-        $xpath = new DOMXpath($this->xml);
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $totalNode = $xpath->query("CrimeCatagory [@name='".AreasModel::totalInFraudTitle."']", $area)->item(0);
 
         $newArea->setTotal($totalNode->getAttribute("total"));
@@ -58,7 +57,7 @@ class AreasModel {
         } else {
             $crimeCatNode = $this->_getCrimeCategoryNode($crimeCat->getName(), $areaNode); // not finding the node!
             $crimeCatNode->setAttribute("total", $crimeCat->getTotal());
-            $this->dataAccess->saveData($this->xml);
+            DataAccess::GetInstance()->saveXML();
 
             $this->_updateTotalsNodes($areaNode);
         }
@@ -80,7 +79,7 @@ class AreasModel {
             $this->_updateCrimeCategoryTotal($crime->getCrimeCatagory(), $areaNode);
             
             $this->_updateTotalsNodes($areaNode);
-            $this->dataAccess->saveData($this->xml);
+            DataAccess::GetInstance()->saveXML();
         }
     }
 
@@ -88,13 +87,13 @@ class AreasModel {
 
         $oldRegion = $this->getAreaByName($name);
 
-        $xpath = new DOMXpath($this->xml);
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $area = $xpath->query("Country/Region/area [@name='" . $name . "']")->item(0);
 
 
         $totalNode = $xpath->query("CrimeType/CrimeCatagory [@name='".AreasModel::totalInFraudTitle."']", $area);
         $totalNode->item(0)->setAttribute("total", $value);
-        $this->dataAccess->saveData($this->xml);
+        $this->dataAccess->saveData(DataAccess::GetInstance()->getCrimeXML());
 
         $newRegion = $this->getAreaByName($name);
 
@@ -102,24 +101,24 @@ class AreasModel {
     }
 
     private function _createCrimeCatagoryNode($crimeCat, $areaNode) {
-        $newCatNode = $this->xml->createElement("CrimeCatagory");
+        $newCatNode = DataAccess::GetInstance()->getCrimeXML()->createElement("CrimeCatagory");
         $newCatNode->setAttribute("name", $crimeCat->getName());
         $newCatNode->setAttribute("type", $crimeCat->getCrimeType());
         $newCatNode->setAttribute("total", $crimeCat->getTotal());
         $areaNode->appendChild($newCatNode);
 
-        $this->dataAccess->saveData($this->xml);
+        DataAccess::GetInstance()->saveXML();
     }
 
     private function _createCrimeNode(Crime $crime, $areaNode) {
-        $xpath = new DOMXpath($this->xml);
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $catNode = $xpath->query("CrimeCatagory [@name='" . $crime->getCrimeCatagory() . "']", $areaNode)->item(0); // not finding the correct node at all
         $areaName = $areaNode->getAttribute("name");
 
         if (isset($catNode)) {
-            $newCrimeNode = $this->xml->createElement("Crime");
+            $newCrimeNode = DataAccess::GetInstance()->getCrimeXML()->createElement("Crime");
             $newCrimeNode->setAttribute("name", $crime->getName());
-            $textNode = $this->xml->createTextNode($crime->getValue());
+            $textNode = DataAccess::GetInstance()->getCrimeXML()->createTextNode($crime->getValue());
             $newCrimeNode->appendChild($textNode);
             $catNode->appendChild($newCrimeNode);
         } else {
@@ -133,7 +132,7 @@ class AreasModel {
 
             $this->addCrimeToArea($crime, $areaName);
         }
-        $this->dataAccess->saveData($this->xml);
+        DataAccess::GetInstance()->saveXML();
 
         $this->_updateTotalsNodes($areaNode);
     }
@@ -164,33 +163,33 @@ class AreasModel {
     }
 
     private function _getAreaNode($name) {
-        $xpath = new DOMXpath($this->xml);
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         return $xpath->query("Country/Region/area [@name='" . $name . "']")->item(0);
     }
 
     private function _crimeCategoryExists($crimeCatName, $areaNode) {
-        $xpath = new DOMXpath($this->xml);
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $node = $xpath->query("CrimeCatagory [@name='" . $crimeCatName . "']", $areaNode)->item(0);
 
         return isset($node);
     }
 
     private function _crimeExists($crimeName, $areaNode) {
-        $xpath = new DOMXpath($this->xml);
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $exists = $xpath->query("CrimeCatagory/Crime [@name='" . $crimeName . "']", $areaNode)->item(0);
 
         return isset($exists);
     }
 
     private function _getCrimeNode($crimeName, $areaNode) {
-        $xpath = new DOMXpath($this->xml);
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $node = $xpath->query("CrimeCatagory/Crime [@name='" . $crimeName . "']", $areaNode)->item(0);
 
         return $node;
     }
 
     private function _getCrimeCategoryNode($crimeCatagoryName, $areaNode) {
-        $xpath = new DOMXpath($this->xml);
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $node = $xpath->query("CrimeCatagory [@name='" . $crimeCatagoryName . "']", $areaNode)->item(0);
 
         return $node;
@@ -208,13 +207,12 @@ class AreasModel {
 
         $crimeCatNode->setAttribute("total", $total);
 
-        $this->dataAccess->saveData($this->xml); // save the changes
+        DataAccess::GetInstance()->saveXML(); // save the changes
     }
 
     private function _updateTotalsNodes($areaNode) {
         if ($this->_crimeCategoryExists(AreasModel::totalInFraudTitle, $areaNode)) {
             $crimeCats = $areaNode->getElementsByTagName("CrimeCatagory");
-            
             
             
             $total = 0;
@@ -238,7 +236,7 @@ class AreasModel {
             $totalNoFraud = $this->_getCrimeCategoryNode(AreasModel::totalNoFraudTitle, $areaNode);
             $totalNoFraud->setAttribute("total", ($test - $fraudTotal));
 
-            $this->dataAccess->saveData($this->xml);
+            DataAccess::GetInstance()->saveXML();
         } else {
             $this->_createTotalsNodes($areaNode);
 

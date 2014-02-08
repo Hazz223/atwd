@@ -19,15 +19,15 @@ class RegionsModel {
     private $xml, $dataAccess;
 
     function __construct() {
-        $this->dataAccess = new DataAccess();
-        $this->xml = $this->dataAccess->getCrimeXML(); // gives me access to the xml
+//        $this->dataAccess = new DataAccess();
+//        $this->xml = $this->dataAccess->getCrimeXML(); // gives me access to the xml
     }
 
     public function getAllRegions() {
         //Get elements by county, then create a region object. The county can then be fed to it. 
         $newRegionList = array();
 
-        $countries = $this->xml->getElementsByTagName("Country");
+        $countries = DataAccess::GetInstance()->getCrimeXML()->getElementsByTagName("Country");
 
         foreach ($countries as $country) { // somehow this leaves out wales!
             $countryName = $country->getAttribute("name");
@@ -52,7 +52,7 @@ class RegionsModel {
     }
 
     public function getRegionByName($name) {
-        $this->xml = $this->dataAccess->getCrimeXML(); // weird that it can't find  anuything
+
         $region = $this->_getRegionNodeByName($name);
 
         $newRegion = new Region();
@@ -68,9 +68,9 @@ class RegionsModel {
         }
 
         if ($countryName === "ENGLAND") {
-            //$newRegion->setTotal($this->_getEnglishRegionTotal($region));
+            $newRegion->setTotal($this->_getEnglishRegionTotal($region));
         } else {
-            //$newRegion->setTotal($this->_getWalesRegionTotal($region));
+            $newRegion->setTotal($this->_getWalesRegionTotal($region));
         }
 
         return $newRegion;
@@ -78,26 +78,26 @@ class RegionsModel {
 
     public function addAreaToRegion(Area $areaObj) {
         if (!$this->_areaExists($areaObj->getName())) {
-            $newAreaNode = $this->xml->createElement("area");
+            $newAreaNode = DataAccess::GetInstance()->getCrimeXML()->createElement("area");
             $newAreaNode->setAttribute("name", $areaObj->getName());
 
             $regionNode = $this->_getRegionNodeByName($areaObj->getRegionName());
 
             $regionNode->appendChild($newAreaNode);
 
-            $this->dataAccess->saveData($this->xml);
+            DataAccess::GetInstance()->saveXML();
         }
     }
 
     private function _areaExists($name) {
-        $xpath = new DOMXpath($this->xml);
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $exists = $xpath->query("Country/Region/area [@name='" . $name . "']")->item(0);
         return isset($exists);
     }
 
     private function _getEnglishRegionTotal($region) {
-        $this->xml = $this->dataAccess->getCrimeXML();
-        $xpath = new DOMXpath($this->xml);
+        
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $areas = $region->getElementsByTagName("area");
 
         $regionTotal = 0;
@@ -111,7 +111,7 @@ class RegionsModel {
     }
 
     private function _getWalesRegionTotal($region) {
-        $xpath = new DOMXpath($this->xml);
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $totalNode = $xpath->query("CrimeType/CrimeCatagory [@name='Total recorded crime - including fraud']", $region)->item(0);
         return intval($totalNode->getAttribute("total"));
     }
@@ -128,9 +128,9 @@ class RegionsModel {
         return $areaNames;
     }
 
-    private function _getRegionNodeByName($regionName) {
+    public function _getRegionNodeByName($regionName) {
         $name = str_replace("_", " ", $regionName);
-        $xpath = new DOMXpath($this->xml);
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $regionNode = $xpath->query("Country/Region [@name='" . $name . "']")->item(0);
         return $regionNode;
     }
@@ -138,9 +138,9 @@ class RegionsModel {
     private function _createCrimeNodes($crimeData, $newCrimeCatNode) {
         if (isset($crimeData)) {
             foreach ($crimeData as $crime) {
-                $newCrimeNode = $this->xml->createElement("Crime");
+                $newCrimeNode = DataAccess::GetInstance()->getCrimeXML()->createElement("Crime");
                 $newCrimeNode->setAttribute("name", $crime->getName());
-                $text = $this->xml->createTextNode($crime->getValue());
+                $text = DataAccess::GetInstance()->getCrimeXML()->createTextNode($crime->getValue());
                 $newCrimeNode->appendChild($text);
 
                 $newCrimeCatNode->appendChild($newCrimeNode);

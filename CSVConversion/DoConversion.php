@@ -257,8 +257,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
 
     $doc->save("../Data/CrimeStats.xml");
 
-    header("Content-type: text/xml");
-    echo $doc->saveXML();
+    echo "Completed Conversion";
 }
 
 function RemoveEmptyArraySlots($array) {

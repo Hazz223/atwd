@@ -40,27 +40,10 @@ foreach ($crimes as $crime) {
     $areaModel->addCrimeToArea($crime, $newAreaName);
 }
 
-//We need to send an item to the view.
-//Need to put this data into a region object! Woo!
-$test = $regionModel->_getRegionNodeByName($region);
-
-$responseXML = new DOMDocument();
-$base = $responseXML->createElement("reponse");
-
-$newNode = $responseXML->importNode($test, true);
-
-$base->appendChild($newNode);
-$responseXML->appendChild($base);
-header("Content-type: text/xml");
-echo $responseXML->saveXML();
-
-echo $test->getAttribute("total");
-
-// XML isn't being updated properly. It might be because something else is reading it? Maybe?
 
 $_SESSION["area"] = $areaModel->getAreaByName($newAreaName);
 $_SESSION["region"] = $regionModel->getRegionByName($region); 
-//include "../Views/PostRequestView.php";
+include "../Views/PostRequestView.php";
 
 function DecodeRequestURI($uri) {
     return explode("/", $uri);
