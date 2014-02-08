@@ -52,15 +52,14 @@ class RegionsModel {
     }
 
     public function getRegionByName($name) {
-        // need to clean up the name.
-
-
+        $this->xml = $this->dataAccess->getCrimeXML(); // weird that it can't find  anuything
         $region = $this->_getRegionNodeByName($name);
 
         $newRegion = new Region();
+        $newRegion->setName($region->getAttribute("name"));
+        
         $countryName = $region->parentNode->getAttribute("name");
         $newRegion->setCountry($countryName);
-        $newRegion->setName($region->getAttribute("name"));
 
         $areas = $region->getElementsByTagName("area");
 
@@ -69,52 +68,41 @@ class RegionsModel {
         }
 
         if ($countryName === "ENGLAND") {
-            $newRegion->setTotal($this->_getEnglishRegionTotal($region));
+            //$newRegion->setTotal($this->_getEnglishRegionTotal($region));
         } else {
-            $newRegion->setTotal($this->_getWalesRegionTotal($region));
+            //$newRegion->setTotal($this->_getWalesRegionTotal($region));
         }
 
         return $newRegion;
     }
 
-    public function addAreaToRegion($areaObj) {
-        $newAreaNode = $this->xml->createElement("area");
-        $newAreaNode->setAttribute("name", $areaObj->getName());
+    public function addAreaToRegion(Area $areaObj) {
+        if (!$this->_areaExists($areaObj->getName())) {
+            $newAreaNode = $this->xml->createElement("area");
+            $newAreaNode->setAttribute("name", $areaObj->getName());
 
-        $regionNode = $this->_getRegionNodeByName($areaObj->getRegionName());
-        
-        
-        // do this stuff in teh area model instead - maybe make a wrapper later
-//        $crimeCatagoryArray = $areaObj->getCrimeData();
-//
-//        if (isset($crimeCatagoryArray)) {
-//
-//            foreach ($crimeCatagoryArray as $crimeCat) {
-//
-//                $newCrimeCatNode = $this->xml->createElement("CrimeCatagory");
-//                $newCrimeCatNode->setAttribute("name", $crimeCat->getName());
-//                $newCrimeCatNode->setAttribute("type", $crimeCat->getCrimeType());
-//                $newCrimeCatNode->setAttribute("total", $crimeCat->getTotal());
-//                $crimeData = $crimeCat->getCrimeList();
-//
-//                $newCrimeCatNode = $this->_createCrimeNodes($crimeData, $newCrimeCatNode);
-//
-//                $newAreaNode->appendChild($newCrimeCatNode);
-//            }
-//        }
+            $regionNode = $this->_getRegionNodeByName($areaObj->getRegionName());
 
-        $regionNode->appendChild($newAreaNode);
+            $regionNode->appendChild($newAreaNode);
 
-        $this->dataAccess->saveData($this->xml);
+            $this->dataAccess->saveData($this->xml);
+        }
+    }
+
+    private function _areaExists($name) {
+        $xpath = new DOMXpath($this->xml);
+        $exists = $xpath->query("Country/Region/area [@name='" . $name . "']")->item(0);
+        return isset($exists);
     }
 
     private function _getEnglishRegionTotal($region) {
+        $this->xml = $this->dataAccess->getCrimeXML();
         $xpath = new DOMXpath($this->xml);
         $areas = $region->getElementsByTagName("area");
 
         $regionTotal = 0;
         foreach ($areas as $area) {
-            $totalNode = $xpath->query("CrimeType/CrimeCatagory [@name='Total recorded crime - including fraud']", $area)->item(0);
+            $totalNode = $xpath->query("CrimeCatagory [@name='Total recorded crime - including fraud']", $area)->item(0);
 
             $regionTotal = $regionTotal + intval($totalNode->getAttribute("total"));
         }
@@ -158,7 +146,7 @@ class RegionsModel {
                 $newCrimeCatNode->appendChild($newCrimeNode);
             }
         }
-        
+
         return $newCrimeCatNode;
     }
 

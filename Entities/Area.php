@@ -36,7 +36,7 @@ class Area {
     }
 
     public function setCrimeData($crimeData) {
-        $this->crimeData = $crimeData; // key value array -> "Crime name" : "data";
+        $this->crimeData = $crimeData;
     }
     
     public function getCrimeValueByName($name){

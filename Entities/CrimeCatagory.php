@@ -12,7 +12,7 @@
  * @author Harry
  */
 class CrimeCatagory {
-    private $name, $crimeType, $total, $crimeList;
+    private $name, $crimeType, $total, $crimeList = array();
     
     public function getName() {
         return $this->name;

@@ -255,10 +255,10 @@ if (($handle = fopen($input, "r")) !== FALSE) {
 
     $doc->appendChild($rootNode);
 
-    //$doc->save("../Data/CrimeStats.xml");
+    $doc->save("../Data/CrimeStats.xml");
 
     header("Content-type: text/xml");
-    //echo $doc->saveXML();
+    echo $doc->saveXML();
 }
 
 function RemoveEmptyArraySlots($array) {
@@ -326,9 +326,6 @@ function PopulateCrimeData($array, $node, $doc, $titleCount, $titlesArray, $cata
 }
 
 function CreateFurtherStatisticsNode($furtherStatsNode, $crimeHeadersArray, $titlesArray, $catagoryArray, $doc, $row) {
-    $crimeTypeTotal = $doc->createElement("CrimeType"); // for the two totals
-    $crimeTypeTotal->setAttribute("name", "Totals");
-
     $totalWithCrime = $doc->createElement("CrimeCatagory");
     $totalWithCrime->setAttribute("name", $crimeHeadersArray[0]);
     $totalWithCrime->setAttribute("type", "Totals");
@@ -339,25 +336,15 @@ function CreateFurtherStatisticsNode($furtherStatsNode, $crimeHeadersArray, $tit
     $totalWithoutCrime->setAttribute("type", "Totals");
     $totalWithoutCrime->setAttribute("total", str_replace(",", "", $row[2]));
 
-    $crimeTypeTotal->appendChild($totalWithCrime);
-    $crimeTypeTotal->appendChild($totalWithoutCrime);
+    $furtherStatsNode->appendChild($totalWithCrime);
+    $furtherStatsNode->appendChild($totalWithoutCrime);
 
     $victimArray = ExtractItemsFromArrayBetweenBounds(3, 18, $row);
-    $crimeTypeVictimEmpty = $doc->createElement("CrimeType"); // for the two totals
-    $crimeTypeVictimEmpty->setAttribute("name", $crimeHeadersArray[2]);
-    $crimeTypeVictimFilled = PopulateCrimeData($victimArray, $crimeTypeVictimEmpty, $doc, 0, $titlesArray, $catagoryArray, $crimeHeadersArray[2]);
+    $furtherStatsNode = PopulateCrimeData($victimArray, $furtherStatsNode, $doc, 0, $titlesArray, $catagoryArray, $crimeHeadersArray[2]);
 
     // Frad etc
     $fraudArray = ExtractItemsFromArrayBetweenBounds(19, 24, $row);  // I have no idea why this doesn't work...
-    $crimeTypeFraudEmpty = $doc->createElement("CrimeType"); // for the two totals
-    $crimeTypeFraudEmpty->setAttribute("name", $crimeHeadersArray[3]);
-    $crimeTypeFraudFilled = PopulateCrimeData($fraudArray, $crimeTypeFraudEmpty, $doc, 16, $titlesArray, $catagoryArray, $crimeHeadersArray[3]);
-
-
-    // Append nodes
-    $furtherStatsNode->appendChild($crimeTypeTotal);
-    $furtherStatsNode->appendChild($crimeTypeVictimFilled);
-    $furtherStatsNode->appendChild($crimeTypeFraudFilled);
+    $furtherStatsNode = PopulateCrimeData($fraudArray, $furtherStatsNode, $doc, 16, $titlesArray, $catagoryArray, $crimeHeadersArray[3]);
 
     return $furtherStatsNode;
 }
@@ -373,13 +360,13 @@ function CreateConfigXML($titlesArray, $catagoryArray, $crimeHeadersArray) {
     foreach ($titlesArray as $title) {
         $nameNode = $doc->createElement("Crime");
         $nameNode->setAttribute("name", $title);
-        
-        if($title === "Drug offences"){
+
+        if ($title === "Drug offences") {
             $crimeType = $crimeHeadersArray[3];
         }
-        
+
         $nameNode->setAttribute("abrivated", getAbriviatedName($title));
-        
+
         if (TitleInArray($title, $catagoryArray)) {
             $catagory = $title;
             $nameNode->setAttribute("crimecatagory", $title);
@@ -390,46 +377,44 @@ function CreateConfigXML($titlesArray, $catagoryArray, $crimeHeadersArray) {
             $nameNode->setAttribute("type", $crimeType);
             $nameNode->setAttribute("iscrimecatagory", "false");
         }
-        
+
         $abrivNode->appendChild($nameNode);
     }
     $rootNode->appendChild($abrivNode);
     $doc->appendChild($rootNode);
-    echo $doc->saveXML();
     $doc->save("../Config/CrimeConfig.xml");
 }
 
 function getAbriviatedName($name) {
-    
+
     $acronym = "";
-    
+
     $brokenName = explode(" ", $name);
-    
+
     $length = count($brokenName);
-    
-    if($length == 1){
-        $acronym = $brokenName[0][0].$brokenName[0][1].$brokenName[0][1];
+
+    if ($length == 1) {
+        $acronym = $brokenName[0][0] . $brokenName[0][1] . $brokenName[0][2];
     }
-    
-    if($length > 1){
+
+    if ($length > 1) {
         $count = 0;
-        foreach($brokenName as $word){
-            if($count > 3){
+        foreach ($brokenName as $word) {
+            if ($count > 3) {
                 break;
             }
-            if(isset($word[0])){
+            if (isset($word[0])) {
                 // need to check for without
-                if($word=== "without"){
+                if ($word === "without") {
                     $acronym .= "wo";
-                }
-                else{
+                } else {
                     $acronym .= $word[0];
                 }
-                
+
                 $count++;
-            }  
+            }
         }
     }
-    
+
     return strtolower($acronym);
 }
