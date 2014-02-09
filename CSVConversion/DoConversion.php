@@ -34,16 +34,19 @@ if (($handle = fopen($input, "r")) !== FALSE) {
 
     $englandNode = $doc->createElement("Country");
     $englandNode->setAttribute("name", "ENGLAND");
+    $englandNode->setAttribute("proper_name", "England");
 
     $walesNode = $doc->createElement("Country");
     $walesNode->setAttribute("name", "WALES");
+    $walesNode->setAttribute("proper_name", "Wales");
 
     $britishTrasportNode = $doc->createElement("FurtherStatistics");
-    $britishTrasportNode->setAttribute("name", "British Transport Police");
-
+    $britishTrasportNode->setAttribute("name", "british_transport_police");
+    $britishTrasportNode->setAttribute("proper_name", "British Transport Police");
+    
     $actionFraudNode = $doc->createElement("FurtherStatistics");
-    $actionFraudNode->setAttribute("name", "Action Fraud");
-
+    $actionFraudNode->setAttribute("name", "action_fraud");
+    $actionFraudNode->setAttribute("proper_name", "Action Fraud");
 
     $dataArray = RemoveEmptyArraySlots($dataArray); // does this even work?
 
@@ -59,7 +62,10 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                     if ($dataArray[$rowCount + 1][0] === "") {
                         if ($row[0] != "ENGLAND") {
                             $regionNode = $doc->createElement("Region");
-                            $regionNode->setAttribute("name", str_replace(" Region", "", $row[0]));
+                            $nonRegionName = str_replace(" Region", "", $row[0]);
+                            $withUnderscores = str_replace(" ", "_", $nonRegionName);
+                            $regionNode->setAttribute("name",  strtolower($withUnderscores));
+                            $regionNode->setAttribute("proper_name", $nonRegionName);
 
                             foreach ($areaArray as $area) {
                                 $regionNode->appendChild($area);
@@ -69,8 +75,10 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                             $areaArray = array();
                         }
                     } else {
-                        $areaNode = $doc->createElement("area");
-                        $areaNode->setAttribute("name", $row[0]);
+                        $areaNode = $doc->createElement("Area");
+                        $withUnderscores = str_replace(" ", "_", $row[0]);
+                        $areaNode->setAttribute("name",  strtolower($withUnderscores));
+                        $areaNode->setAttribute("proper_name", $row[0]);
                         $areaArray[] = $areaNode;
 
                         $crimeTypeTotal = $doc->createElement("CrimeType"); // for the two totals
@@ -147,6 +155,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
 
                         $walesRegionNode = $doc->createElement("Region");
                         $walesRegionNode->setAttribute("name", "WALES");
+                        $walesRegionNode->setAttribute("proper_name", "Wales");
                         foreach ($areaArray as $area) {
                             $walesRegionNode->appendChild($area);
                         }
@@ -155,11 +164,13 @@ if (($handle = fopen($input, "r")) !== FALSE) {
 
                         $areaArray = array();
                     } else {
-                        $areaNode = $doc->createElement("area");
-                        $areaNode->setAttribute("name", $row[0]);
+                        $areaNode = $doc->createElement("Area");
+                        $withUnderscores = str_replace(" ", "_", $row[0]);
+                        $areaNode->setAttribute("name",  strtolower($withUnderscores));
+                        $areaNode->setAttribute("proper_name", $row[0]);
                         $areaArray[] = $areaNode;
-
-                        $crimeTypeTotal = $doc->createElement("CrimeType"); // for the two totals
+                     
+                        $crimeTypeTotal = $doc->createElement("CrimeType");
                         $crimeTypeTotal->setAttribute("name", "Totals");
 
                         $totalWithCrime = $doc->createElement("CrimeCatagory");

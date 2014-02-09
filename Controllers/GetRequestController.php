@@ -7,6 +7,7 @@ require_once '../Models/RegionsModel.php';
 require_once '../Models/CountriesModel.php';
 require_once '../Models/FurtherStatisticsModel.php';
 require_once '../Models/AreasModel.php';
+require_once '../Exceptions/FieldNotFoundException.php';
 
 $countryModel = new CountriesModel();
 $regionModel = new RegionsModel();
@@ -22,80 +23,70 @@ $crime->setAttribute("year", "6-2013");
 
 if (isset($_GET["region"])) {
     $givenRegionName = $_GET["region"];
-    // Need to check for Action Fraud/Transport
 
     if (strtolower($givenRegionName) === "british_transport_police" || strtolower($givenRegionName) === "action_fraud") {
-        $obj = $fStatsModel->getFurtherStatisticsByName($givenRegionName); // gets the object. We then do something similar to the below.
-        // This needs to be all chanegd, as this comes through as a region... Apprently?!
 
-        $furtehrStatNode = $responseXML->createElement("national");
-        $furtehrStatNode->setAttribute("id", $furtherStat->getName());
-        $furtehrStatNode->setAttribute("total", $furtherStat->getTotal());
+        try {
+            $obj = $fStatsModel->getFurtherStatisticsByName($givenRegionName);
 
-        $crime->appendChild($furtehrStatNode);
-    } else {
-        $region = $regionModel->getRegionByName($givenRegionName);
+            $_SESSION["fStat"] = $obj;
+            include '../Views/GetRequests/GetFurtherStatRequestView.php';
+            
+        } catch (FieldNotFoundException $ex) {
+            $_SESSION["errorMessage"] = $ex->getMessage();
+            $_SESSION["errorCode"] = $ex->getCode();
+            
+            include "../Views/Errors/ErrorView.php";
+        } catch (Exception $ex) {
+            $_SESSION["errorMessage"] = $ex->getMessage();
+            $_SESSION["errorCode"] = 500;
 
-        $name = $region->getName();
-
-        $regionNode = $responseXML->createElement("region");
-        $regionNode->setAttribute("id", $name);
-        $regionNode->setAttribute("total", $region->getTotal());
-
-        $areaNames = $region->getAreaNames();
-        foreach ($areaNames as $areaName) {
-
-            $areaObj = $areasModel->getAreaByName($areaName);
-
-            $areaNode = $responseXML->createElement("area");
-            $areaNode->setAttribute("id", $areaObj->getName());
-            $areaNode->setAttribute("total", $areaObj->getTotal());
-            $regionNode->appendChild($areaNode);
+            include "../Views/Errors/ErrorView.php";
         }
+    } else {
+        try {
+            $region = $regionModel->getRegionByName($givenRegionName);
+            $_SESSION["region"] = $region;
 
-        $crime->appendChild($regionNode);
+            include '../Views/GetRequests/GetRegionRequestView.php';
+        } catch (FieldNotFoundException $ex) {
+            $_SESSION["errorMessage"] = $ex->getMessage();
+            $_SESSION["errorCode"] = $ex->getCode();
+            include "../Views/Errors/ErrorView.php";
+        } catch (Exception $ex) {
+            $_SESSION["errorMessage"] = $ex->getMessage();
+            $_SESSION["errorCode"] = 500;
+
+            include "../Views/Errors/ErrorView.php";
+        }
     }
 } else {
 
-    $regions = $regionModel->getAllRegions();
-    $countries = $countryModel->getAllCountries();
-    $fStats = $fStatsModel->getAllFurtherStatistics();
+    try {
+        $regions = $regionModel->getAllRegions();
+        $countries = $countryModel->getAllCountries();
+        $fStats = $fStatsModel->getAllFurtherStatistics();
 
+        $_SESSION["regions"] = $regions;
+        $_SESSION["countries"] = $countries;
+        $_SESSION["fStats"] = $fStats;
 
+        include '../Views/GetRequests/FullGetRequestView.php';
+    } catch (FieldNotFoundException $ex) {
+        $_SESSION["errorMessage"] = $ex->getMessage();
+        $_SESSION["errorCode"] = $ex->getCode();
 
-    foreach ($regions as $region) {
-        $name = $region->getName();
-        if ($name != "WALES") {
-            $regionNode = $responseXML->createElement("region");
-            $regionNode->setAttribute("id", $name);
+        include "../Views/Errors/ErrorView.php";
+    } catch (Exception $ex) {
+        $_SESSION["errorMessage"] = $ex->getMessage();
+        $_SESSION["errorCode"] = 500;
 
-            $regionNode->setAttribute("total", $region->getTotal());
-            $crime->appendChild($regionNode);
-        }
+        include "../Views/Errors/ErrorView.php";
     }
-
-    foreach ($countries as $country) {
-        $name = $country->getName();
-        $countryNode = $responseXML->createElement(strtolower($name));
-        $countryNode->setAttribute("total", $country->getTotal());
-
-        $crime->appendChild($countryNode);
-    }
-
-    foreach ($fStats as $stat) {
-        $statNode = $responseXML->createElement("national");
-        $statNode->setAttribute("id", $stat->getName());
-        $statNode->setAttribute("total", $stat->getTotal());
-        $crime->appendChild($statNode);
-    }
-
-
-
-    //Could i not just do an include as a view?
 }
 
 
-header("Content-type: text/xml");
-$base->appendChild($crime);
-$responseXML->appendChild($base);
-echo $responseXML->saveXML();
+//header("Content-type: text/xml");
+//$base->appendChild($crime);
+//$responseXML->appendChild($base);
+//echo $responseXML->saveXML();

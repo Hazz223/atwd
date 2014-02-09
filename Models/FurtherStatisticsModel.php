@@ -24,7 +24,8 @@ class FurtherStatisticsModel {
             $newFurtherStat = new FurtherStatistic();
 
             $newFurtherStat->setName($fStat->getAttribute("name"));
-
+            $newFurtherStat->setProperName($fStat->getAttribute("proper_name"));
+            
             $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
             $totalNode = $xpath->query("CrimeCatagory [@name='Total recorded crime - including fraud']", $fStat)->item(0);
             $total = intval($totalNode->getAttribute("total"));
@@ -38,10 +39,10 @@ class FurtherStatisticsModel {
 
     public function getFurtherStatisticsByName($name) {
         // find this using xpath
-        $name = str_replace("_", " ", $name); // remove any annoying underscores
+        $name = str_replace(" ", "_", $name); /// incase a space has gotten in, replace with underscore
 
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $furtherStat = $xpath->query("FurtherStatistics[@name='" . $name . "']")->item(0);
+        $furtherStat = $xpath->query("FurtherStatistics [@name='" . strtolower($name). "']")->item(0);
         //British Transport Police
         
         //$furtherStat = $xpath->query("FurtherStatistics[@name='British Transport Police']")->item(0);
@@ -49,7 +50,7 @@ class FurtherStatisticsModel {
 
         $furtherStatObj->setName($furtherStat->getAttribute("name"));
 
-        $totalNode = $xpath->query("CrimeType/CrimeCatagory [@name='Total recorded crime - including fraud']", $furtherStat)->item(0);
+        $totalNode = $xpath->query("CrimeCatagory [@name='Total recorded crime - including fraud']", $furtherStat)->item(0);
         $total = intval($totalNode->getAttribute("total"));
         $furtherStatObj->setTotal($total);
         

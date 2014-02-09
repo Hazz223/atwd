@@ -13,7 +13,7 @@
  */
 class Area {
 
-    private $name, $total, $crimeData = array(), $regionName;
+    private $name, $total, $crimeData = array(), $regionName, $properName;
 
     public function getName() {
         return $this->name;
@@ -50,4 +50,14 @@ class Area {
     public function setRegionName($regionName) {
         $this->regionName = $regionName;
     }
+    
+    public function getProperName() {
+        return $this->properName;
+    }
+
+    public function setProperName($properName) {
+        $this->properName = $properName;
+    }
+
+
 }

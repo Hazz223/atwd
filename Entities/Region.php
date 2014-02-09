@@ -12,7 +12,7 @@
  * @author Harry
  */
 class Region {
-    private $total, $name, $country, $areaNames = array();
+    private $total, $name, $country, $areaNames = array(), $properName;
     
     public function getTotal() {
         return $this->total;
@@ -49,6 +49,11 @@ class Region {
     public function addAreaName($areaName){
         $this->areaNames[] = $areaName;
     }
+    public function getProperName() {
+        return $this->properName;
+    }
 
-
+    public function setProperName($properName) {
+        $this->properName = $properName;
+    }
 }

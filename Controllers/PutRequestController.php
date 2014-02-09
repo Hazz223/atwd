@@ -8,10 +8,7 @@ $area = $_GET["area"];
 $data =  $_GET["data"];
 $areasModel = new AreasModel();
 
-$results = $areasModel->UpdateAreaTotal($area, $data); // That's because it's areas are classed as regions, not areas. Wonderful.
-// Perhapes a rewrite so that wales has a region of wales within it, and within those are areas?
-
-// So wales is also a region and a country. Just to make shit real confusing!
+$results = $areasModel->UpdateAreaTotal($area, $data); // this currently doesn't work!
 
 $oldArea = $results[0];
 $newAreaName = $results[1];

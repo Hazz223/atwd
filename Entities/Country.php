@@ -12,7 +12,7 @@
  * @author Harry
  */
 class Country {
-    private $name, $countryTotal, $regionNames = array();
+    private $name, $countryTotal, $regionNames = array(), $properName;
     
     public function getName() {
         return $this->name;
@@ -36,5 +36,21 @@ class Country {
 
     public function setRegionNames($regionNames) {
         $this->regionNames = $regionNames;
+    }
+    
+    public function getCountryTotal() {
+        return $this->countryTotal;
+    }
+
+    public function getProperName() {
+        return $this->properName;
+    }
+
+    public function setCountryTotal($countryTotal) {
+        $this->countryTotal = $countryTotal;
+    }
+
+    public function setProperName($properName) {
+        $this->properName = $properName;
     }
 }

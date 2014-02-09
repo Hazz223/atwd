@@ -16,12 +16,9 @@ $regionModel = new RegionsModel();
 $areaModel = new AreasModel();
 $fStatsModel = new FurtherStatisticsModel();
 
-
-
-
 if ($areaModel->isArea($deleteItem)) {
     
-    $deletedArea = $areaModel->getAreaByName($deleteItem); // can get the area object, just then doesn't do anything with the bloody thing?!
+    $deletedArea = $areaModel->getAreaByName($deleteItem);
     $areaNode = $areaModel->DeleteArea($deleteItem);
 
     $englishRegions = $regionModel->getRegionsByCountry("ENGLAND");
@@ -34,7 +31,13 @@ if ($areaModel->isArea($deleteItem)) {
     $_SESSION["englandTotal"] = $england->getTotal();
     $combinedTotal = $wales->getTotal() + $england->getTotal();
     $_SESSION["combinedTotal"] = $combinedTotal;
+    
+    // send all this stuff to the view.
     include "../Views/DeleteView.php";
+}
+else{
+    // store stuff in the session, then access it here.
+    throw new Exception("Help me");
 }
 
 

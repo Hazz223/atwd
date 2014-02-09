@@ -14,7 +14,7 @@
 
 
 class FurtherStatistic {
-    private $name, $total, $crimeData = array();
+    private $name, $total, $crimeData = array(), $properName;
     
     public function getName() {
         return $this->name;
@@ -39,6 +39,12 @@ class FurtherStatistic {
     public function setCrimeData($crimeData) {
         $this->crimeData = $crimeData;
     }
+    public function getProperName() {
+        return $this->properName;
+    }
 
+    public function setProperName($properName) {
+        $this->properName = $properName;
+    }
 
 }

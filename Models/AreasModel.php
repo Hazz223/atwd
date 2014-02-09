@@ -22,15 +22,12 @@ class AreasModel {
     const totalInFraudTitle = "Total recorded crime - including fraud"; // set these so i dont have to keep refering to them.
     const totalNoFraudTitle = "Total recorded crime - excluding fraud";
     
-    function __construct() {
-        //$this->dataAccess = new DataAccess();
-    }
-
     public function getAreaByName($name) {
         $area = $this->_getAreaNode($name);
 
         $newArea = new Area();
         $newArea->setName($area->getAttribute("name"));
+        $newArea->setProperName($area->getAttribute("proper_name"));
         $newArea->setRegionName($area->parentNode->getAttribute("name"));
 
         $crimeCategories = $area->getElementsByTagName("CrimeCatagory");
@@ -50,12 +47,8 @@ class AreasModel {
     }
     
     public function isArea($name){
-        // if it is an area, return true
-        // else return false.
-        // Use xpath to find out?
-        
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $result = $xpath->query("Country/Region/area [@name='" . $name . "']")->item(0);
+        $result = $xpath->query("Country/Region/Area [@name='" . $name . "']")->item(0);
         
         return isset($result);
     }
@@ -99,12 +92,12 @@ class AreasModel {
         $oldRegion = $this->getAreaByName($name);
 
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $area = $xpath->query("Country/Region/area [@name='" . $name . "']")->item(0);
+        $area = $xpath->query("Country/Region/Area [@name='" . strtolower($name) . "']")->item(0);
 
 
-        $totalNode = $xpath->query("CrimeType/CrimeCatagory [@name='".AreasModel::totalInFraudTitle."']", $area);
-        $totalNode->item(0)->setAttribute("total", $value);
-        $this->dataAccess->saveData(DataAccess::GetInstance()->getCrimeXML());
+        $totalNode = $xpath->query(" CrimeCatagory [@name='".AreasModel::totalInFraudTitle."']", $area)->item(0);
+        $totalNode->setAttribute("total", $value);
+        DataAccess::GetInstance()->saveXML();
 
         $newRegion = $this->getAreaByName($name);
 
@@ -182,7 +175,7 @@ class AreasModel {
 
     private function _getAreaNode($name) {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        return $xpath->query("Country/Region/area [@name='" . $name . "']")->item(0);
+        return $xpath->query("Country/Region/Area [@name='" . $name . "']")->item(0);
     }
 
     private function _crimeCategoryExists($crimeCatName, $areaNode) {
@@ -231,8 +224,7 @@ class AreasModel {
     private function _updateTotalsNodes($areaNode) {
         if ($this->_crimeCategoryExists(AreasModel::totalInFraudTitle, $areaNode)) {
             $crimeCats = $areaNode->getElementsByTagName("CrimeCatagory");
-            
-            
+
             $total = 0;
             $fraudTotal = 0;
 
@@ -258,7 +250,7 @@ class AreasModel {
         } else {
             $this->_createTotalsNodes($areaNode);
 
-            $this->_updateTotalsNodes($areaNode);
+            $this->_updateTotalsNodes($areaNode); // recursion!
         }
     }
 

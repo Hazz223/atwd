@@ -34,17 +34,7 @@ class RegionsModel {
             $regions = $country->getElementsByTagName("Region");
 
             foreach ($regions as $region) {
-                $newRegion = new Region();
-                $regionName = $region->getAttribute("name");
-
-                $regionName = str_replace("Region", "", $regionName);
-
-                $newRegion->setName($regionName);
-                $newRegion->setCountry($countryName);
-                $newRegion->setAreaNames($this->_populateAreaNames($region));
-                $newRegion->setTotal($this->_getEnglishRegionTotal($region));
-
-                $newRegionList[] = $newRegion;
+                $newRegionList[] = $this->_createRegionObject($region);
             }
         }
 
@@ -54,14 +44,20 @@ class RegionsModel {
     public function getRegionByName($name) {
 
         $region = $this->_getRegionNodeByName($name);
-        $regionObj = $this->_createRegionObject($region);
-        return $regionObj;
+
+        if (isset($region)) {
+            $regionObj = $this->_createRegionObject($region);
+            return $regionObj;
+        } else {
+            throw new FieldNotFoundException("Could not find region: ".$name, 404);
+        }
     }
 
     public function addAreaToRegion(Area $areaObj) {
-        if (!$this->_areaExists($areaObj->getName())) {
+        if (!$this->_areaExists($areaObj->getName())) { // create a whole new area
             $newAreaNode = DataAccess::GetInstance()->getCrimeXML()->createElement("area");
             $newAreaNode->setAttribute("name", $areaObj->getName());
+            $newAreaNode->setAttribute("proper_name", $areaObj->getProperName());
 
             $regionNode = $this->_getRegionNodeByName($areaObj->getRegionName());
 
@@ -69,6 +65,7 @@ class RegionsModel {
 
             DataAccess::GetInstance()->saveXML();
         }
+        // add extra stuff to the area if it already exists!
     }
 
     public function isRegion($name) {
@@ -84,12 +81,12 @@ class RegionsModel {
         $countryNode = $xpath->query("Country [@name='" . $countryName . "']")->item(0);
 
         // need to return a list of region objects that are associated with this country!
-        
+
         $regionNodeList = $countryNode->getElementsByTagName("Region");
-        
+
         $regionObjList = array();
-        
-        foreach($regionNodeList as $regionNode){
+
+        foreach ($regionNodeList as $regionNode) {
             $regionObjList[] = $this->_createRegionObject($regionNode);
         }
         return $regionObjList;
@@ -123,7 +120,7 @@ class RegionsModel {
     }
 
     private function _getRegionTotal(DOMNode $region) {
-        $areas = $region->getElementsByTagName("area");
+        $areas = $region->getElementsByTagName("Area");
 
         $regionTotal = 0;
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
@@ -138,7 +135,7 @@ class RegionsModel {
 
     private function _populateAreaNames($region) {
         $areaNames = array();
-        $areas = $region->getElementsByTagName("area");
+        $areas = $region->getElementsByTagName("Area");
 
         foreach ($areas as $area) {
 
@@ -149,9 +146,9 @@ class RegionsModel {
     }
 
     public function _getRegionNodeByName($regionName) {
-        $name = str_replace("_", " ", $regionName);
+        $name = str_replace(" ", " ", $regionName);
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $regionNode = $xpath->query("Country/Region [@name='" . $name . "']")->item(0);
+        $regionNode = $xpath->query("Country/Region [@name='" .strtolower($name). "']")->item(0);
         return $regionNode;
     }
 
@@ -173,8 +170,9 @@ class RegionsModel {
     private function _createRegionObject(DOMNode $regionNode) {
         $newRegion = new Region();
         $newRegion->setName($regionNode->getAttribute("name"));
-
-        $countryName = $regionNode->parentNode->getAttribute("name"); 
+        $newRegion->setName($regionNode->getAttribute("proper_name"));
+        
+        $countryName = $regionNode->parentNode->getAttribute("name");
         $newRegion->setCountry($countryName);
 
         $areas = $regionNode->getElementsByTagName("area");
@@ -183,14 +181,8 @@ class RegionsModel {
             $newRegion->addAreaName($area->getAttribute("name"));
         }
 
-//        if ($countryName === "ENGLAND") {
-//            $newRegion->setTotal($this->_getEnglishRegionTotal($regionNode));
-//        } else {
-//            $newRegion->setTotal($this->_getWalesRegionTotal($regionNode));
-//        }
-        
         $newRegion->setTotal($this->_getRegionTotal($regionNode));
-        
+
         return $newRegion;
     }
 
