@@ -58,7 +58,7 @@ if (isset($_GET["region"])) {
 } else {
 
     $regions = $regionModel->getAllRegions();
-    $countries = $countryModel->getAllCounties();
+    $countries = $countryModel->getAllCountries();
     $fStats = $fStatsModel->getAllFurtherStatistics();
 
 

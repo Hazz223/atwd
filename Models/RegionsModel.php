@@ -54,26 +54,8 @@ class RegionsModel {
     public function getRegionByName($name) {
 
         $region = $this->_getRegionNodeByName($name);
-
-        $newRegion = new Region();
-        $newRegion->setName($region->getAttribute("name"));
-        
-        $countryName = $region->parentNode->getAttribute("name");
-        $newRegion->setCountry($countryName);
-
-        $areas = $region->getElementsByTagName("area");
-
-        foreach ($areas as $area) {
-            $newRegion->addAreaName($area->getAttribute("name"));
-        }
-
-        if ($countryName === "ENGLAND") {
-            $newRegion->setTotal($this->_getEnglishRegionTotal($region));
-        } else {
-            $newRegion->setTotal($this->_getWalesRegionTotal($region));
-        }
-
-        return $newRegion;
+        $regionObj = $this->_createRegionObject($region);
+        return $regionObj;
     }
 
     public function addAreaToRegion(Area $areaObj) {
@@ -89,6 +71,30 @@ class RegionsModel {
         }
     }
 
+    public function isRegion($name) {
+        $cleanedName = str_replace("_", " ", $name);
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
+        $regionNode = $xpath->query("Country/Region [@name='" . $cleanedName . "']")->item(0);
+
+        return isset($regionNode);
+    }
+
+    public function getRegionsByCountry($countryName) {
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
+        $countryNode = $xpath->query("Country [@name='" . $countryName . "']")->item(0);
+
+        // need to return a list of region objects that are associated with this country!
+        
+        $regionNodeList = $countryNode->getElementsByTagName("Region");
+        
+        $regionObjList = array();
+        
+        foreach($regionNodeList as $regionNode){
+            $regionObjList[] = $this->_createRegionObject($regionNode);
+        }
+        return $regionObjList;
+    }
+
     private function _areaExists($name) {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $exists = $xpath->query("Country/Region/area [@name='" . $name . "']")->item(0);
@@ -96,7 +102,7 @@ class RegionsModel {
     }
 
     private function _getEnglishRegionTotal($region) {
-        
+
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $areas = $region->getElementsByTagName("area");
 
@@ -114,6 +120,20 @@ class RegionsModel {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $totalNode = $xpath->query("CrimeType/CrimeCatagory [@name='Total recorded crime - including fraud']", $region)->item(0);
         return intval($totalNode->getAttribute("total"));
+    }
+
+    private function _getRegionTotal(DOMNode $region) {
+        $areas = $region->getElementsByTagName("area");
+
+        $regionTotal = 0;
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
+        foreach ($areas as $area) {
+            $totalNode = $xpath->query("CrimeCatagory [@name='Total recorded crime - including fraud']", $area)->item(0);
+
+            $regionTotal = $regionTotal + intval($totalNode->getAttribute("total"));
+        }
+
+        return $regionTotal;
     }
 
     private function _populateAreaNames($region) {
@@ -148,6 +168,30 @@ class RegionsModel {
         }
 
         return $newCrimeCatNode;
+    }
+
+    private function _createRegionObject(DOMNode $regionNode) {
+        $newRegion = new Region();
+        $newRegion->setName($regionNode->getAttribute("name"));
+
+        $countryName = $regionNode->parentNode->getAttribute("name"); 
+        $newRegion->setCountry($countryName);
+
+        $areas = $regionNode->getElementsByTagName("area");
+
+        foreach ($areas as $area) {
+            $newRegion->addAreaName($area->getAttribute("name"));
+        }
+
+//        if ($countryName === "ENGLAND") {
+//            $newRegion->setTotal($this->_getEnglishRegionTotal($regionNode));
+//        } else {
+//            $newRegion->setTotal($this->_getWalesRegionTotal($regionNode));
+//        }
+        
+        $newRegion->setTotal($this->_getRegionTotal($regionNode));
+        
+        return $newRegion;
     }
 
 }

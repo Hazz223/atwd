@@ -35,4 +35,9 @@ class DataAccess {
     public function saveXML(){
         $this->xml->save(DataAccess::xmlFile);
     }
+    
+    public function RemoveNode($node){
+        $this->xml->removeChild($node);
+        $this->saveXML();
+    }
 }

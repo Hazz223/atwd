@@ -16,24 +16,17 @@ require_once '../Entities/FurtherStatistic.php';
 
 class FurtherStatisticsModel {
 
-    private $xml;
-
-    function __construct() {
-        $dataAccess = new DataAccess();
-        $this->xml = $dataAccess->getCrimeXML(); // gives me access to the xml
-    }
-
     public function getAllFurtherStatistics() {
         $newFStatsList = array();
-        $fStats = $this->xml->getElementsByTagName("FurtherStatistics");
+        $fStats = DataAccess::GetInstance()->getCrimeXML()->getElementsByTagName("FurtherStatistics");
 
         foreach ($fStats as $fStat) {
             $newFurtherStat = new FurtherStatistic();
 
             $newFurtherStat->setName($fStat->getAttribute("name"));
 
-            $xpath = new DOMXpath($this->xml);
-            $totalNode = $xpath->query("CrimeType/CrimeCatagory [@name='Total recorded crime - including fraud']", $fStat)->item(0);
+            $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
+            $totalNode = $xpath->query("CrimeCatagory [@name='Total recorded crime - including fraud']", $fStat)->item(0);
             $total = intval($totalNode->getAttribute("total"));
             $newFurtherStat->setTotal($total);
 
@@ -47,7 +40,7 @@ class FurtherStatisticsModel {
         // find this using xpath
         $name = str_replace("_", " ", $name); // remove any annoying underscores
 
-        $xpath = new DOMXpath($this->xml);
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $furtherStat = $xpath->query("FurtherStatistics[@name='" . $name . "']")->item(0);
         //British Transport Police
         
@@ -70,6 +63,13 @@ class FurtherStatisticsModel {
         $furtherStatObj->setCrimeData($crimeStatsArray);
 
         return $furtherStatObj;
+    }
+    
+    public function isFurtherStat($name){
+        $cleanedName = str_replace("_", " ", $name);
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
+        $statNode = $xpath->query("FurtherStatistics [@name='" . $cleanedName . "']")->item(0);
+        return isset($statNode);
     }
 
 }

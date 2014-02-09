@@ -55,7 +55,6 @@ function DecodeCrimeData($data) {
     $crimeDataArray = array();
 
     foreach ($splitData as $crime) {
-
         $crimeArray = explode(":", $crime);
         $crimeDataArray[$crimeArray[0]] = $crimeArray[1];
     }

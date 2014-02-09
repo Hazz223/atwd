@@ -11,28 +11,20 @@ require_once 'RegionsModel.php';
 require_once '../Entities/Country.php';
 
 class CountriesModel {
-    private $xml;
-
-    function __construct() {
-        $dataAccess = new DataAccess();
-        $this->xml = $dataAccess->getCrimeXML(); // gives me access to the xml
-    }
     
-    function getAllCounties(){
+    function getAllCountries(){
         $regionModel = new RegionsModel();
         
         $allRegions = $regionModel->GetAllRegions();
         $countryList = array();
 
-        $countries = $this->xml->getElementsByTagName("Country");
+        $countries = DataAccess::GetInstance()->getCrimeXML()->getElementsByTagName("Country");
         
         foreach($countries as $country){
             $newCountry = new Country();
             
             $countryName = $country->getAttribute("name");
             $newCountry->setName($countryName);
-            
-            // I could get all regions, and then split them based on if their parent is England or Wales...? 
             
             $total = 0;
             $regionNames = array();
@@ -49,5 +41,35 @@ class CountriesModel {
         }
         
         return $countryList;
+    }
+   
+    public function getCountryByName($countryName, $regionList){
+        $countryNode = $this->_getCountryNode($countryName);
+                
+        $countryObj = new Country();
+        $countryObj->setName($countryNode->getAttribute("name"));
+       
+
+        $regionNamesList = array();
+        $countryTotal = 0;
+        foreach($regionList as $regionObj){
+            $regionNamesList[] = $regionObj->getName();
+            $countryTotal = $regionObj->getTotal();
+        }
+        
+        $countryObj->setRegionNames($regionNamesList);
+        $countryObj->setTotal($countryTotal);
+        
+        return $countryObj;
+    }
+    
+    public function isCountry($name){
+        $countryNode = $this->_getCountryNode($name);
+        return isset($countryNode);
+    }
+    
+    private function _getCountryNode($name){
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
+        return $xpath->query("Country [@name='" . $name . "']")->item(0);
     }
 }

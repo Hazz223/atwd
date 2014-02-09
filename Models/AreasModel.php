@@ -48,6 +48,17 @@ class AreasModel {
 
         return $newArea;
     }
+    
+    public function isArea($name){
+        // if it is an area, return true
+        // else return false.
+        // Use xpath to find out?
+        
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
+        $result = $xpath->query("Country/Region/area [@name='" . $name . "']")->item(0);
+        
+        return isset($result);
+    }
 
     public function AddCrimeCategory(CrimeCatagory $crimeCat, $areaName) {
         $areaNode = $this->_getAreaNode($areaName);
@@ -100,6 +111,13 @@ class AreasModel {
         return array($oldRegion, $newRegion);
     }
 
+    public function DeleteArea($areaName){
+        $areaNode = $this->_getAreaNode($areaName);
+        $parent = $areaNode->parentNode;
+        $parent->removeChild($areaNode);
+        DataAccess::GetInstance()->saveXML();
+    }
+    
     private function _createCrimeCatagoryNode($crimeCat, $areaNode) {
         $newCatNode = DataAccess::GetInstance()->getCrimeXML()->createElement("CrimeCatagory");
         $newCatNode->setAttribute("name", $crimeCat->getName());
