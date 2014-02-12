@@ -13,9 +13,9 @@
  */
 class FieldNotFoundException extends Exception{
     
-    public function __construct($message, $code) {
+    public function __construct($message) {
         
-        parent::__construct($message, $code);
+        parent::__construct($message, 404);
     }
     
     public function __toString() {
