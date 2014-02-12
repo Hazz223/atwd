@@ -154,7 +154,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                     if ($dataArray[$rowCount + 1][0] === "") {
 
                         $walesRegionNode = $doc->createElement("Region");
-                        $walesRegionNode->setAttribute("name", "WALES");
+                        $walesRegionNode->setAttribute("name", "wales");
                         $walesRegionNode->setAttribute("proper_name", "Wales");
                         foreach ($areaArray as $area) {
                             $walesRegionNode->appendChild($area);
