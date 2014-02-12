@@ -55,7 +55,7 @@ class RegionsModel {
 
     public function addAreaToRegion(Area $areaObj) {
         if (!$this->_areaExists($areaObj->getName())) { // create a whole new area
-            $newAreaNode = DataAccess::GetInstance()->getCrimeXML()->createElement("area");
+            $newAreaNode = DataAccess::GetInstance()->getCrimeXML()->createElement("Area");
             $newAreaNode->setAttribute("name", $areaObj->getName());
             $newAreaNode->setAttribute("proper_name", $areaObj->getProperName());
 
@@ -170,12 +170,12 @@ class RegionsModel {
     private function _createRegionObject(DOMNode $regionNode) {
         $newRegion = new Region();
         $newRegion->setName($regionNode->getAttribute("name"));
-        $newRegion->setName($regionNode->getAttribute("proper_name"));
+        $newRegion->setProperName($regionNode->getAttribute("proper_name"));
         
         $countryName = $regionNode->parentNode->getAttribute("name");
         $newRegion->setCountry($countryName);
 
-        $areas = $regionNode->getElementsByTagName("area");
+        $areas = $regionNode->getElementsByTagName("Area");
 
         foreach ($areas as $area) {
             $newRegion->addAreaName($area->getAttribute("name"));

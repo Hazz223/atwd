@@ -48,6 +48,7 @@ class CountriesModel {
                 
         $countryObj = new Country();
         $countryObj->setName($countryNode->getAttribute("name"));
+        $countryObj->setProperName($countryNode->getAttribute("proper_name"));
        
 
         $regionNamesList = array();
