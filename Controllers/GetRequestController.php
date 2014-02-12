@@ -8,7 +8,9 @@ require_once '../Models/CountriesModel.php';
 require_once '../Models/FurtherStatisticsModel.php';
 require_once '../Models/AreasModel.php';
 require_once '../Exceptions/FieldNotFoundException.php';
+require_once '../Cache/Cache.php';
 
+$cache = new Cache();
 $countryModel = new CountriesModel();
 $regionModel = new RegionsModel();
 $fStatsModel = new FurtherStatisticsModel();
@@ -30,12 +32,13 @@ if (isset($_GET["region"])) {
             $obj = $fStatsModel->getFurtherStatisticsByName($givenRegionName);
 
             $_SESSION["fStat"] = $obj;
+            $_SESSION["type"] = $_GET["type"];
+
             include '../Views/GetRequests/GetFurtherStatRequestView.php';
-            
         } catch (FieldNotFoundException $ex) {
             $_SESSION["errorMessage"] = $ex->getMessage();
             $_SESSION["errorCode"] = $ex->getCode();
-            
+
             include "../Views/Errors/ErrorView.php";
         } catch (Exception $ex) {
             $_SESSION["errorMessage"] = $ex->getMessage();
@@ -47,6 +50,14 @@ if (isset($_GET["region"])) {
         try {
             $region = $regionModel->getRegionByName($givenRegionName);
             $_SESSION["region"] = $region;
+
+            $areaArray = array();
+            foreach ($region->getAreaNames() as $areaName) {
+                $areaArray[] = $areasModel->getAreaByName($areaName);
+            }
+
+            $_SESSION["areas"] = $areaArray;
+            $_SESSION["type"] = $_GET["type"];
 
             include '../Views/GetRequests/GetRegionRequestView.php';
         } catch (FieldNotFoundException $ex) {
@@ -61,32 +72,48 @@ if (isset($_GET["region"])) {
         }
     }
 } else {
+    $type = $_GET["type"];
+    
+    if ($cache->hasCacheFile("all-get", $type)) {
+        $data = $cache->getCacheFile("all-get", $type);
+        $_SESSION["data"] = $data;
+        $_SESSION["type"] = $type;
+        
+        include "../Views/CacheView.php";
+        
+    } else {
+        try {
+            $regions = $regionModel->getAllRegions();
+            $countries = $countryModel->getAllCountries();
+            $fStats = $fStatsModel->getAllFurtherStatistics();
 
-    try {
-        $regions = $regionModel->getAllRegions();
-        $countries = $countryModel->getAllCountries();
-        $fStats = $fStatsModel->getAllFurtherStatistics();
+            $walesRegion = $regionModel->getRegionByName("WALES");
 
-        $_SESSION["regions"] = $regions;
-        $_SESSION["countries"] = $countries;
-        $_SESSION["fStats"] = $fStats;
+            $walesRegionList = array();
 
-        include '../Views/GetRequests/FullGetRequestView.php';
-    } catch (FieldNotFoundException $ex) {
-        $_SESSION["errorMessage"] = $ex->getMessage();
-        $_SESSION["errorCode"] = $ex->getCode();
+            foreach ($walesRegion->getAreaNames() as $areaName) {
+                $walesRegionList[] = $areasModel->getAreaByName($areaName);
+            }
 
-        include "../Views/Errors/ErrorView.php";
-    } catch (Exception $ex) {
-        $_SESSION["errorMessage"] = $ex->getMessage();
-        $_SESSION["errorCode"] = 500;
+            $_SESSION["regions"] = $regions;
+            $_SESSION["countries"] = $countries;
+            $_SESSION["fStats"] = $fStats;
+            $_SESSION["walesAreas"] = $walesRegionList;
+            $_SESSION["type"] = $type;
 
-        include "../Views/Errors/ErrorView.php";
+            include '../Views/GetRequests/FullGetRequestView.php';
+            
+        } catch (FieldNotFoundException $ex) {
+            $_SESSION["errorMessage"] = $ex->getMessage();
+            $_SESSION["errorCode"] = $ex->getCode();
+
+            include "../Views/Errors/ErrorView.php";
+        } catch (Exception $ex) {
+            $_SESSION["errorMessage"] = $ex->getMessage();
+            $_SESSION["errorCode"] = 500;
+
+            include "../Views/Errors/ErrorView.php";
+        }
     }
 }
 
-
-//header("Content-type: text/xml");
-//$base->appendChild($crime);
-//$responseXML->appendChild($base);
-//echo $responseXML->saveXML();
