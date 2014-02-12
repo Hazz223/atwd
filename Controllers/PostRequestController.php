@@ -1,12 +1,12 @@
 <?php
 
-
 require_once '../Models/RegionsModel.php';
 require_once '../Models/AreasModel.php';
 require_once '../Models/CrimeConfig.php';
 require_once '../Entities/Area.php';
 require_once '../Entities/CrimeCatagory.php';
 require_once '../Entities/Crime.php';
+require_once '../Exceptions/AreaAlreadyExists.php';
 
 $uriArray = DecodeRequestURI($_SERVER['REQUEST_URI']);
 
@@ -17,33 +17,51 @@ $viewType = $uriArray[8];
 
 $crimeDataAbrivated = DecodeCrimeData($data);
 
-$regionModel = new RegionsModel();
+try {
+    $areaModel = new AreasModel();
+    $regionModel = new RegionsModel();
 
+    if($areaModel->isArea($newAreaName)){
+        throw new AreaAlreadyExists("Area with name ['". $newAreaName."'] already exsits.");
+    }
+    $new = new Area();
+    $new->setRegionName($region);
+    $new->setName($newAreaName);
+    $new->setProperName(ucfirst($newAreaName));
 
-$newArea = new Area();
-$newArea->setRegionName($region);
-$newArea->setName($newAreaName);
+    $regionModel->addAreaToRegion($new);
 
-$regionModel->addAreaToRegion($newArea);
+    $crimeCats = createCrimeCategoryData($crimeDataAbrivated);
+    $crimes = createCrimeData($crimeDataAbrivated);
 
+    foreach ($crimeCats as $crime) {
+        $areaModel->AddCrimeCategory($crime, $newAreaName);
+    }
 
-$areaModel = new AreasModel();
+    foreach ($crimes as $crime) {
+        $areaModel->addCrimeToArea($crime, $newAreaName);
+    }
 
-$crimeCats = createCrimeCategoryData($crimeDataAbrivated);
-$crimes = createCrimeData($crimeDataAbrivated);
+    $_SESSION["type"] = $viewType;
+    $_SESSION["area"] = $areaModel->getAreaByName($newAreaName);
+    $_SESSION["region"] = $regionModel->getRegionByName($region);
+    include "../Views/PostRequestView.php";
+} catch (AreaAlreadyExists $ex) {
+    $_SESSION["errorMessage"] = $ex->getMessage();
+    $_SESSION["errorCode"] = $ex->getCode();
 
-foreach ($crimeCats as $crime) {
-    $areaModel->AddCrimeCategory($crime, $newAreaName);
+    include "../Views/Errors/ErrorView.php";
+} catch (FieldNotFoundException $ex) {
+    $_SESSION["errorMessage"] = $ex->getMessage();
+    $_SESSION["errorCode"] = $ex->getCode();
+
+    include "../Views/Errors/ErrorView.php";
+} catch (Exception $ex) {
+    $_SESSION["errorMessage"] = $ex->getMessage();
+    $_SESSION["errorCode"] = 500;
+
+    include "../Views/Errors/ErrorView.php";
 }
-
-foreach ($crimes as $crime) {
-    $areaModel->addCrimeToArea($crime, $newAreaName);
-}
-
-
-$_SESSION["area"] = $areaModel->getAreaByName($newAreaName);
-$_SESSION["region"] = $regionModel->getRegionByName($region); 
-include "../Views/PostRequestView.php";
 
 function DecodeRequestURI($uri) {
     return explode("/", $uri);
@@ -69,8 +87,8 @@ function createCrimeData($crimeDataArray) {
     // If it's not, we need to find the catagory it belongs too, then append it to that one.
 
     foreach ($crimeDataArray as $name => $value) {
-        if (!$crimeConfigModel->CheckIfCrimeCategory($name)) { 
-            
+        if (!$crimeConfigModel->CheckIfCrimeCategory($name)) {
+
             $newCrime = new Crime();
             $newCrime->setName($crimeConfigModel->GetCrimeName($name));
             $newCrime->setValue($value);
@@ -87,10 +105,9 @@ function createCrimeCategoryData($crimeDataArray) {
     $crimeConfigModel = new CrimeConfig();
 
     $crimeCatArray = array();
-    
+
     foreach ($crimeDataArray as $name => $value) {
         if ($crimeConfigModel->CheckIfCrimeCategory($name)) { // Can't find the node. Lame!
-            
             $newCrimeCat = new CrimeCatagory();
             $newCrimeCat->setTotal($value);
             $newCrimeCat->setName($crimeConfigModel->GetCrimeName($name));

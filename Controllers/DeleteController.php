@@ -1,7 +1,6 @@
 <?php
 
 $deleteItem = $_GET["data"];
-
 //I need to do a check to see if this is an area, region, country or furtherStat
 require_once '../Models/CountriesModel.php';
 require_once '../Models/RegionsModel.php';
@@ -19,7 +18,7 @@ $fStatsModel = new FurtherStatisticsModel();
 if ($areaModel->isArea($deleteItem)) {
     
     $deletedArea = $areaModel->getAreaByName($deleteItem);
-    $areaNode = $areaModel->DeleteArea($deleteItem);
+    //$areaNode = $areaModel->DeleteArea($deleteItem);
 
     $englishRegions = $regionModel->getRegionsByCountry("ENGLAND");
     $welshRegions = $regionModel->getRegionsByCountry("WALES");
@@ -32,12 +31,14 @@ if ($areaModel->isArea($deleteItem)) {
     $combinedTotal = $wales->getTotal() + $england->getTotal();
     $_SESSION["combinedTotal"] = $combinedTotal;
     
+    $_SESSION["type"] = $_GET["type"];
     // send all this stuff to the view.
     include "../Views/DeleteView.php";
 }
 else{
-    // store stuff in the session, then access it here.
-    throw new Exception("Help me");
+    $_SESSION["errorCode"] = 404;
+    $_SESSION["errorMessage"] = "could not find area with name: ".$deleteItem;
+    include "../Views/Errors/ErrorView.php";
 }
 
 

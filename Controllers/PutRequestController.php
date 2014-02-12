@@ -4,30 +4,42 @@
 // This doesn't work with wales.
 
 require_once '../Models/AreasModel.php';
-$area = $_GET["area"];
-$data =  $_GET["data"];
+require_once '../Models/FurtherStatisticsModel.php';
+
+$areaName = $_GET["area"];
+$data = $_GET["data"];
+$type = $_GET["type"];
+
 $areasModel = new AreasModel();
+$furtherStatsModel = new FurtherStatisticsModel();
 
-$results = $areasModel->UpdateAreaTotal($area, $data); // this currently doesn't work!
+try {
+    if ($areasModel->isArea($areaName)) {
+        $old = $areasModel->getAreaByName($areaName);
+        $areasModel->UpdateAreaTotal($old->getName(), $data);
+        $new = $areasModel->getAreaByName($areaName);
 
-$oldArea = $results[0];
-$newAreaName = $results[1];
+        $_SESSION["old"] = $old;
+        $_SESSION["new"] = $new;
+    } else {
+        $oldFurtherStat = $furtherStatsModel->getFurtherStatisticsByName($areaName);
+        $furtherStatsModel->updateTotal($areaName, $data);
+        $newFurtherStat = $furtherStatsModel->getFurtherStatisticsByName($areaName);
+        
+        $_SESSION["type"] = $type;
+        $_SESSION["old"] = $oldFurtherStat;
+        $_SESSION["new"] = $newFurtherStat;
+    }
 
-$responseXML = new DOMDocument();
-$base = $responseXML->createElement("reponse");
-$base->setAttribute("timestamp", date("YmdHi"));
-$crime = $responseXML->createElement("crimes");
-$crime->setAttribute("year", "6-2013");
+    include "../Views/PutRequestView.php";
+} catch (FieldNotFoundException $ex) {
+    $_SESSION["errorMessage"] = $ex->getMessage();
+    $_SESSION["errorCode"] = $ex->getCode();
 
-$regionNode = $responseXML->createElement("region");
+    include "../Views/Errors/ErrorView.php";
+} catch (Exception $ex) {
+    $_SESSION["errorMessage"] = $ex->getMessage();
+    $_SESSION["errorCode"] = 500;
 
-$regionNode->setAttribute("id", $oldArea->getName());
-$regionNode->setAttribute("previous", $oldArea->getTotal());
-$regionNode->setAttribute("total", $newAreaName->getTotal());
-
-$crime->appendChild($regionNode);
-header("Content-type: text/xml");
-$base->appendChild($crime);
-$responseXML->appendChild($base);
-echo $responseXML->saveXML();
-
+    include "../Views/Errors/ErrorView.php";
+}
