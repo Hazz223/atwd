@@ -1,30 +1,21 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of AreasModel
- *
- * @author Harry
- */
 require_once 'DataAccess.php';
 require_once '../Entities/Area.php';
 require_once '../Entities/Crime.php';
 require_once '../Entities/CrimeCatagory.php';
+require_once '../Exceptions/FieldNotFoundException.php';
 
 class AreasModel {
-
     private $xml, $dataAccess;
+
     const totalInFraudTitle = "Total recorded crime - including fraud"; // set these so i dont have to keep refering to them.
     const totalNoFraudTitle = "Total recorded crime - excluding fraud";
-    
-    public function getAreaByName($name) {
-        $area = $this->_getAreaNode($name);
 
+    public function getAreaByName($name) {
+
+        $area = $this->_getAreaNode($name);
+        
         $newArea = new Area();
         $newArea->setName($area->getAttribute("name"));
         $newArea->setProperName($area->getAttribute("proper_name"));
@@ -38,24 +29,23 @@ class AreasModel {
         }
 
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $totalNode = $xpath->query("CrimeCatagory [@name='".AreasModel::totalInFraudTitle."']", $area)->item(0);
+        $totalNode = $xpath->query("CrimeCatagory [@name='" . AreasModel::totalInFraudTitle . "']", $area)->item(0);
 
         $newArea->setTotal($totalNode->getAttribute("total"));
         $newArea->setCrimeData($crimeDataArray);
 
         return $newArea;
     }
-    
-    public function isArea($name){
+
+    public function isArea($name) {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $result = $xpath->query("Country/Region/Area [@name='" . $name . "']")->item(0);
-        
         return isset($result);
     }
 
     public function AddCrimeCategory(CrimeCatagory $crimeCat, $areaName) {
         $areaNode = $this->_getAreaNode($areaName);
-        
+
         if (!$this->_crimeCategoryExists($crimeCat->getName(), $areaNode)) {
             $this->_createCrimeCatagoryNode($crimeCat, $areaNode);
         } else {
@@ -73,15 +63,14 @@ class AreasModel {
         if (!$this->_crimeExists($crime->getName(), $areaNode)) {
             $this->_createCrimeNode($crime, $areaNode);
             $this->_updateCrimeCategoryTotal($crime->getCrimeCatagory(), $areaNode);
-            
-            $this->_updateTotalsNodes($areaNode);
 
+            $this->_updateTotalsNodes($areaNode);
         } else {
             $crimeNode = $this->_getCrimeNode($crime->getName(), $areaNode);
             $crimeNode->nodeValue = $crime->getValue();
 
             $this->_updateCrimeCategoryTotal($crime->getCrimeCatagory(), $areaNode);
-            
+
             $this->_updateTotalsNodes($areaNode);
             DataAccess::GetInstance()->saveXML();
         }
@@ -89,28 +78,21 @@ class AreasModel {
 
     public function UpdateAreaTotal($name, $value) {
 
-        $oldRegion = $this->getAreaByName($name);
+        $area = $this->_getAreaNode($name);
 
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $area = $xpath->query("Country/Region/Area [@name='" . strtolower($name) . "']")->item(0);
-
-
-        $totalNode = $xpath->query(" CrimeCatagory [@name='".AreasModel::totalInFraudTitle."']", $area)->item(0);
+        $totalNode = $xpath->query(" CrimeCatagory [@name='" . AreasModel::totalInFraudTitle . "']", $area)->item(0);
         $totalNode->setAttribute("total", $value);
         DataAccess::GetInstance()->saveXML();
-
-        $newRegion = $this->getAreaByName($name);
-
-        return array($oldRegion, $newRegion);
     }
 
-    public function DeleteArea($areaName){
+    public function DeleteArea($areaName) {
         $areaNode = $this->_getAreaNode($areaName);
         $parent = $areaNode->parentNode;
         $parent->removeChild($areaNode);
         DataAccess::GetInstance()->saveXML();
     }
-    
+
     private function _createCrimeCatagoryNode($crimeCat, $areaNode) {
         $newCatNode = DataAccess::GetInstance()->getCrimeXML()->createElement("CrimeCatagory");
         $newCatNode->setAttribute("name", $crimeCat->getName());
@@ -133,7 +115,7 @@ class AreasModel {
             $newCrimeNode->appendChild($textNode);
             $catNode->appendChild($newCrimeNode);
         } else {
-            // need to build the crime cat node based off the crime object
+
             $newCrimeCatObj = new CrimeCatagory();
             $newCrimeCatObj->setName($crime->getCrimeCatagory());
             $newCrimeCatObj->setTotal($crime->getValue());
@@ -175,7 +157,12 @@ class AreasModel {
 
     private function _getAreaNode($name) {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        return $xpath->query("Country/Region/Area [@name='" . $name . "']")->item(0);
+        $node = $xpath->query("Country/Region/Area [@name='" . $name . "']")->item(0);
+        if (isset($node)) {
+            return $node;
+        } else {
+            throw new FieldNotFoundException("Could not find area with name ".$name, 404);
+        }
     }
 
     private function _crimeCategoryExists($crimeCatName, $areaNode) {
@@ -268,5 +255,4 @@ class AreasModel {
         $totalNoFraud->setCrimeType("Total");
         $this->_createCrimeCatagoryNode($totalNoFraud, $areaNode);
     }
-
 }

@@ -26,8 +26,7 @@ class FurtherStatisticsModel {
             $newFurtherStat->setName($fStat->getAttribute("name"));
             $newFurtherStat->setProperName($fStat->getAttribute("proper_name"));
             
-            $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-            $totalNode = $xpath->query("CrimeCatagory [@name='Total recorded crime - including fraud']", $fStat)->item(0);
+            $totalNode = $this->_getTotalNode($fStat);
             $total = intval($totalNode->getAttribute("total"));
             $newFurtherStat->setTotal($total);
 
@@ -38,39 +37,64 @@ class FurtherStatisticsModel {
     }
 
     public function getFurtherStatisticsByName($name) {
-        // find this using xpath
-        $name = str_replace(" ", "_", $name); /// incase a space has gotten in, replace with underscore
 
-        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $furtherStat = $xpath->query("FurtherStatistics [@name='" . strtolower($name). "']")->item(0);
-        //British Transport Police
+        $furtherStatNode = $this->_findFurtherStatNode($name);
         
-        //$furtherStat = $xpath->query("FurtherStatistics[@name='British Transport Police']")->item(0);
         $furtherStatObj = new FurtherStatistic();
-
-        $furtherStatObj->setName($furtherStat->getAttribute("name"));
-
-        $totalNode = $xpath->query("CrimeCatagory [@name='Total recorded crime - including fraud']", $furtherStat)->item(0);
+        
+        $furtherStatObj->setName($furtherStatNode->getAttribute("name"));
+        $furtherStatObj->setProperName($furtherStatNode->getAttribute("proper_name"));
+        
+        $totalNode = $this->_getTotalNode($furtherStatNode);
         $total = intval($totalNode->getAttribute("total"));
         $furtherStatObj->setTotal($total);
-        
-        $crimes = $furtherStat->getElementsByTagName("Crime");
-        
+
+        $crimes = $furtherStatNode->getElementsByTagName("Crime");
+
         $crimeStatsArray = array();
-        foreach($crimes as $crime){
+        foreach ($crimes as $crime) {
             $crimeStatsArray[$crime->getAttribute("name")] = $crime->textContent;
         }
-        
+
         $furtherStatObj->setCrimeData($crimeStatsArray);
 
         return $furtherStatObj;
     }
-    
-    public function isFurtherStat($name){
+
+    public function isFurtherStat($name) {
         $cleanedName = str_replace("_", " ", $name);
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $statNode = $xpath->query("FurtherStatistics [@name='" . $cleanedName . "']")->item(0);
         return isset($statNode);
     }
 
+    public function updateTotal($name, $data) {
+        $furtherStatNode = $this->_findFurtherStatNode($name);
+        
+        $totalNode = $this->_getTotalNode($furtherStatNode);
+        $totalNode->setAttribute("total", $data);
+        
+        DataAccess::GetInstance()->saveXML();
+    }
+
+    private function _findFurtherStatNode($name) {
+        $name = str_replace(" ", "_", $name);
+
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
+        $furtherStat = $xpath->query("FurtherStatistics [@name='" . strtolower($name) . "']")->item(0);
+        
+        if(isset($furtherStat)){
+            return $furtherStat;
+        }
+        else{
+            throw new FieldNotFoundException("Could not find National stat: ".$name);
+        }
+    }
+    
+    private function _getTotalNode($node){
+        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
+        $totalNode = $xpath->query("CrimeCatagory [@name='Total recorded crime - including fraud']", $node)->item(0);
+        
+        return $totalNode;
+    }
 }

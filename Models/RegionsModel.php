@@ -13,15 +13,9 @@
  */
 require_once 'DataAccess.php';
 require_once '../Entities/Region.php';
+require_once '../Exceptions/FieldNotFoundException.php';
 
 class RegionsModel {
-
-    private $xml, $dataAccess;
-
-    function __construct() {
-//        $this->dataAccess = new DataAccess();
-//        $this->xml = $this->dataAccess->getCrimeXML(); // gives me access to the xml
-    }
 
     public function getAllRegions() {
         //Get elements by county, then create a region object. The county can then be fed to it. 
@@ -29,8 +23,8 @@ class RegionsModel {
 
         $countries = DataAccess::GetInstance()->getCrimeXML()->getElementsByTagName("Country");
 
-        foreach ($countries as $country) { // somehow this leaves out wales!
-            $countryName = $country->getAttribute("name");
+        foreach ($countries as $country) {
+            
             $regions = $country->getElementsByTagName("Region");
 
             foreach ($regions as $region) {
@@ -42,7 +36,6 @@ class RegionsModel {
     }
 
     public function getRegionByName($name) {
-
         $region = $this->_getRegionNodeByName($name);
 
         if (isset($region)) {
@@ -65,7 +58,6 @@ class RegionsModel {
 
             DataAccess::GetInstance()->saveXML();
         }
-        // add extra stuff to the area if it already exists!
     }
 
     public function isRegion($name) {
@@ -77,11 +69,13 @@ class RegionsModel {
     }
 
     public function getRegionsByCountry($countryName) {
-        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $countryNode = $xpath->query("Country [@name='" . $countryName . "']")->item(0);
-
-        // need to return a list of region objects that are associated with this country!
-
+        try{
+            $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
+            $countryNode = $xpath->query("Country [@name='" . $countryName . "']")->item(0);
+        } catch (FieldNotFoundException $ex) {
+            throw new FieldNotFoundException("Failed to find country with name: ".$countyName);
+        }
+        
         $regionNodeList = $countryNode->getElementsByTagName("Region");
 
         $regionObjList = array();
@@ -98,27 +92,6 @@ class RegionsModel {
         return isset($exists);
     }
 
-    private function _getEnglishRegionTotal($region) {
-
-        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $areas = $region->getElementsByTagName("area");
-
-        $regionTotal = 0;
-        foreach ($areas as $area) {
-            $totalNode = $xpath->query("CrimeCatagory [@name='Total recorded crime - including fraud']", $area)->item(0);
-
-            $regionTotal = $regionTotal + intval($totalNode->getAttribute("total"));
-        }
-
-        return $regionTotal;
-    }
-
-    private function _getWalesRegionTotal($region) {
-        $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $totalNode = $xpath->query("CrimeType/CrimeCatagory [@name='Total recorded crime - including fraud']", $region)->item(0);
-        return intval($totalNode->getAttribute("total"));
-    }
-
     private function _getRegionTotal(DOMNode $region) {
         $areas = $region->getElementsByTagName("Area");
 
@@ -133,23 +106,17 @@ class RegionsModel {
         return $regionTotal;
     }
 
-    private function _populateAreaNames($region) {
-        $areaNames = array();
-        $areas = $region->getElementsByTagName("Area");
-
-        foreach ($areas as $area) {
-
-            $areaNames[] = $area->getAttribute("name");
-        }
-
-        return $areaNames;
-    }
-
     public function _getRegionNodeByName($regionName) {
-        $name = str_replace(" ", " ", $regionName);
+       
+        $name = str_replace(" ", "_", $regionName);
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $regionNode = $xpath->query("Country/Region [@name='" .strtolower($name). "']")->item(0);
-        return $regionNode;
+        if(isset($regionNode)){
+            return $regionNode;
+        }
+        else{
+            throw new FieldNotFoundException("Region not found with name ". $regionName);
+        }
     }
 
     private function _createCrimeNodes($crimeData, $newCrimeCatNode) {
@@ -185,5 +152,4 @@ class RegionsModel {
 
         return $newRegion;
     }
-
 }
