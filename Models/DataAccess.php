@@ -11,33 +11,38 @@
  *
  * @author Harry
  */
+require_once '../Exceptions/XMLDataNotFound.php';
+
 class DataAccess {
+
     const xmlFile = "../Data/CrimeStats.xml";
+
     private $xml;
     private static $instance;
-    
+
     private function __construct() {
         $this->xml = new DOMDocument();
         $this->xml->load(DataAccess::xmlFile);
     }
 
-    public static function GetInstance(){ // Should change it so there is only one XML item.
-        if(self::$instance === null){
+    public static function GetInstance() { // Should change it so there is only one XML item.
+        if (self::$instance === null) {
             self::$instance = new DataAccess();
         }
         return self::$instance;
     }
-    
+
     public function getCrimeXML() {
         return $this->xml;
     }
-    
-    public function saveXML(){
+
+    public function saveXML() {
         $this->xml->save(DataAccess::xmlFile);
     }
-    
-    public function RemoveNode($node){
+
+    public function RemoveNode($node) {
         $this->xml->removeChild($node);
         $this->saveXML();
     }
+
 }
