@@ -1,0 +1,68 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 14-Feb-2014, 12:06:26
+    Author     : Harry
+*/
+
+
+.push{
+    width: 100%;
+    height: 100px;
+}
+
+.row{
+    height:50%;
+}
+
+.postive{
+    background: #ffffff;
+    height: 500px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.negative{
+    background: #E3E3E3;
+    height: 500px;
+}
+
+.footer{
+    background: #333333;
+    height: 50px;
+}
+
+.chart{
+    height: 300px;
+    width: 50%;
+    float:left;
+}
+
+.chart-text{
+    height: 130px;
+    width: 50%;
+    float:left;
+}
+
+.add-area-complete{
+    display: none;
+}
+
+.delete-option{
+    display: none;
+}
+
+.inlineHeaders{
+    display:inline;
+}
+
+.addResults{
+    margin-top: 20px;
+}
+
+.hidden{
+    display:none;
+}
