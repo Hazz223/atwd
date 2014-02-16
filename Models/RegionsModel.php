@@ -36,7 +36,7 @@ class RegionsModel {
     }
 
     public function getRegionByName($name) {
-        $region = $this->_getRegionNodeByName($name);
+        $region = $this->_getRegionNode($name);
 
         if (isset($region)) {
             $regionObj = $this->_createRegionObject($region);
@@ -52,7 +52,7 @@ class RegionsModel {
             $newAreaNode->setAttribute("name", $areaObj->getName());
             $newAreaNode->setAttribute("proper_name", $areaObj->getProperName());
 
-            $regionNode = $this->_getRegionNodeByName($areaObj->getRegionName());
+            $regionNode = $this->_getRegionNode($areaObj->getRegionName());
 
             $regionNode->appendChild($newAreaNode);
 
@@ -61,10 +61,10 @@ class RegionsModel {
     }
 
     public function isRegion($name) {
-        $cleanedName = str_replace("_", " ", $name);
+        $cleanedName = str_replace("", "_", $name);
+        $cleanedName = strtolower($cleanedName);
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $regionNode = $xpath->query("Country/Region [@name='" . $cleanedName . "']")->item(0);
-
         return isset($regionNode);
     }
 
@@ -106,7 +106,7 @@ class RegionsModel {
         return $regionTotal;
     }
 
-    public function _getRegionNodeByName($regionName) {
+    public function _getRegionNode($regionName) {
        
         $name = str_replace(" ", "_", $regionName);
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
