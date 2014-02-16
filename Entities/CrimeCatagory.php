@@ -23,7 +23,7 @@ class CrimeCatagory {
     }
 
     public function getTotal() {
-        return $this->total;
+        return intval($this->total);
     }
 
     public function getCrimeList() {

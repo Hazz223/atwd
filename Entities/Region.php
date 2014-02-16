@@ -15,7 +15,7 @@ class Region {
     private $total, $name, $country, $areaNames = array(), $properName;
     
     public function getTotal() {
-        return $this->total;
+        return intval($this->total);
     }
 
     public function getName() {

@@ -21,7 +21,7 @@ class FurtherStatistic {
     }
 
     public function getTotal() {
-        return $this->total;
+        return intval($this->total);
     }
 
     public function setName($name) {

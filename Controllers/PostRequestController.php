@@ -22,7 +22,7 @@ try {
     $regionModel = new RegionsModel();
 
     if($areaModel->isArea($newAreaName)){
-        throw new AreaAlreadyExists("Area with name ['". $newAreaName."'] already exsits.");
+        throw new AreaAlreadyExists("Area with name '". $newAreaName."' already exsits.");
     }
     $new = new Area();
     $new->setRegionName($region);

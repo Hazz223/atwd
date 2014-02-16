@@ -31,7 +31,7 @@ class Crime {
     }
 
     public function getValue() {
-        return $this->value;
+        return intval($this->value);
     }
 
     public function setName($name) {
