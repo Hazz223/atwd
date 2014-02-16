@@ -85,6 +85,13 @@ class RegionsModel {
         }
         return $regionObjList;
     }
+    
+    public function DeleteRegion($name){
+        $regionNode = $this->_getRegionNode($name);
+        $parent = $regionNode->parentNode;
+        $parent->removeChild($regionNode);
+        DataAccess::GetInstance()->saveXML();
+    }
 
     private function _areaExists($name) {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
