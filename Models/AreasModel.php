@@ -55,6 +55,8 @@ class AreasModel {
 
             $this->_updateTotalsNodes($areaNode);
         }
+        
+        $this->_updateTotalsNodes($areaNode);
     }
 
     public function addCrimeToArea(Crime $crime, $areaName) {
@@ -223,15 +225,15 @@ class AreasModel {
                     if ($crimeCat->getAttribute("name") === "Fraud") {
                         $fraudTotal = $value;
                     }
-                    $test = $total + $value;
+                    $total = $total + $value;
                 }
             }
 
             $totalInFraud = $this->_getCrimeCategoryNode(AreasModel::totalInFraudTitle, $areaNode);
-            $totalInFraud->setAttribute("total", $test);
+            $totalInFraud->setAttribute("total", $fraudTotal);
 
             $totalNoFraud = $this->_getCrimeCategoryNode(AreasModel::totalNoFraudTitle, $areaNode);
-            $totalNoFraud->setAttribute("total", ($test - $fraudTotal));
+            $totalNoFraud->setAttribute("total", ($total - $fraudTotal));
 
             DataAccess::GetInstance()->saveXML();
         } else {
