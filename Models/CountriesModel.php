@@ -43,21 +43,25 @@ class CountriesModel {
         return $countryList;
     }
    
-    public function getCountryByName($countryName, $regionList){
+    public function getCountryByName($countryName){
+        $regionModel = new RegionsModel();
+        
         $countryNode = $this->_getCountryNode($countryName);
-                
+        
         $countryObj = new Country();
         $countryObj->setName($countryNode->getAttribute("name"));
         $countryObj->setProperName($countryNode->getAttribute("proper_name"));
-       
-
+      
+        
+        $regions = $regionModel->getRegionsByCountry($countryObj->getName());
+        
         $regionNamesList = array();
         $countryTotal = 0;
-        foreach($regionList as $regionObj){
-            $regionNamesList[] = $regionObj->getName();
-            $countryTotal = $regionObj->getTotal();
+        foreach($regions as $region){
+            $regionNamesList[] = $region->getName();
+            $countryTotal = $region->getTotal();
         }
-        
+
         $countryObj->setRegionNames($regionNamesList);
         $countryObj->setTotal($countryTotal);
         
