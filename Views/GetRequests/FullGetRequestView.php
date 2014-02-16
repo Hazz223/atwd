@@ -77,23 +77,20 @@ if ($type === "xml") {
 
     $dataArray = array();
     $dataArray["timestamp"] = date("YmdHi");
-    $dataArray["crimes"] = $crimeData;
-    $dataArray["national"] = $fStatArray;
+    $crimeData["national"] = $fStatArray;
 
     foreach ($countries as $country) {
-        $dataArray[strtolower($country->getProperName())] = $country->getTotal();
+        $crimeData[strtolower($country->getName())] = $country->getTotal();
     }
+    $dataArray["crimes"] = $crimeData;
 
     $base = array();
     $base["response"] = $dataArray;
- 
-        
+
     header("Content-type: application/json");
-    $fullJson = json_encode($base);
-    
+    $fullJson = json_encode($base, JSON_PRETTY_PRINT);
+
     $cache->createCacheFile("all-get", $fullJson, $type);
     echo $fullJson;
-
-
 }
 

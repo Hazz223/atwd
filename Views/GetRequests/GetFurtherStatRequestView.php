@@ -2,6 +2,7 @@
 
 $furtherStat = $_SESSION["fStat"];
 $type = $_SESSION["type"];
+$cache = new Cache();
 
 if ($type === "xml") {
     $responseXML = new DOMDocument();
@@ -20,6 +21,7 @@ if ($type === "xml") {
     $base->appendChild($crime);
     $responseXML->appendChild($base);
 
+    $cache->createCacheFile($furtherStat->getName()."-cache", $responseXML, $type);
     header("Content-type: text/xml");
     echo $responseXML->saveXML();
 }
@@ -34,6 +36,9 @@ else{
     $base = array();
     $base["response"] = $dataArray;
     header("Content-type: application/json");
-    echo json_encode($base);
+    $fullJson = json_encode($base, JSON_PRETTY_PRINT);
+    
+    $cache->createCacheFile($furtherStat->getName()."-cache", $fullJson, $type);
+    echo $fullJson;
 }
 
