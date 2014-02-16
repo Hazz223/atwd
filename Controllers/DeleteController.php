@@ -15,35 +15,58 @@ $regionModel = new RegionsModel();
 $areaModel = new AreasModel();
 $fStatsModel = new FurtherStatisticsModel();
 
-if ($areaModel->isArea($deleteItem)) {
-    
-    $deletedArea = $areaModel->getAreaByName($deleteItem);
-    //$areaNode = $areaModel->DeleteArea($deleteItem);
+$hasDeleted = false;
 
+if ($areaModel->isArea($deleteItem)) {
+    $deletedArea = $areaModel->getAreaByName($deleteItem);
+    $areaModel->DeleteArea($deleteItem);
+
+    $_SESSION["area"] = $deletedArea;
     $englishRegions = $regionModel->getRegionsByCountry("ENGLAND");
     $welshRegions = $regionModel->getRegionsByCountry("WALES");
-    
-    $england = $countryModel->getCountryByName("ENGLAND", $englishRegions);
-    $wales = $countryModel->getCountryByName("WALES", $welshRegions);
-    
-    $_SESSION["area"] =  $deletedArea;
-    $_SESSION["englandTotal"] = $england->getTotal();
+
+    $england = $countryModel->getCountryByName("ENGLAND");
+    $wales = $countryModel->getCountryByName("WALES");
     $combinedTotal = $wales->getTotal() + $england->getTotal();
+
+    $_SESSION["englandTotal"] = $england->getTotal();
     $_SESSION["combinedTotal"] = $combinedTotal;
-    
     $_SESSION["type"] = $_GET["type"];
-    // send all this stuff to the view.
-    include "../Views/DeleteView.php";
+
+    $hasDeleted = true;
+    include "../Views/DeleteAreaView.php";
 }
-else{
+
+if ($regionModel->isRegion($deleteItem)) {
+    $deletedRegion = $regionModel->getRegionByName($deleteItem);
+    $areaNames = $deletedRegion->getAreaNames();
+   
+    $areaData = array();
+    foreach ($areaNames as $areaName) {
+        $areaData[] = $areaModel->getAreaByName($areaName);
+    }
+
+    $regionModel->DeleteRegion($deleteItem);
+
+    $england = $countryModel->getCountryByName("ENGLAND");
+    $wales = $countryModel->getCountryByName("WALES");
+    $combinedTotal = $wales->getTotal() + $england->getTotal();
+
+    $_SESSION["englandTotal"] = $england->getTotal();
+    $_SESSION["combinedTotal"] = $combinedTotal;
+    $_SESSION["type"] = $_GET["type"];
+    $_SESSION["region"] = $deletedRegion;
+    $_SESSION["areaList"] = $areaData;
+
+    $hasDeleted = true;
+    include "../Views/DeleteRegionView.php";
+}
+
+if (!$hasDeleted) {
+
+
     $_SESSION["errorCode"] = 404;
-    $_SESSION["errorMessage"] = "could not find area with name: ".$deleteItem;
+    $_SESSION["errorMessage"] = "could not find area with name: " . $deleteItem;
     include "../Views/Errors/ErrorView.php";
 }
-
-
-
-
-
-
 
