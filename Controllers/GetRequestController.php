@@ -22,65 +22,79 @@ $base = $responseXML->createElement("reponse");
 $base->setAttribute("timestamp", date("YmdHi"));
 $crime = $responseXML->createElement("crimes");
 $crime->setAttribute("year", "6-2013");
-
+$type = $_GET["type"];
 if (isset($_GET["region"])) {
     $givenRegionName = $_GET["region"];
 
     if (strtolower($givenRegionName) === "british_transport_police" || strtolower($givenRegionName) === "action_fraud") {
+        if ($cache->hasCacheFile($givenRegionName . "-cache", $type)) {
+            $data = $cache->getCacheFile($givenRegionName . "-cache", $type);
+            $_SESSION["data"] = $data;
+            $_SESSION["type"] = $type;
 
-        try {
-            $obj = $fStatsModel->getFurtherStatisticsByName($givenRegionName);
+            include "../Views/CacheView.php";
+        } else {
+            try {
+                $obj = $fStatsModel->getFurtherStatisticsByName($givenRegionName);
 
-            $_SESSION["fStat"] = $obj;
-            $_SESSION["type"] = $_GET["type"];
+                $_SESSION["fStat"] = $obj;
+                $_SESSION["type"] = $type;
 
-            include '../Views/GetRequests/GetFurtherStatRequestView.php';
-        } catch (FieldNotFoundException $ex) {
-            $_SESSION["errorMessage"] = $ex->getMessage();
-            $_SESSION["errorCode"] = $ex->getCode();
+                include '../Views/GetRequests/GetFurtherStatRequestView.php';
+            } catch (FieldNotFoundException $ex) {
+                $_SESSION["errorMessage"] = $ex->getMessage();
+                $_SESSION["errorCode"] = $ex->getCode();
 
-            include "../Views/Errors/ErrorView.php";
-        } catch (Exception $ex) {
-            $_SESSION["errorMessage"] = $ex->getMessage();
-            $_SESSION["errorCode"] = 500;
+                include "../Views/Errors/ErrorView.php";
+            } catch (Exception $ex) {
+                $_SESSION["errorMessage"] = $ex->getMessage();
+                $_SESSION["errorCode"] = 500;
 
-            include "../Views/Errors/ErrorView.php";
+                include "../Views/Errors/ErrorView.php";
+            }
         }
     } else {
-        try {
-            $region = $regionModel->getRegionByName($givenRegionName);
-            $_SESSION["region"] = $region;
 
-            $areaArray = array();
-            foreach ($region->getAreaNames() as $areaName) {
-                $areaArray[] = $areasModel->getAreaByName($areaName);
+        if ($cache->hasCacheFile($givenRegionName . "-cache", $type)) {
+            $data = $cache->getCacheFile($givenRegionName . "-cache", $type);
+            $_SESSION["data"] = $data;
+            $_SESSION["type"] = $type;
+
+            include "../Views/CacheView.php";
+        } else {
+            try {
+                $region = $regionModel->getRegionByName($givenRegionName);
+                $_SESSION["region"] = $region;
+
+                $areaArray = array();
+                foreach ($region->getAreaNames() as $areaName) {
+                    $areaArray[] = $areasModel->getAreaByName($areaName);
+                }
+
+                $_SESSION["areas"] = $areaArray;
+                $_SESSION["type"] = $type;
+
+                include '../Views/GetRequests/GetRegionRequestView.php';
+            } catch (FieldNotFoundException $ex) {
+                $_SESSION["errorMessage"] = $ex->getMessage();
+                $_SESSION["errorCode"] = $ex->getCode();
+                include "../Views/Errors/ErrorView.php";
+            } catch (Exception $ex) {
+                $_SESSION["errorMessage"] = $ex->getMessage();
+                $_SESSION["errorCode"] = 500;
+
+                include "../Views/Errors/ErrorView.php";
             }
-
-            $_SESSION["areas"] = $areaArray;
-            $_SESSION["type"] = $_GET["type"];
-
-            include '../Views/GetRequests/GetRegionRequestView.php';
-        } catch (FieldNotFoundException $ex) {
-            $_SESSION["errorMessage"] = $ex->getMessage();
-            $_SESSION["errorCode"] = $ex->getCode();
-            include "../Views/Errors/ErrorView.php";
-        } catch (Exception $ex) {
-            $_SESSION["errorMessage"] = $ex->getMessage();
-            $_SESSION["errorCode"] = 500;
-
-            include "../Views/Errors/ErrorView.php";
         }
     }
 } else {
-    $type = $_GET["type"];
-    
+
     if ($cache->hasCacheFile("all-get", $type)) {
         $data = $cache->getCacheFile("all-get", $type);
         $_SESSION["data"] = $data;
         $_SESSION["type"] = $type;
-        
+
         include "../Views/CacheView.php";
-        
     } else {
         try {
             $regions = $regionModel->getAllRegions();
@@ -102,7 +116,6 @@ if (isset($_GET["region"])) {
             $_SESSION["type"] = $type;
 
             include '../Views/GetRequests/FullGetRequestView.php';
-            
         } catch (FieldNotFoundException $ex) {
             $_SESSION["errorMessage"] = $ex->getMessage();
             $_SESSION["errorCode"] = $ex->getCode();
@@ -117,3 +130,4 @@ if (isset($_GET["region"])) {
     }
 }
 
+    
