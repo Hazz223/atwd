@@ -19,21 +19,21 @@ if ($type === "xml") {
 
     foreach ($regions as $region) {
         $name = $region->getProperName();
-        if ($name === "Wales") {
-            foreach ($walesAreas as $area) {
-                $regionNode = $responseXML->createElement("region");
-                $regionNode->setAttribute("id", $area->getProperName());
-
-                $regionNode->setAttribute("total", $area->getTotal());
-                $crime->appendChild($regionNode);
-            }
-        } else {
+//        if ($name === "Wales") {
+//            foreach ($walesAreas as $area) {
+//                $regionNode = $responseXML->createElement("region");
+//                $regionNode->setAttribute("id", $area->getProperName());
+//
+//                $regionNode->setAttribute("total", $area->getTotal());
+//                $crime->appendChild($regionNode);
+//            }
+//        } else {
             $regionNode = $responseXML->createElement("region");
             $regionNode->setAttribute("id", $name);
 
             $regionNode->setAttribute("total", $region->getTotal());
             $crime->appendChild($regionNode);
-        }
+        //}
     }
 
     foreach ($countries as $country) {
@@ -62,8 +62,15 @@ if ($type === "xml") {
 } else {
     $regionArray = array();
     foreach ($regions as $region) {
-        $array = array("id" => $region->getProperName(), "total" => $region->getTotal());
-        $regionArray[] = $array;
+//        if ($region->getProperName() === "Wales") {
+//            foreach ($walesAreas as $area) {
+//                $array = array("id" => $area->getProperName(), "total" => $area->getTotal());
+//                $regionArray[] = $array;
+//            }
+//        } else {
+            $array = array("id" => $region->getProperName(), "total" => $region->getTotal());
+            $regionArray[] = $array;
+//        }
     }
 
     $fStatArray = array();
