@@ -3,7 +3,7 @@
 $errorMessage = $_SESSION["errorMessage"];
 $errorCode = $_SESSION["errorCode"];
 
-$responseXML = new DOMDocument();
+$responseXML = new DOMDocument("1.0");
 $base = $responseXML->createElement("reponse");
 $base->setAttribute("timestamp", date("YmdHi"));
 
