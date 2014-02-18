@@ -3,6 +3,8 @@
 $area = $_SESSION["area"];
 $region = $_SESSION["region"];
 $type = $_SESSION["type"];
+$englandTotal = $_SESSION["englandTotal"];
+$combinedTotal = $_SESSION["combinedTotal"];
 
 if ($type === "xml") {
     $responseXML = new DOMDocument();
@@ -44,6 +46,15 @@ if ($type === "xml") {
 
     $crimeDataNode->appendChild($regionNode);
 
+    $englandTotalNode = $responseXML->createElement("england");
+    $englandTotalNode->setAttribute("total", $englandTotal);
+
+    $combinedTotalNode = $responseXML->createElement("england_wales");
+    $combinedTotalNode->setAttribute("total", $combinedTotal);
+
+    $crimeDataNode->appendChild($englandTotalNode);
+    $crimeDataNode->appendChild($combinedTotalNode);
+    
     $base->appendChild($crimeDataNode);
     $responseXML->appendChild($base);
     header("Content-type: text/xml");
@@ -69,8 +80,8 @@ if ($type === "xml") {
 
 
     $crimesData = array("year" => "6-2013");
-    $areaArray = array("id" => $area->getProperName(), "total" => $area->getTotal(),"recorded" => $addedArray );
-    $crimesData["region"] = array("id" => $region->getProperName(), "total" => $region->getTotal(), "area" =>$areaArray);
+    $areaArray = array("id" => $area->getProperName(), "total" => $area->getTotal(), "recorded" => $addedArray);
+    $crimesData["region"] = array("id" => $region->getProperName(), "total" => $region->getTotal(), "area" => $areaArray);
 
     $dataArray = array();
     $dataArray["timestamp"] = date("YmdHi");

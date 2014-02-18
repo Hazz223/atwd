@@ -230,7 +230,7 @@ class AreasModel {
             }
 
             $totalInFraud = $this->_getCrimeCategoryNode(AreasModel::totalInFraudTitle, $areaNode);
-            $totalInFraud->setAttribute("total", $fraudTotal);
+            $totalInFraud->setAttribute("total", $total);
 
             $totalNoFraud = $this->_getCrimeCategoryNode(AreasModel::totalNoFraudTitle, $areaNode);
             $totalNoFraud->setAttribute("total", ($total - $fraudTotal));

@@ -26,7 +26,7 @@ $type = $_GET["type"];
 if (isset($_GET["region"])) {
     $givenRegionName = $_GET["region"];
 
-    if (strtolower($givenRegionName) === "british_transport_police" || strtolower($givenRegionName) === "action_fraud") {
+    if ($fStatsModel->isFurtherStat($givenRegionName)) {
         if ($cache->hasCacheFile($givenRegionName . "-cache", $type)) {
             $data = $cache->getCacheFile($givenRegionName . "-cache", $type);
             $_SESSION["data"] = $data;
@@ -54,7 +54,6 @@ if (isset($_GET["region"])) {
             }
         }
     } else {
-
         if ($cache->hasCacheFile($givenRegionName . "-cache", $type)) {
             $data = $cache->getCacheFile($givenRegionName . "-cache", $type);
             $_SESSION["data"] = $data;

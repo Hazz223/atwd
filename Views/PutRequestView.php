@@ -10,7 +10,6 @@ if ($type === "xml") {
     $base->setAttribute("timestamp", date("YmdHi"));
     $crime = $responseXML->createElement("crimes");
     $crime->setAttribute("year", "6-2013");
-
     $regionNode = $responseXML->createElement("region");
 
     $regionNode->setAttribute("id", $old->getName());
@@ -23,8 +22,7 @@ if ($type === "xml") {
 
     header("Content-type: text/xml");
     echo $responseXML->saveXML();
-} else {
-    
+} else { 
     $crimesData = array("year" => "6-2013");
     $crimesData["region"] = array("id" => $new->getName(), "previous" =>$old->getTotal(), "total" => $new->getTotal());
 

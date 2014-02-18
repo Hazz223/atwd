@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
+        <file>file:/L:/public_html/atwd/Views/Resources/JS/Add.js</file>
+        <file>file:/L:/public_html/atwd/Views/Resources/JS/Charts.js</file>
+        <file>file:/L:/public_html/atwd/Views/Resources/JS/Delete.js</file>
+        <file>file:/L:/public_html/atwd/Views/Resources/JS/ErrorDecode.js</file>
+        <file>file:/L:/public_html/atwd/Views/Resources/JS/NavBar.js</file>
+        <file>file:/L:/public_html/atwd/Views/HomeView.php</file>
+        <file>file:/L:/public_html/atwd/Controllers/GetRequestController.php</file>
+        <file>file:/L:/public_html/atwd/Models/RegionsModel.php</file>
+        <file>file:/L:/public_html/atwd/CSVConversion/DoConversion.php</file>
+        <file>file:/L:/public_html/atwd/Views/PostRequestView.php</file>
+    </open-files>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/F:/Development/AdvancedWebDev/Views/Resources/JS/NavBar.js</file>

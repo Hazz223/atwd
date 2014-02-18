@@ -1,0 +1,9 @@
+ErrorDocument 404 /~hlp2-winser/awtd/Views/Errors/501URLError.php
+RewriteEngine On
+RewriteRule ^$ /~hlp2-winser/awtd/Controllers/HomeController\.php?$ [NC,L]
+RewriteRule ^index\.php$ /~hlp2-winser/awtd/Controllers/HomeController\.php? [NC,L]
+RewriteRule ^crimes/6-2013/(xml|json)$ /~hlp2-winser/awtd/Controllers/GetRequestController\.php?type=$1 [NC,L]
+RewriteRule ^crimes/6-2013/([a-zA-Z_]*)/(xml|json)$ /~hlp2-winser/awtd/Controllers/GetRequestController?region=$1&type=$2 [NC,L]
+RewriteRule ^crimes/6-2013/delete/([a-zA-Z_]*)/(xml|json)$ /~hlp2-winser/awtd/Controllers/DeleteController?data=$1&type=$2 [NC,L]
+RewriteRule ^crimes/6-2013/put/([a-zA-Z_]*):([0-9]*)/(xml|json)$ /~hlp2-winser/awtd/Controllers/PutRequestController?area=$1&data=$2&type=3 [NC,L]
+RewriteRule ^crimes/6-2013/post/([a-zA-Z_]*)/([a-zA-Z_]*)/(([a-zA-Z_]*):([0-9]*-))*([a-zA-Z_]*):([0-9]*)/(xml|json)$ /~hlp2-winser/awtd/Controllers/PostRequestController [NC,L]

@@ -1,10 +1,10 @@
 google.load('visualization', '1.0', {'packages': ['corechart']});
 google.setOnLoadCallback(CreateCharts);
 
-function CreateCharts(crimeData, pieDiv, barDiv, title) {
+function CreateCharts(crimeData, pieDiv, barDiv, title, chartColumnOneName, chartColumnTwoName) {
     var data = new google.visualization.DataTable();
-    data.addColumn('string', 'Name');
-    data.addColumn('number', 'Total');
+    data.addColumn('string', chartColumnOneName);
+    data.addColumn('number', chartColumnTwoName);
 
     $.each(crimeData, function() {
         data.addRows([[this.id, this.total]]);

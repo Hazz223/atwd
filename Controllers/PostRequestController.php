@@ -2,7 +2,9 @@
 
 require_once '../Models/RegionsModel.php';
 require_once '../Models/AreasModel.php';
+require_once '../Models/CountriesModel.php';
 require_once '../Models/CrimeConfig.php';
+require_once '../Models/CountriesModel.php';
 require_once '../Entities/Area.php';
 require_once '../Entities/CrimeCatagory.php';
 require_once '../Entities/Crime.php';
@@ -10,16 +12,17 @@ require_once '../Exceptions/AreaAlreadyExists.php';
 
 $uriArray = DecodeRequestURI($_SERVER['REQUEST_URI']);
 
-$region = $uriArray[5];
-$newAreaName = $uriArray[6];
-$data = $uriArray[7];
-$viewType = $uriArray[8];
+$region = $uriArray[6];
+$newAreaName = $uriArray[7];
+$data = $uriArray[8];
+$viewType = $uriArray[9];
 
 $crimeDataAbrivated = DecodeCrimeData($data);
 
 try {
     $areaModel = new AreasModel();
     $regionModel = new RegionsModel();
+    $countryModel = new CountriesModel();
 
     if($areaModel->isArea($newAreaName)){
         throw new AreaAlreadyExists("Area with name '". $newAreaName."' already exsits.");
@@ -41,11 +44,19 @@ try {
     foreach ($crimes as $crime) {
         $areaModel->addCrimeToArea($crime, $newAreaName);
     }
+    
+    $england = $countryModel->getCountryByName("ENGLAND");
+    $wales = $countryModel->getCountryByName("WALES");
+    $combinedTotal = $wales->getTotal() + $england->getTotal();
 
+    $_SESSION["englandTotal"] = $england->getTotal();
+    $_SESSION["combinedTotal"] = $combinedTotal;
     $_SESSION["type"] = $viewType;
     $_SESSION["area"] = $areaModel->getAreaByName($newAreaName);
     $_SESSION["region"] = $regionModel->getRegionByName($region);
+    
     include "../Views/PostRequestView.php";
+    
 } catch (AreaAlreadyExists $ex) {
     $_SESSION["errorMessage"] = $ex->getMessage();
     $_SESSION["errorCode"] = $ex->getCode();
@@ -90,7 +101,7 @@ function createCrimeData($crimeDataArray) {
         if (!$crimeConfigModel->CheckIfCrimeCategory($name)) {
 
             $newCrime = new Crime();
-            $newCrime->setName($crimeConfigModel->GetCrimeName($name));
+            $newCrime->setName($crimeConfigModel->getCrimeName($name));
             $newCrime->setValue($value);
             $newCrime->setCrimeCatagory($crimeConfigModel->GetCrimeCatagory($name));
             $newCrime->setCrimeType($crimeConfigModel->GetCrimeType($name));
@@ -110,7 +121,7 @@ function createCrimeCategoryData($crimeDataArray) {
         if ($crimeConfigModel->CheckIfCrimeCategory($name)) { // Can't find the node. Lame!
             $newCrimeCat = new CrimeCatagory();
             $newCrimeCat->setTotal($value);
-            $newCrimeCat->setName($crimeConfigModel->GetCrimeName($name));
+            $newCrimeCat->setName($crimeConfigModel->getCrimeName($name));
             $newCrimeCat->setCrimeType($crimeConfigModel->GetCrimeType($name));
             $crimeCatArray[] = $newCrimeCat;
         }

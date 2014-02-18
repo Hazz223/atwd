@@ -1,16 +1,5 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of RegionsModel
- *
- * @author Harry
- */
 require_once 'DataAccess.php';
 require_once '../Entities/Region.php';
 require_once '../Exceptions/FieldNotFoundException.php';
@@ -61,7 +50,7 @@ class RegionsModel {
     }
 
     public function isRegion($name) {
-        $cleanedName = str_replace("", "_", $name);
+        $cleanedName = str_replace(" ", "_", $name);
         $cleanedName = strtolower($cleanedName);
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $regionNode = $xpath->query("Country/Region [@name='" . $cleanedName . "']")->item(0);
@@ -114,7 +103,6 @@ class RegionsModel {
     }
 
     public function _getRegionNode($regionName) {
-       
         $name = str_replace(" ", "_", $regionName);
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $regionNode = $xpath->query("Country/Region [@name='" .strtolower($name). "']")->item(0);

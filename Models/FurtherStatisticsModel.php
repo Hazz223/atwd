@@ -62,7 +62,7 @@ class FurtherStatisticsModel {
     }
 
     public function isFurtherStat($name) {
-        $cleanedName = str_replace("_", " ", $name);
+        $cleanedName = str_replace(" ", "_", $name);
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $statNode = $xpath->query("FurtherStatistics [@name='" . $cleanedName . "']")->item(0);
         return isset($statNode);

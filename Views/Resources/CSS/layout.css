@@ -20,14 +20,20 @@ and open the template in the editor.
 
 .postive{
     background: #ffffff;
-    height: 500px;
     margin: 0 auto;
     padding: 0;
 }
 
+.standard-height{
+    height: 1000px;
+}
+
+.country-container{
+    hieght: 500px;
+}
+
 .negative{
     background: #E3E3E3;
-    height: 500px;
 }
 
 .footer{
@@ -45,6 +51,7 @@ and open the template in the editor.
     height: 130px;
     width: 50%;
     float:left;
+    padding: 5px;
 }
 
 .add-area-complete{
@@ -65,4 +72,17 @@ and open the template in the editor.
 
 .hidden{
     display:none;
+}
+
+.data-box{
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.add-container{
+    height: 500px;
+}
+
+.delete-container{
+    height: 500px;
 }

@@ -26,7 +26,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
     // Also create the abrivated ones.
     CreateConfigXML($titlesArray, $catagoryArray, $crimeHeadersArray);
 
-    $doc = new DOMDocument();
+    $doc = new DOMDocument("1.0");
 
     $rootNode = $doc->createElement("CrimeStats");
 
@@ -265,10 +265,11 @@ if (($handle = fopen($input, "r")) !== FALSE) {
     $rootNode->appendChild($actionFraudNode);
 
     $doc->appendChild($rootNode);
-
+    header("Content-type: text/xml");
+    echo $doc->saveXML();
     $doc->save("../Data/CrimeStats.xml");
 
-    echo "Completed Conversion";
+    
 }
 
 function RemoveEmptyArraySlots($array) {

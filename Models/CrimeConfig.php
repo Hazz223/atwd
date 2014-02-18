@@ -10,10 +10,22 @@ class CrimeConfig {
         $this->xpath = new DOMXpath($this->configXml);
     }
 
-    public function GetCrimeName($abName) {
+    public function getCrimeName($abName) {
         $crimeNode = $this->_getNodeOnAbName($abName);
 
         return $crimeNode->getAttribute("name");
+    }
+    
+    public function getAllNamesAndAbvNames(){
+        $abvNames = $this->getAllCrimeNamesAbrivated();
+        
+        $nameArray = array();
+        
+        foreach($abvNames as $abvName){
+            $nameArray[$abvName] = $this->getCrimeName($abvName);
+        }
+        
+        return $nameArray;
     }
 
     public function CheckIfCrimeCategory($abName) {
@@ -61,5 +73,4 @@ class CrimeConfig {
     private function _getNodeOnAbName($abName) {
         return $this->xpath->query("CrimeAbriviations/Crime [@abrivated='" . $abName . "']")->item(0);
     }
-
 }

@@ -19,7 +19,6 @@ function CheckForError(data) {
 function DecodeErrorMessage(data) {
 
 //    alert($.parseXML(data)); // returning null
-//    $xml = $( xml );
 //    var errorCode= xml.find("error[code]");
 //    var errorDesc= xml.find("error[desc]");
 //    

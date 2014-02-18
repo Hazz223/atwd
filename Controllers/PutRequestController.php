@@ -21,14 +21,21 @@ try {
 
         $_SESSION["old"] = $old;
         $_SESSION["new"] = $new;
-    } else {
-        $oldFurtherStat = $furtherStatsModel->getFurtherStatisticsByName($areaName);
-        $furtherStatsModel->updateTotal($areaName, $data);
-        $newFurtherStat = $furtherStatsModel->getFurtherStatisticsByName($areaName);
-        
         $_SESSION["type"] = $type;
-        $_SESSION["old"] = $oldFurtherStat;
-        $_SESSION["new"] = $newFurtherStat;
+    } else {
+        
+        if ($furtherStatsModel->isFurtherStat($areaName)) {
+            $oldFurtherStat = $furtherStatsModel->getFurtherStatisticsByName($areaName);
+            $furtherStatsModel->updateTotal($areaName, $data);
+            $newFurtherStat = $furtherStatsModel->getFurtherStatisticsByName($areaName);
+            
+            $_SESSION["type"] = $type;
+            $_SESSION["old"] = $oldFurtherStat;
+            $_SESSION["new"] = $newFurtherStat;
+        }
+        else{
+            throw new FieldNotFoundException("[".$areaName."] is not a National Statistic or an Area");
+        }
     }
 
     include "../Views/PutRequestView.php";

@@ -10,22 +10,22 @@ $areasModel = new AreasModel();
 $coutnriesModel = new CountriesModel();
 $crimeConf = new CrimeConfig();
 
-$crimeNames = $crimeConf->getAllCrimeNamesAbrivated();
+$crimeNamesAbr = $crimeConf->getAllNamesAndAbvNames();
+
 
 $regions = $regionModel->getAllRegions();
 
 $areaNameArray = array();
 $regionNames = array();
 foreach($regions as $region){
-    
    $areaNameArray = array_merge($areaNameArray,$region->getAreaNames());
    $regionNames[] = $region->getProperName();
 }
 
 // somehow, this is returning a regionNames that INCLUDE the further statistics?!
 
-$_SESSION["areaNames"] = $areaNameArray;
+$_SESSION["areaNames"] = $areaNameArray; // can i create an array the same as the crimeAbrv
 $_SESSION["regionNames"] = $regionNames;
-$_SESSION["crimeNames"] = $crimeNames;
+$_SESSION["crimeNamesAbv"] = $crimeNamesAbr;
 include "../Views/HomeView.php"; 
 
