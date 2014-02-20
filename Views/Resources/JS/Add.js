@@ -54,7 +54,7 @@ $("#submitCrime").click(function() {
         i++;
     });
 
-    $.getJSON("http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/crimes/6-2013/post/" + cleanedRegionName + "/" + cleanedAreaName + "/" + completedString + "/json", function(addData) {
+    $.getJSON("crimes/6-2013/post/" + cleanedRegionName + "/" + cleanedAreaName + "/" + completedString + "/json", function(addData) {
         // http://stackoverflow.com/questions/4965004/jquery-animate-height-toggle
         $("#addContainer").slideDown(function() { 
             $(this).animate({height: 1000}, 200);

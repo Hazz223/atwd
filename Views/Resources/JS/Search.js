@@ -11,7 +11,7 @@ $("#choose-region").click(function() {
 });
 
 function CreateRegionCharts(region, title) {
-    $.getJSON("http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/crimes/6-2013/" + region + "/json", function(data) {
+    $.getJSON("crimes/6-2013/" + region + "/json", function(data) {
         
         $("#searchRegionData").html(JSON.stringify(data, null,4));
         

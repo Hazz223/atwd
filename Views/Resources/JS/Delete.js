@@ -42,7 +42,7 @@ $(".deleteButton").click(function() {
             break;
     }
 
-    $.getJSON("http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/crimes/6-2013/delete/" + deleteValue + "/json", function(data) {
+    $.getJSON("crimes/6-2013/delete/" + deleteValue + "/json", function(data) {
         $("#deleteContainer").slideDown(function() {
             $(this).animate({height: 1000}, 200);
         });

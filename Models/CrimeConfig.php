@@ -30,7 +30,7 @@ class CrimeConfig {
 
     public function CheckIfCrimeCategory($abName) {
         $crimeNode = $this->_getNodeOnAbName($abName);
-        if ($crimeNode->getAttribute("iscrimecatagory") === "true") { // not finding the node.. Balls!
+        if ($crimeNode->getAttribute("iscrimecatagory") === "true") {
             return true;
         } else {
             return false;

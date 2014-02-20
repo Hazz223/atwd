@@ -9,6 +9,7 @@ require_once '../Entities/Area.php';
 require_once '../Entities/CrimeCatagory.php';
 require_once '../Entities/Crime.php';
 require_once '../Exceptions/AreaAlreadyExists.php';
+require_once '../Exceptions/InvalidCrimeData.php';
 
 $uriArray = DecodeRequestURI($_SERVER['REQUEST_URI']);
 
@@ -17,25 +18,30 @@ $newAreaName = $uriArray[7];
 $data = $uriArray[8];
 $viewType = $uriArray[9];
 
-$crimeDataAbrivated = DecodeCrimeData($data);
+
 
 try {
+    $crimeDataAbrivated = DecodeCrimeData($data);
+    
     $areaModel = new AreasModel();
     $regionModel = new RegionsModel();
     $countryModel = new CountriesModel();
 
-    if($areaModel->isArea($newAreaName)){
-        throw new AreaAlreadyExists("Area with name '". $newAreaName."' already exsits.");
+    if ($areaModel->isArea($newAreaName)) {
+        throw new AreaAlreadyExists("Area with name '" . $newAreaName . "' already exsits.");
     }
+    
     $new = new Area();
     $new->setRegionName($region);
     $new->setName($newAreaName);
-    $new->setProperName(ucfirst($newAreaName));
+    
+    $properName = str_replace("_", " ", $newAreaName);
+    $new->setProperName(ucfirst($properName));
 
     $regionModel->addAreaToRegion($new);
 
-    $crimeCats = createCrimeCategoryData($crimeDataAbrivated);
-    $crimes = createCrimeData($crimeDataAbrivated);
+    $crimeCats = CreateCrimeCategoryData($crimeDataAbrivated);
+    $crimes = CreateCrimeData($crimeDataAbrivated);
 
     foreach ($crimeCats as $crime) {
         $areaModel->AddCrimeCategory($crime, $newAreaName);
@@ -44,7 +50,7 @@ try {
     foreach ($crimes as $crime) {
         $areaModel->addCrimeToArea($crime, $newAreaName);
     }
-    
+
     $england = $countryModel->getCountryByName("ENGLAND");
     $wales = $countryModel->getCountryByName("WALES");
     $combinedTotal = $wales->getTotal() + $england->getTotal();
@@ -54,10 +60,14 @@ try {
     $_SESSION["type"] = $viewType;
     $_SESSION["area"] = $areaModel->getAreaByName($newAreaName);
     $_SESSION["region"] = $regionModel->getRegionByName($region);
-    
+
     include "../Views/PostRequestView.php";
-    
 } catch (AreaAlreadyExists $ex) {
+    $_SESSION["errorMessage"] = $ex->getMessage();
+    $_SESSION["errorCode"] = $ex->getCode();
+
+    include "../Views/Errors/ErrorView.php";
+} catch (InvalidCrimeData $ex) {
     $_SESSION["errorMessage"] = $ex->getMessage();
     $_SESSION["errorCode"] = $ex->getCode();
 
@@ -78,24 +88,26 @@ function DecodeRequestURI($uri) {
     return explode("/", $uri);
 }
 
-function DecodeCrimeData($data) {
+function DecodeCrimeData($data) { // h
     $splitData = explode("-", $data);
-
     $crimeDataArray = array();
 
     foreach ($splitData as $crime) {
         $crimeArray = explode(":", $crime);
+        if(array_key_exists($crimeArray[0], $crimeDataArray)){
+             throw new InvalidCrimeData("There are duplicate crimes in the url ['" . $crimeArray[0] . "']");
+        }
+        
         $crimeDataArray[$crimeArray[0]] = $crimeArray[1];
     }
-
     return $crimeDataArray;
 }
 
-function createCrimeData($crimeDataArray) {
+function CreateCrimeData($crimeDataArray) {
     $crimeConfigModel = new CrimeConfig();
 
     $crimeArray = array(); // If catagory object, then we need to store it in here. 
-    // If it's not, we need to find the catagory it belongs too, then append it to that one.
+// If it's not, we need to find the catagory it belongs too, then append it to that one.
 
     foreach ($crimeDataArray as $name => $value) {
         if (!$crimeConfigModel->CheckIfCrimeCategory($name)) {
@@ -112,13 +124,13 @@ function createCrimeData($crimeDataArray) {
     return $crimeArray;
 }
 
-function createCrimeCategoryData($crimeDataArray) {
+function CreateCrimeCategoryData($crimeDataArray) {
     $crimeConfigModel = new CrimeConfig();
 
     $crimeCatArray = array();
 
     foreach ($crimeDataArray as $name => $value) {
-        if ($crimeConfigModel->CheckIfCrimeCategory($name)) { // Can't find the node. Lame!
+        if ($crimeConfigModel->CheckIfCrimeCategory($name)) {
             $newCrimeCat = new CrimeCatagory();
             $newCrimeCat->setTotal($value);
             $newCrimeCat->setName($crimeConfigModel->getCrimeName($name));
@@ -127,4 +139,17 @@ function createCrimeCategoryData($crimeDataArray) {
         }
     }
     return $crimeCatArray;
+}
+
+function CheckForDuplicateInputs($crimeDataArray) {
+    $keyArray = array();
+
+    foreach ($crimeDataArray as $key => $value) {
+        
+        if (in_array($key, $keyArray)) {
+            throw new InvalidCrimeData("This crime[" . $key . "] already has data in the URL.");
+            
+        }
+        $keyArray[] = $key;
+    }
 }

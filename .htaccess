@@ -1,5 +1,6 @@
 ErrorDocument 404 /~hlp2-winser/atwd/Views/Errors/501URLError.php
 RewriteEngine On
+RewriteRule ^checkcache/([0-9]*) /~hlp2-winser/atwd/Controllers/CheckCacheController\.php?date=$1 [NC,L]
 RewriteRule ^$ /~hlp2-winser/atwd/Controllers/HomeController\.php?$ [NC,L]
 RewriteRule ^index\.php$ /~hlp2-winser/atwd/Controllers/HomeController\.php? [NC,L]
 RewriteRule ^crimes/6-2013/(xml|json)$ /~hlp2-winser/atwd/Controllers/GetRequestController\.php?type=$1 [NC,L]

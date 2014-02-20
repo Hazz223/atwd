@@ -96,7 +96,7 @@ class RegionsModel {
         foreach ($areas as $area) {
             $totalNode = $xpath->query("CrimeCatagory [@name='Total recorded crime - including fraud']", $area)->item(0);
 
-            $regionTotal = $regionTotal + intval($totalNode->getAttribute("total"));
+            $regionTotal = $regionTotal + intval($totalNode->getAttribute("total")); // not working?
         }
 
         return $regionTotal;

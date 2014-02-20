@@ -279,6 +279,7 @@
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<!--<script src="http://ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.6.2.js"></script>-->
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript" src="Views/Resources/JS/Charts.js"></script>
 <script type="text/javascript" src="Views/Resources/JS/Delete.js"></script>

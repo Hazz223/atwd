@@ -393,7 +393,7 @@ function CreateConfigXML($titlesArray, $catagoryArray, $crimeHeadersArray) {
     }
     $rootNode->appendChild($abrivNode);
     $doc->appendChild($rootNode);
-    $doc->save("../Config/CrimeConfig.xml");
+    $doc->save("../Config/CrimeConfig.xml"); // Weird issue with persmissons?!
 }
 
 function getAbriviatedName($name) {

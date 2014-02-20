@@ -60,8 +60,7 @@ if ($type === "xml") {
     header("Content-type: text/xml");
     echo $responseXML->saveXML();
 } else {
-    $regionArray = array();
-
+   
     $addedArray = array();
     foreach ($area->getCrimeData() as $crimeCat) {
         if ($crimeCat->getCrimeType() != "Total") {

@@ -22,8 +22,6 @@ foreach($regions as $region){
    $regionNames[] = $region->getProperName();
 }
 
-// somehow, this is returning a regionNames that INCLUDE the further statistics?!
-
 $_SESSION["areaNames"] = $areaNameArray; // can i create an array the same as the crimeAbrv
 $_SESSION["regionNames"] = $regionNames;
 $_SESSION["crimeNamesAbv"] = $crimeNamesAbr;
