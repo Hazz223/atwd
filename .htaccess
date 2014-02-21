@@ -3,6 +3,7 @@ RewriteEngine On
 RewriteRule ^checkcache/([0-9]*) /~hlp2-winser/atwd/Controllers/CheckCacheController\.php?date=$1 [NC,L]
 RewriteRule ^$ /~hlp2-winser/atwd/Controllers/HomeController\.php?$ [NC,L]
 RewriteRule ^index\.php$ /~hlp2-winser/atwd/Controllers/HomeController\.php? [NC,L]
+RewriteRule ^doc\.php$ /~hlp2-winser/atwd/Controllers/DocumentationController\.php? [NC,L]
 RewriteRule ^crimes/6-2013/(xml|json)$ /~hlp2-winser/atwd/Controllers/GetRequestController\.php?type=$1 [NC,L]
 RewriteRule ^crimes/6-2013/([a-zA-Z_]*)/(xml|json)$ /~hlp2-winser/atwd/Controllers/GetRequestController\.php?region=$1&type=$2 [NC,L]
 RewriteRule ^crimes/6-2013/delete/([a-zA-Z_]*)/(xml|json)$ /~hlp2-winser/atwd/Controllers/DeleteController\.php?data=$1&type=$2 [NC,L]

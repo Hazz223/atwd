@@ -15,7 +15,6 @@ class RegionsModel {
         foreach ($countries as $country) {
             
             $regions = $country->getElementsByTagName("Region");
-
             foreach ($regions as $region) {
                 $newRegionList[] = $this->_createRegionObject($region);
             }
@@ -26,7 +25,7 @@ class RegionsModel {
 
     public function getRegionByName($name) {
         $region = $this->_getRegionNode($name);
-
+       
         if (isset($region)) {
             $regionObj = $this->_createRegionObject($region);
             return $regionObj;

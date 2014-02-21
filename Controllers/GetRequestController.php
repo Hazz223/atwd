@@ -87,7 +87,6 @@ if (isset($_GET["region"])) {
         }
     }
 } else {
-
     if ($cache->hasCacheFile("all-get", $type)) {
         $data = $cache->getCacheFile("all-get", $type);
         $_SESSION["data"] = $data;

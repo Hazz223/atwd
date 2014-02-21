@@ -13,7 +13,9 @@ $crimeConf = new CrimeConfig();
 $crimeNamesAbr = $crimeConf->getAllNamesAndAbvNames();
 
 
-$regions = $regionModel->getAllRegions();
+
+$regions = $regionModel->getAllRegions(); // this is failing...
+
 
 $areaNameArray = array();
 $regionNames = array();

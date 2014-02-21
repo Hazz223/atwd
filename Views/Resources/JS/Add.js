@@ -1,5 +1,5 @@
 var firstAdd = true;
-// This needs a bit of a clean up
+
 $("#addCrimeValue").click(function() {
     $("#comeplted-add-area").addClass("hidden");
     $("#addAreaTableContainer").addClass("hidden");
@@ -65,6 +65,7 @@ $("#submitCrime").click(function() {
         $("#add-area-table").addClass("hidden");
         $("#comeplted-add-area").removeClass("hidden");
         var areaName = addData.response.crimes.region.area.id;
+        var regionName = addData.response.crimes.region.id;
         var recorded = addData.response.crimes.region.area.recorded;
         var areaTotal = addData.response.crimes.region.area.total;
         var regionTotal = addData.response.crimes.region.total;
@@ -79,7 +80,7 @@ $("#submitCrime").click(function() {
         $("#addAreaTableContainer").removeClass("hidden");
         $("#addAreaRawContainer").removeClass("hidden");
 
-        $("#completedMessage").html("For the Region [], a new Area [" + areaName + "] as been added. Please refresh the page to view the changes across the entire applcation.");
+        $("#completedMessage").html("For the Region ["+regionName+"], a new Area [" + areaName + "] as been added. Please refresh the page to view the changes across the entire applcation.");
 
         newAreaDataArray = new Object();
         newAreaName = "";
@@ -100,8 +101,7 @@ $("#submitCrime").click(function() {
         $("#newAreaName").prop("disabled", false);
         $("#add-area-table").addClass("hidden");
         // need to clean table
-        $("#newAreaTable tbody").html("<tr><th>Crime Name</th><th>Value</th></tr>"); // relaly don't like this...
+        $("#newAreaTable tbody").html("<tr><th>Crime Name</th><th>Value</th></tr>"); // really don't like this
         $("#submitCrime").addClass("hidden");
-
     });
 });

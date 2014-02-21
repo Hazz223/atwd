@@ -1,8 +1,9 @@
 <?php
 
+require_once 'ConfigFileCreator.php';
 $input = "data.csv"; // datafile
 
-$xmlLocaltion= "../Data/CrimeStats.xml";
+$xmlLocation = "../Data/CrimeStats.xml";
 
 if (($handle = fopen($input, "r")) !== FALSE) {
     $dataArray = array();
@@ -20,11 +21,12 @@ if (($handle = fopen($input, "r")) !== FALSE) {
 
     $titlesArray = RemoveEmptyArraySlots($dataArray[4]);
 
-
     // need to pass it the tital array, the crime headers, and the catagory array.
     // from here we should be able to fashion the config xml, which will allow us
     // Also create the abrivated ones.
-    CreateConfigXML($titlesArray, $catagoryArray, $crimeHeadersArray, $xmlLocaltion);
+    $confCreator = new ConfigFileCreator($titlesArray, $catagoryArray, $crimeHeadersArray, $xmlLocation, "../Config/CrimeConfig.xml");
+
+    $confCreator->CreateConfigFile(); // creates the config file.
 
     $doc = new DOMDocument("1.0");
 
@@ -43,7 +45,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
     $britishTrasportNode = $doc->createElement("FurtherStatistics");
     $britishTrasportNode->setAttribute("name", "british_transport_police");
     $britishTrasportNode->setAttribute("proper_name", "British Transport Police");
-    
+
     $actionFraudNode = $doc->createElement("FurtherStatistics");
     $actionFraudNode->setAttribute("name", "action_fraud");
     $actionFraudNode->setAttribute("proper_name", "Action Fraud");
@@ -64,7 +66,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                             $regionNode = $doc->createElement("Region");
                             $nonRegionName = str_replace(" Region", "", $row[0]);
                             $withUnderscores = str_replace(" ", "_", $nonRegionName);
-                            $regionNode->setAttribute("name",  strtolower($withUnderscores));
+                            $regionNode->setAttribute("name", strtolower($withUnderscores));
                             $regionNode->setAttribute("proper_name", $nonRegionName);
 
                             foreach ($areaArray as $area) {
@@ -77,7 +79,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                     } else {
                         $areaNode = $doc->createElement("Area");
                         $withUnderscores = str_replace(" ", "_", $row[0]);
-                        $areaNode->setAttribute("name",  strtolower($withUnderscores));
+                        $areaNode->setAttribute("name", strtolower($withUnderscores));
                         $areaNode->setAttribute("proper_name", $row[0]);
                         $areaArray[] = $areaNode;
 
@@ -166,10 +168,10 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                     } else {
                         $areaNode = $doc->createElement("Area");
                         $withUnderscores = str_replace(" ", "_", $row[0]);
-                        $areaNode->setAttribute("name",  strtolower($withUnderscores));
+                        $areaNode->setAttribute("name", strtolower($withUnderscores));
                         $areaNode->setAttribute("proper_name", $row[0]);
                         $areaArray[] = $areaNode;
-                     
+
                         $crimeTypeTotal = $doc->createElement("CrimeType");
                         $crimeTypeTotal->setAttribute("name", "Totals");
 
@@ -267,9 +269,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
     $doc->appendChild($rootNode);
     header("Content-type: text/xml");
     echo $doc->saveXML();
-    $doc->save($xmlLocaltion);
-
-    
+    $doc->save($xmlLocation);
 }
 
 function RemoveEmptyArraySlots($array) {
@@ -311,25 +311,27 @@ function TitleInArray($needle, $heystack) {
 function PopulateCrimeData($array, $node, $doc, $titleCount, $titlesArray, $catagoryArray, $type) {
     $catagoryNode = null;
     foreach ($array as $data) {
-        if (TitleInArray($titlesArray[$titleCount], $catagoryArray)) {
-            $newCatagoryNode = $doc->createElement("CrimeCatagory");
-            $newCatagoryNode->setAttribute("name", $titlesArray[$titleCount]);
-            $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
-            $newCatagoryNode->setAttribute("type", $type);
-            $catagoryNode = $newCatagoryNode;
-        } else {
-            if ($catagoryNode != null) {
-                $crime = $doc->createElement("Crime");
-                $crime->setAttribute("name", $titlesArray[$titleCount]);
-                $text = $doc->createTextNode(str_replace(",", "", $data));
-                $crime->appendChild($text);
+        if ($data != "..") {
+            if (TitleInArray($titlesArray[$titleCount], $catagoryArray)) {
+                $newCatagoryNode = $doc->createElement("CrimeCatagory");
+                $newCatagoryNode->setAttribute("name", $titlesArray[$titleCount]);
+                $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
+                $newCatagoryNode->setAttribute("type", $type);
+                $catagoryNode = $newCatagoryNode;
+            } else {
+                if ($catagoryNode != null) {
+                    $crime = $doc->createElement("Crime");
+                    $crime->setAttribute("name", $titlesArray[$titleCount]);
+                    $text = $doc->createTextNode(str_replace(",", "", $data));
+                    $crime->appendChild($text);
 
-                $catagoryNode->appendChild($crime);
+                    $catagoryNode->appendChild($crime);
+                }
             }
+            
+            $node->appendChild($catagoryNode);
+            
         }
-
-
-        $node->appendChild($catagoryNode);
         $titleCount++;
     }
 
@@ -358,83 +360,4 @@ function CreateFurtherStatisticsNode($furtherStatsNode, $crimeHeadersArray, $tit
     $furtherStatsNode = PopulateCrimeData($fraudArray, $furtherStatsNode, $doc, 16, $titlesArray, $catagoryArray, $crimeHeadersArray[3]);
 
     return $furtherStatsNode;
-}
-
-function CreateConfigXML($titlesArray, $catagoryArray, $crimeHeadersArray, $xmlLocation) {
-    $doc = new DOMDocument();
-
-    $rootNode = $doc->createElement("Config");
-
-    $abrivNode = $doc->createElement("CrimeAbriviations");
-    $catagory = "";
-    $crimeType = $crimeHeadersArray[2];
-    foreach ($titlesArray as $title) {
-        $nameNode = $doc->createElement("Crime");
-        $nameNode->setAttribute("name", $title);
-
-        if ($title === "Drug offences") {
-            $crimeType = $crimeHeadersArray[3];
-        }
-
-        $nameNode->setAttribute("abrivated", getAbriviatedName($title));
-
-        if (TitleInArray($title, $catagoryArray)) {
-            $catagory = $title;
-            $nameNode->setAttribute("crimecatagory", $title);
-            $nameNode->setAttribute("type", $crimeType);
-            $nameNode->setAttribute("iscrimecatagory", "true");
-        } else {
-            $nameNode->setAttribute("crimecatagory", $catagory);
-            $nameNode->setAttribute("type", $crimeType);
-            $nameNode->setAttribute("iscrimecatagory", "false");
-        }
-
-        $abrivNode->appendChild($nameNode);
-    }
-    
-    $crimeDataNode = $doc->createElement("crime_data");
-    $testNode = $doc->createElement("stored_xml_location");
-    
-    $text = $doc->createTextNode($xmlLocation);
-    $testNode->appendChild($text);
-    $crimeDataNode->appendChild($testNode);
-    
-    $rootNode->appendChild($abrivNode);
-    $rootNode->appendChild($crimeDataNode);
-    $doc->appendChild($rootNode);
-    $doc->save("../Config/CrimeConfig.xml"); 
-}
-
-function getAbriviatedName($name) {
-
-    $acronym = "";
-
-    $brokenName = explode(" ", $name);
-
-    $length = count($brokenName);
-
-    if ($length == 1) {
-        $acronym = $brokenName[0][0] . $brokenName[0][1] . $brokenName[0][2];
-    }
-
-    if ($length > 1) {
-        $count = 0;
-        foreach ($brokenName as $word) {
-            if ($count > 3) {
-                break;
-            }
-            if (isset($word[0])) {
-                // need to check for without
-                if ($word === "without") {
-                    $acronym .= "wo";
-                } else {
-                    $acronym .= $word[0];
-                }
-
-                $count++;
-            }
-        }
-    }
-
-    return strtolower($acronym);
 }

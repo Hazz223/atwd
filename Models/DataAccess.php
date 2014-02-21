@@ -16,17 +16,15 @@ require_once '../Exceptions/XMLDataNotFound.php';
 
 class DataAccess {
 
-    const xmlFile = "../Data/CrimeStats.xml";
-
+    private $xmlFileName;
     private $xml;
     private static $instance;
 
     private function __construct() {
-        
-        $crimeConf = new CrimeConfig();
-        
-        $this->xml = new DOMDocument();
-        $this->xml->load($crimeConf->GetDataXMLName()); // gets the name from the config
+            $crimeConf = new CrimeConfig();
+            $this->xmlFileName = $crimeConf->GetDataXMLName();
+            $this->xml = new DOMDocument();
+            $this->xml->load($this->xmlFileName); // gets the name from the config
     }
 
     public static function GetInstance() { // solves the issue of he file not updating fast enough
@@ -41,7 +39,7 @@ class DataAccess {
     }
 
     public function saveXML() {
-        $this->xml->save(DataAccess::xmlFile);
+        $this->xml->save($this->xmlFileName);
     }
 
     public function RemoveNode($node) {
