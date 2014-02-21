@@ -7,7 +7,7 @@ $type = $_SESSION["type"];
 if ($type === "xml") {
     $responseXML = new DOMDocument();
     $base = $responseXML->createElement("reponse");
-    $base->setAttribute("timestamp", date("YmdHi"));
+    $base->setAttribute("timestamp", time());
     $crime = $responseXML->createElement("crimes");
     $crime->setAttribute("year", "6-2013");
     $regionNode = $responseXML->createElement("region");
@@ -27,7 +27,7 @@ if ($type === "xml") {
     $crimesData["region"] = array("id" => $new->getName(), "previous" =>$old->getTotal(), "total" => $new->getTotal());
 
     $dataArray = array();
-    $dataArray["timestamp"] = date("YmdHi");
+    $dataArray["timestamp"] = time();
 
     $dataArray["crimes"] = $crimesData;
 

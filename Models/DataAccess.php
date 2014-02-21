@@ -11,6 +11,7 @@
  *
  * @author Harry
  */
+require_once 'CrimeConfig.php';
 require_once '../Exceptions/XMLDataNotFound.php';
 
 class DataAccess {
@@ -21,11 +22,14 @@ class DataAccess {
     private static $instance;
 
     private function __construct() {
+        
+        $crimeConf = new CrimeConfig();
+        
         $this->xml = new DOMDocument();
-        $this->xml->load(DataAccess::xmlFile);
+        $this->xml->load($crimeConf->GetDataXMLName()); // gets the name from the config
     }
 
-    public static function GetInstance() { // Should change it so there is only one XML item.
+    public static function GetInstance() { // solves the issue of he file not updating fast enough
         if (self::$instance === null) {
             self::$instance = new DataAccess();
         }

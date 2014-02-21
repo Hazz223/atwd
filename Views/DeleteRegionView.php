@@ -9,7 +9,7 @@ $type = $_SESSION["type"];
 if ($type === "xml") {
     $responseXML = new DOMDocument();
     $base = $responseXML->createElement("reponse");
-    $base->setAttribute("timestamp", date("YmdHi"));
+    $base->setAttribute("timestamp", time());
     $crimeDataNode = $responseXML->createElement("crimes");
     $crimeDataNode->setAttribute("year", "6-2013");
 
@@ -53,7 +53,7 @@ if ($type === "xml") {
     $crimesData["region"] = array("id" => $region->getProperName(), "total" => $region->getTotal(), "deleted" => $deletedArray);
 
     $dataArray = array();
-    $dataArray["timestamp"] = date("YmdHi");
+    $dataArray["timestamp"] = time();
 
     $dataArray["crimes"] = $crimesData;
 

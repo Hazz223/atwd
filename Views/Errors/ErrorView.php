@@ -5,7 +5,7 @@ $errorCode = $_SESSION["errorCode"];
 
 $responseXML = new DOMDocument("1.0");
 $base = $responseXML->createElement("reponse");
-$base->setAttribute("timestamp", date("YmdHi"));
+$base->setAttribute("timestamp", time());
 
 $errorNode = $responseXML->createElement("error");
 $errorNode->setAttribute("code", $errorCode);

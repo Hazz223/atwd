@@ -2,7 +2,7 @@
 
 $input = "data.csv"; // datafile
 
-
+$xmlLocaltion= "../Data/CrimeStats.xml";
 
 if (($handle = fopen($input, "r")) !== FALSE) {
     $dataArray = array();
@@ -24,7 +24,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
     // need to pass it the tital array, the crime headers, and the catagory array.
     // from here we should be able to fashion the config xml, which will allow us
     // Also create the abrivated ones.
-    CreateConfigXML($titlesArray, $catagoryArray, $crimeHeadersArray);
+    CreateConfigXML($titlesArray, $catagoryArray, $crimeHeadersArray, $xmlLocaltion);
 
     $doc = new DOMDocument("1.0");
 
@@ -267,7 +267,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
     $doc->appendChild($rootNode);
     header("Content-type: text/xml");
     echo $doc->saveXML();
-    $doc->save("../Data/CrimeStats.xml");
+    $doc->save($xmlLocaltion);
 
     
 }
@@ -360,7 +360,7 @@ function CreateFurtherStatisticsNode($furtherStatsNode, $crimeHeadersArray, $tit
     return $furtherStatsNode;
 }
 
-function CreateConfigXML($titlesArray, $catagoryArray, $crimeHeadersArray) {
+function CreateConfigXML($titlesArray, $catagoryArray, $crimeHeadersArray, $xmlLocation) {
     $doc = new DOMDocument();
 
     $rootNode = $doc->createElement("Config");
@@ -391,9 +391,18 @@ function CreateConfigXML($titlesArray, $catagoryArray, $crimeHeadersArray) {
 
         $abrivNode->appendChild($nameNode);
     }
+    
+    $crimeDataNode = $doc->createElement("crime_data");
+    $testNode = $doc->createElement("stored_xml_location");
+    
+    $text = $doc->createTextNode($xmlLocation);
+    $testNode->appendChild($text);
+    $crimeDataNode->appendChild($testNode);
+    
     $rootNode->appendChild($abrivNode);
+    $rootNode->appendChild($crimeDataNode);
     $doc->appendChild($rootNode);
-    $doc->save("../Config/CrimeConfig.xml"); // Weird issue with persmissons?!
+    $doc->save("../Config/CrimeConfig.xml"); 
 }
 
 function getAbriviatedName($name) {

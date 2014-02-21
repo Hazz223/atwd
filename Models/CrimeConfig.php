@@ -36,6 +36,12 @@ class CrimeConfig {
             return false;
         }
     }
+    
+    public function GetDataXMLName(){
+        $nameNode = $this->xpath->query("crime_data/stored_xml_location")->item(0); // should get the node.
+        
+        return $nameNode->textContent; // returns the DataXML name!
+    }
 
     public function GetCrimeCatagory($abName) {
         $crimeNode = $this->_getNodeOnAbName($abName);

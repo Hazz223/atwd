@@ -1,8 +1,12 @@
 <?php
     
     $result = $_SESSION["result"];
+    $lastModified = $_SESSION["lastModified"];
+    $givenTimeStamp = $_SESSION["givenTimeStamp"];
     $dataArray = array();
-    $dataArray["timestamp"] = date("YmdHi");
+    $dataArray["timestamp"] = time();
+    $dataArray["lastModified"] = $lastModified;
+    $dataArray["givenTime"] = $givenTimeStamp;
     $dataArray["isCurrent"] = $result;
 
     $base = array();

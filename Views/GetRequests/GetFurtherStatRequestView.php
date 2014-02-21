@@ -30,7 +30,7 @@ else{
     $crimesData["national"] = array("id" => $furtherStat->getProperName(), "total" => $furtherStat->getTotal());
 
     $dataArray = array();
-    $dataArray["timestamp"] = date("YmdHi");
+    $dataArray["timestamp"] = time();
     $dataArray["crimes"] = $crimesData;
 
     $base = array();

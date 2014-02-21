@@ -9,7 +9,7 @@ if ($type === "xml") {
     $responseXML = new DOMDocument();
     $base = $responseXML->createElement("reponse");
 
-    $base->setAttribute("timestamp", date("YmdHi"));
+    $base->setAttribute("timestamp", time());
     $crime = $responseXML->createElement("crimes");
     $crime->setAttribute("year", "6-2013");
 
@@ -47,7 +47,7 @@ if ($type === "xml") {
     $crimeData["region"] = array("id" => $region->getProperName(), "total" => $region->getTotal(), "areas" => $areasArray);
 
     $dataArray = array();
-    $dataArray["timestamp"] = date("YmdHi");
+    $dataArray["timestamp"] = time();
 
     $dataArray["crimes"] = $crimeData;
 
