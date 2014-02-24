@@ -91,26 +91,16 @@ if (isset($_GET["region"])) {
         $data = $cache->getCacheFile("all-get", $type);
         $_SESSION["data"] = $data;
         $_SESSION["type"] = $type;
-
         include "../Views/CacheView.php";
     } else {
         try {
             $regions = $regionModel->getAllRegions();
             $countries = $countryModel->getAllCountries();
             $fStats = $fStatsModel->getAllFurtherStatistics();
-
-            $walesRegion = $regionModel->getRegionByName("WALES");
-
-            $walesRegionList = array();
-
-            foreach ($walesRegion->getAreaNames() as $areaName) {
-                $walesRegionList[] = $areasModel->getAreaByName($areaName);
-            }
-
+            
             $_SESSION["regions"] = $regions;
             $_SESSION["countries"] = $countries;
             $_SESSION["fStats"] = $fStats;
-            $_SESSION["walesAreas"] = $walesRegionList;
             $_SESSION["type"] = $type;
 
             include '../Views/GetRequests/FullGetRequestView.php';

@@ -59,7 +59,7 @@ class CountriesModel {
         $countryTotal = 0;
         foreach($regions as $region){
             $regionNamesList[] = $region->getName();
-            $countryTotal = $region->getTotal();
+            $countryTotal = $countryTotal + $region->getTotal(); // setting over the total. Bug!!
         }
 
         $countryObj->setRegionNames($regionNamesList);

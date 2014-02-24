@@ -18,6 +18,7 @@
                         <li class="nav-bar" id="search"><a href="#Search">Search</a></li>
                         <li class="nav-bar" id="add"><a href="#Add">Add</a></li>
                         <li class="nav-bar" id="delete"><a href="#Delete">Delete</a></li>
+                        <li class="nav-bar" id="documentation"><a href="#Documentation">Documentation</a></li>
                     </ul>
                 </div>
             </div>
@@ -92,7 +93,7 @@
                                 ?>
                             </select>
                             <button id="choose-region"class="btn btn-primary" type="button">View Totals</button>
-                            
+
                             <table id="searchRegionTable" class="table">
                                 <tr>
                                     <th>
@@ -203,7 +204,6 @@
         <div class="container">
             <div class="row">
                 <div class="col-mid-12">
-
                     <div class="chart">
                         <h1>Delete Area</h1>
                         <p>
@@ -269,6 +269,53 @@
             </div>
         </div>
     </div>
+    <div class="negative documentation-container standard-height" id="documentationContainer">
+        <div class="container">
+            <div class="row">
+                <div class="col-mid-12">
+
+                    <div class="chart">
+                        <h1>Documentation</h1>
+                        <?php include "../Views/Static/index.html" ?>
+                    </div>
+                    <div class="chart" id="">
+                        <p>More Documentation will go here</p>
+                        <h2>References</h2>
+                        <table class="table">
+                            <tr>
+                                <th>Resource</th>
+                                <th>Link</th>
+                            </tr>
+                            <tr>
+                                <td>Bootstrap - Footer</td>
+                                <td><a href="http://getbootstrap.com/examples/sticky-footer/">http://getbootstrap.com/examples/sticky-footer/</a></td>
+                            </tr>
+                            <tr>
+                                <td>Length of Javascript Object (ie. Associative Array)</td>
+                                <td><a href="http://stackoverflow.com/questions/5223/length-of-javascript-object-ie-associative-array">http://stackoverflow.com/questions/5223/length-of-javascript-object-ie-associative-array</a></td>
+                            </tr>
+                            <tr>
+                                <td>No7. The Past, Present & Future of Local Storage for Web Applications</td>
+                                <td><a href="http://diveintohtml5.info/storage.html">http://diveintohtml5.info/storage.html</a></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="row">
+                    <div class="col-mid-12">
+
+                        <div id="github stuff">
+                            <h1>Github stuff here!</h1>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <div id="footer" class="footer"> <!-- http://getbootstrap.com/examples/sticky-footer/ -->
     <div class="container">
@@ -279,7 +326,6 @@
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-<!--<script src="http://ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.6.2.js"></script>-->
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript" src="Views/Resources/JS/Charts.js"></script>
 <script type="text/javascript" src="Views/Resources/JS/Delete.js"></script>

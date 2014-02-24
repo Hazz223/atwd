@@ -40,7 +40,7 @@ class ConfigFileCreator {
 
             $nameNode->setAttribute("abrivated", $this->_getAbbrivatedName($title));
 
-            if (TitleInArray($title, $this->catagoryArray)) {
+            if ($this->TitleInArray($title, $this->catagoryArray)) {
                 $catagory = $title;
                 $nameNode->setAttribute("crimecatagory", $title);
                 $nameNode->setAttribute("type", $crimeType);
@@ -100,6 +100,17 @@ class ConfigFileCreator {
         }
 
         return strtolower($acronym);
+    }
+
+    private function TitleInArray($needle, $heystack) {
+        $cleanedNeedle = str_replace(" ", "", $needle);
+        foreach ($heystack as $data) {
+            $cleanedData = str_replace(" ", "", $data);
+            if ($cleanedNeedle === $cleanedData) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
