@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Description of InvalidCrimeData
+ * 
+ * @author hlp2-winser
+ */
+
 class InvalidCrimeData extends Exception{
     
     public function __construct($message) {

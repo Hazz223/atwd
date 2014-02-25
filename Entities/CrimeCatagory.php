@@ -1,16 +1,12 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of CrimeCatagory
- *
- * @author Harry
+ * This class represents a Crime Catagory object. It stores a list of Crime objects
+ * 
+ * @author hlp2-winser
  */
+
 class CrimeCatagory {
     private $name, $crimeType, $total, $crimeList = array();
     

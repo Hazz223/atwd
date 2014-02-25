@@ -1,16 +1,13 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of Area
- *
- * @author Harry
+ * This class represents an Area in the data
+ * It also stores crime data
+ * 
+ * @author hlp2-winser
  */
+
 class Area {
 
     private $name, $total, $crimeData = array(), $regionName, $properName;
