@@ -1,9 +1,0 @@
-ErrorDocument 404  /~hlp2-winser/atwd/Views/Errors/yrdy.php
-RewriteEngine On
-RewriteRule ^$ /~hlp2-winser/atwd/Controllers/HomeController\.php$ [NC,L]
-RewriteRule ^index\.php$ /~hlp2-winser/atwd/Controllers/HomeController\.php [NC,L]
-RewriteRule ^crimes/6-2013/(xml|json)$ /~hlp2-winser/atwd/Controllers/GetRequestController\.php?type=$1$ [NC,L]
-RewriteRule ^crimes/6-2013/([a-zA-Z_]*)/(xml|json)$  /~hlp2-winser/atwd/Controllers/GetRequestController\.php?region=$1&type=$2$ [NC,L]
-RewriteRule ^crimes/6-2013/delete/([a-zA-Z_]*)/(xml|json)$  /~hlp2-winser/atwd/Controllers/DeleteController\.php?data=$1&type=$2$ [NC,L]
-RewriteRule ^crimes/6-2013/put/([a-zA-Z_]*):([0-9]*)/(xml|json)$  /~hlp2-winser/atwd/Controllers/PutRequestController\.php?area=$1&data=$2&type=3$ [NC,L]
-RewriteRule ^crimes/6-2013/post/([a-zA-Z_]*)/([a-zA-Z_]*)/(([a-zA-Z_]*):([0-9]*-))*([a-zA-Z_]*):([0-9]*)/(xml|json)$  /~hlp2-winser/atwd/Controllers/PostRequestController\.php$ [NC,L]
