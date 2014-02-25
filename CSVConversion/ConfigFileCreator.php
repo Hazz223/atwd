@@ -1,37 +1,39 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of ConfigFileCreator
- *
+ * Used to create the Config file 
+ * Config knows where the XML is, as well as what the crime names are and
+ * their abreviations
+ * 
  * @author hlp2-winser
  */
 class ConfigFileCreator {
 
     private $titlesArray, $catagoryArray, $crimeHeadersArray, $xmlLocation, $configLocation;
+    private $cacheLocation, $doc;
 
-    function __construct($titlesArray, $catagoryArray, $crimeHeadersArray, $xmlLocation, $configLocation) {
+    function __construct($titlesArray, $catagoryArray, $crimeHeadersArray, $xmlLocation, $configLocation, $cacheLocation) {
         $this->titlesArray = $titlesArray;
         $this->catagoryArray = $catagoryArray;
         $this->crimeHeadersArray = $crimeHeadersArray;
         $this->xmlLocation = $xmlLocation;
         $this->configLocation = $configLocation;
+        $this->cacheLocation = $cacheLocation;
+
+        $this->doc = new DOMDocument();
     }
 
     function CreateConfigFile() {
-        $doc = new DOMDocument();
 
-        $rootNode = $doc->createElement("Config");
 
-        $abrivNode = $doc->createElement("CrimeAbriviations");
+        $rootNode = $this->doc->createElement("Config");
+
+        $abrivNode = $this->doc->createElement("CrimeAbriviations");
         $catagory = "";
         $crimeType = $this->crimeHeadersArray[2];
         foreach ($this->titlesArray as $title) {
-            $nameNode = $doc->createElement("Crime");
+            $nameNode = $this->doc->createElement("Crime");
             $nameNode->setAttribute("name", $title);
 
             if ($title === "Drug offences") {
@@ -40,7 +42,7 @@ class ConfigFileCreator {
 
             $nameNode->setAttribute("abrivated", $this->_getAbbrivatedName($title));
 
-            if ($this->TitleInArray($title, $this->catagoryArray)) {
+            if ($this->_titleInArray($title, $this->catagoryArray)) {
                 $catagory = $title;
                 $nameNode->setAttribute("crimecatagory", $title);
                 $nameNode->setAttribute("type", $crimeType);
@@ -54,22 +56,40 @@ class ConfigFileCreator {
             $abrivNode->appendChild($nameNode);
         }
 
-        $crimeDataNode = $doc->createElement("crime_data");
-        $testNode = $doc->createElement("stored_xml_location");
-
-        $text = $doc->createTextNode($this->xmlLocation);
-        $testNode->appendChild($text);
-        $crimeDataNode->appendChild($testNode);
+        // Create the location of the both the cache folder and the data xml file.
+        $crimeDataNode = $this->_createCrimeXMLNode();
+        $cacheDataNode = $this->_createCacheNode();
 
         $rootNode->appendChild($abrivNode);
         $rootNode->appendChild($crimeDataNode);
-        $doc->appendChild($rootNode);
-        $doc->save($this->configLocation);
+        $rootNode->appendChild($cacheDataNode);
+        $this->doc->appendChild($rootNode);
+        $this->doc->save($this->configLocation);
+    }
+
+    private function _createCrimeXMLNode() {
+        $crimeDataNode = $this->doc->createElement("crime_data");
+        $textNode = $this->doc->createElement("stored_xml_location");
+
+        $text = $this->doc->createTextNode($this->xmlLocation);
+        $textNode->appendChild($text);
+        $crimeDataNode->appendChild($textNode);
+        
+        return $crimeDataNode;
+    }
+
+    private function _createCacheNode() {
+        $cacheDataNode = $this->doc->createElement("cache_data_location");
+        $cacheDataText = $this->doc->createElement("stored_cache_location");
+
+        $cacheText = $this->doc->createTextNode($this->cacheLocation);
+        $cacheDataText->appendChild($cacheText);
+        $cacheDataNode->appendChild($cacheDataText);
+
+        return $cacheDataNode;
     }
 
     private function _getAbbrivatedName($name) {
-
-
         $acronym = "";
 
         $brokenName = explode(" ", $name);
@@ -102,7 +122,7 @@ class ConfigFileCreator {
         return strtolower($acronym);
     }
 
-    private function TitleInArray($needle, $heystack) {
+    private function _titleInArray($needle, $heystack) {
         $cleanedNeedle = str_replace(" ", "", $needle);
         foreach ($heystack as $data) {
             $cleanedData = str_replace(" ", "", $data);

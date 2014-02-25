@@ -1,7 +1,14 @@
 <?php
 
+/**
+ * Description of Conversion
+ * Used to convert the CSV to the XML
+ * 
+ * @author hlp2-winser
+ */
+
 require_once 'CSVToXML.php';
-$input = "data.csv"; // datafile
+$input = "data.csv";
 $xmlLocation = "../Data/CrimeStats.xml";
 
 if (($handle = fopen($input, "r")) !== FALSE) {
@@ -12,7 +19,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
     }
 
     $converter = new CSVToXML($dataArray, $xmlLocation);
-    $converter->CreateConfigFile();
+    $converter->CreateConfigFile("../Config/CrimeConfig.xml", "../Cache/CacheData/");
     
     $converter->CreateEnglandNode();
     $converter->CreateWalesNode();

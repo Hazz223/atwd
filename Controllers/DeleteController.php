@@ -1,7 +1,12 @@
 <?php
+/**
+ * Description of DeleteController
+ * The controller to Delete either a Region or Area from the data
+ * Based on their name
+ * 
+ * @author hlp2-winser
+ */
 
-$deleteItem = $_GET["data"];
-//I need to do a check to see if this is an area, region, country or furtherStat
 require_once '../Models/CountriesModel.php';
 require_once '../Models/RegionsModel.php';
 require_once '../Models/AreasModel.php';
@@ -10,25 +15,27 @@ require_once '../Entities/Area.php';
 require_once '../Entities/Region.php';
 require_once '../Entities/Country.php';
 
+$deleteItem = $_GET["data"];
+
 $countryModel = new CountriesModel();
 $regionModel = new RegionsModel();
 $areaModel = new AreasModel();
-$fStatsModel = new FurtherStatisticsModel();
 
 $hasDeleted = false;
 
 if ($areaModel->isArea($deleteItem)) {
-    $deletedArea = $areaModel->getAreaByName($deleteItem);
+    // if deleting an area
+    
+    $deletedArea = $areaModel->getAreaByName($deleteItem); // object before
+    
     $areaModel->DeleteArea($deleteItem);
 
-    $_SESSION["area"] = $deletedArea;
-    $englishRegions = $regionModel->getRegionsByCountry("ENGLAND");
-    $welshRegions = $regionModel->getRegionsByCountry("WALES");
-
-    $england = $countryModel->getCountryByName("ENGLAND");
+    $england = $countryModel->getCountryByName("ENGLAND"); // get country objects
     $wales = $countryModel->getCountryByName("WALES");
+    
     $combinedTotal = $wales->getTotal() + $england->getTotal();
 
+    $_SESSION["area"] = $deletedArea;
     $_SESSION["englandTotal"] = $england->getTotal();
     $_SESSION["combinedTotal"] = $combinedTotal;
     $_SESSION["type"] = $_GET["type"];
@@ -38,6 +45,8 @@ if ($areaModel->isArea($deleteItem)) {
 }
 
 if ($regionModel->isRegion($deleteItem)) {
+    // If region
+    
     $deletedRegion = $regionModel->getRegionByName($deleteItem);
     $areaNames = $deletedRegion->getAreaNames();
    
@@ -63,8 +72,7 @@ if ($regionModel->isRegion($deleteItem)) {
 }
 
 if (!$hasDeleted) {
-
-
+    // throw error if you can't find that area or region!
     $_SESSION["errorCode"] = 404;
     $_SESSION["errorMessage"] = "could not find area with name: " . $deleteItem;
     include "../Views/Errors/ErrorView.php";

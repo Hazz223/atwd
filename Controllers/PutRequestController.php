@@ -1,6 +1,13 @@
 <?php
 
-// This only works with areas
+/**
+ * Description of PutRequestController
+ * Controller that deals with the PUT request
+ * 
+ * @author hlp2-winser
+ */
+
+// This only works with areas and national stats
 // This doesn't work with wales.
 
 require_once '../Models/AreasModel.php';
@@ -23,7 +30,6 @@ try {
         $_SESSION["new"] = $new;
         $_SESSION["type"] = $type;
     } else {
-        
         if ($furtherStatsModel->isFurtherStat($areaName)) {
             $oldFurtherStat = $furtherStatsModel->getFurtherStatisticsByName($areaName);
             $furtherStatsModel->updateTotal($areaName, $data);

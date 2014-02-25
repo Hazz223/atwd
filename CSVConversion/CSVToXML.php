@@ -1,13 +1,9 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of CSVToXML
- *
+ * Object to allow you to convert the CSV data to XML
+ * 
  * @author hlp2-winser
  */
 require_once 'ConfigFileCreator.php';
@@ -15,10 +11,10 @@ require_once 'ConfigFileCreator.php';
 class CSVToXML {
 
     private $crimeHeadersArray, $catagoryArray, $titlesArray, $dataArray;
-    private $doc, $englandNode, $walesNode, $rootNode;
+    private $doc, $rootNode;
     private $xmlLocation;
 
-// Constructor - accepts the data array. Creates the doc component. 
+    // Constructor - accepts the data array. Creates the doc component. 
 
     function __construct($data, $location) {
         $this->dataArray = $data;
@@ -39,8 +35,8 @@ class CSVToXML {
             "Miscellaneous crimes against society",
             "Fraud"); // These are catagories. 
 
-        $this->titlesArray = $this->RemoveEmptyArraySlots($this->dataArray[4]);
-        $this->dataArray = $this->RemoveEmptyArraySlots($this->dataArray);
+        $this->titlesArray = $this->removeEmptyArraySlots($this->dataArray[4]);
+        $this->dataArray = $this->removeEmptyArraySlots($this->dataArray);
 
         $this->doc = new DOMDocument("1.0"); // need to put in the XML validation stuff
         $this->rootNode = $this->doc->createElement("CrimeStats");
@@ -48,74 +44,86 @@ class CSVToXML {
         $this->xmlLocation = $location;
     }
 
-    public function CreateConfigFile() {
-        
+    public function CreateConfigFile($xmlLocation, $cacheLocation) {
+
         $confCreator = new ConfigFileCreator(
                 $this->titlesArray, 
                 $this->catagoryArray, 
                 $this->crimeHeadersArray, 
                 $this->xmlLocation, 
-                "../Config/CrimeConfig.xml");
+                $xmlLocation, 
+                $cacheLocation);
 
-        $confCreator->CreateConfigFile(); // creates the config file.
+        $confCreator->CreateConfigFile();
     }
 
-    public function CreateWalesNode() {
-        $walesNode = $this->doc->createElement("Country");
-        $walesNode->setAttribute("name", "WALES");
-        $walesNode->setAttribute("proper_name", "Wales");
-
-        $regionNodes = $this->createCountryCrimeData(65, 70);
-
-        foreach ($regionNodes as $node) {
-            $walesNode->appendChild($node);
-        }
+    public function CreateWalesNode() {  // Although the same as England, it's nice to seperate them out.    
+        $walesNode = $this->_createCountryNode("WALES", "Wales", 65, 70);
 
         $this->rootNode->appendChild($walesNode);
     }
 
     public function CreateEnglandNode() {
-        $englandNode = $this->doc->createElement("Country");
-        $englandNode->setAttribute("name", "ENGLAND");
-        $englandNode->setAttribute("proper_name", "England");
-
-        $regionNodes = $this->createCountryCrimeData(5, 65);
-
-        foreach ($regionNodes as $node) {
-            $englandNode->appendChild($node);
-        }
+        $englandNode = $this->_createCountryNode("ENGLAND", "England", 5, 65);
 
         $this->rootNode->appendChild($englandNode);
     }
 
     public function CreateFurtherStatistics() {
 
-        $btpData = $this->RemoveEmptyArraySlots($this->dataArray[71]);
-        $afData = $this->RemoveEmptyArraySlots($this->dataArray[73]);
+        $btpData = $this->removeEmptyArraySlots($this->dataArray[71]);
+        $afData = $this->removeEmptyArraySlots($this->dataArray[73]);
 
-        $britishTrasportNode = $this->CreateFurtherStatisticsNode("british_transport_police", "British Transport Police", $btpData);
-        $actionFraudNode = $this->CreateFurtherStatisticsNode("action_fraud", "Action Fraud", $afData);
+        $britishTrasportNode = $this->_createFurtherStatisticsNode("british_transport_police", "British Transport Police", $btpData);
+        $actionFraudNode = $this->_createFurtherStatisticsNode("action_fraud", "Action Fraud", $afData);
 
         $this->rootNode->appendChild($britishTrasportNode);
         $this->rootNode->appendChild($actionFraudNode);
     }
 
-    private function createCountryCrimeData($lowerBound, $upperBound) {
+    public function SaveData() {
+
+        $this->doc->appendChild($this->rootNode);
+        $this->doc->save($this->xmlLocation);
+    }
+
+    public function DisplayXML() {
+        $this->doc->appendChild($this->rootNode);
+        header("Content-type: text/xml");
+        echo $this->doc->saveXML();
+    }
+
+    private function _createCountryNode($name, $properName, $lowerBound, $upperBound) {
+        $countryNode = $this->doc->createElement("Country");
+        $countryNode->setAttribute("name", $name);
+        $countryNode->setAttribute("proper_name", $properName);
+
+        $regionNodes = $this->_createCountryCrimeData($lowerBound, $upperBound);
+
+        foreach ($regionNodes as $node) {
+            $countryNode->appendChild($node);
+        }
+
+        return $countryNode;
+    }
+
+    // getsRegion and area data. Returns an aray of region Nodes
+    private function _createCountryCrimeData($lowerBound, $upperBound) {
         $areaArray = array();
         $regionArray = array();
         $rowCount = 0;
 
         foreach ($this->dataArray as $row) {
             if ($rowCount > $lowerBound && $rowCount < $upperBound) {
-                $row = $this->RemoveEmptyArraySlots($row);
+                $row = $this->removeEmptyArraySlots($row);
                 if (isset($row[0])) {
-                    if ($this->isRegion($rowCount)) {
+                    if ($this->_isRegion($rowCount)) {
                         if ($row[0] != "ENGLAND") {
-                            $regionArray[] = $this->CreateRegionNode($row, $areaArray);
+                            $regionArray[] = $this->_createRegionNode($row, $areaArray);
                             $areaArray = array(); // resets the array;
                         }
                     } else {
-                        $areaArray[] = $this->CreateAreaNode($row);
+                        $areaArray[] = $this->_createAreaNode($row);
                     }
                 }
             }
@@ -126,19 +134,19 @@ class CSVToXML {
         return $regionArray;
     }
 
-    private function isRegion($rowCount) {
+    private function _isRegion($rowCount) {
         return ($this->dataArray[$rowCount + 1][0] === "");
     }
 
-    private function CreateRegionNode($row, $areaArray) {
+    private function _createRegionNode($row, $areaArray) {
         $regionName = $row[0];
 
-        if ($regionName === "WALES") { // Needed to give wales region a good proper name
+        if ($regionName === "WALES") { // Needed to give wales region a differnet name, else it uts WALES
             $regionName = "Wales";
         }
 
         $regionNode = $this->doc->createElement("Region");
-        $nonRegionName = str_replace(" Region", "", $regionName);
+        $nonRegionName = str_replace(" Region", "", $regionName); // requirements show them without the term region. 
 
         $withUnderscores = str_replace(" ", "_", $nonRegionName);
         $regionNode->setAttribute("name", strtolower($withUnderscores));
@@ -151,7 +159,8 @@ class CSVToXML {
         return $regionNode;
     }
 
-    private function CreateAreaNode($row) {
+    // Creates a Area node - includes totals node, and all crime data stored
+    private function _createAreaNode($row) {
 
         // Creates a new area node, then returns it.
 
@@ -177,73 +186,49 @@ class CSVToXML {
         $areaNode->appendChild($totalWithCrime);
         $areaNode->appendChild($totalWithoutCrime);
 
-        // now need to loop through each of these ones to get the infomration required
-        $victimArray = $this->ExtractItemsFromArrayBetweenBounds(3, 18, $row);
-        $titleCount = 0;
-        $catagoryNode = null;
-        foreach ($victimArray as $data) {
-            // Works fine for victim stuff
-            if ($this->TitleInArray($this->titlesArray[$titleCount], $this->catagoryArray)) { // basically checks if it a new catagory
-                $newCatagoryNode = $this->doc->createElement("CrimeCatagory");
-                $newCatagoryNode->setAttribute("name", $this->titlesArray[$titleCount]);
-                $newCatagoryNode->setAttribute("Type", $this->crimeHeadersArray[2]);
-                $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
-                $catagoryNode = $newCatagoryNode;
-            } else {
-                if ($catagoryNode != null) {
-                    $crime = $this->doc->createElement("Crime"); // for the two totals
-                    $crime->setAttribute("name", $this->titlesArray[$titleCount]);
-                    $text = $this->doc->createTextNode(str_replace(",", "", $data));
-                    $crime->appendChild($text);
+        $victimArray = $this->_extractItemsFromArrayBetweenBounds(3, 18, $row);
 
-                    $catagoryNode->appendChild($crime);
-                }
-            }
-            $areaNode->appendChild($catagoryNode);
-            $titleCount++;
-        }
+        $areaNode = $this->_populateCountryCrimeData($areaNode, $victimArray, 0);
 
-        $fraudArray = $this->ExtractItemsFromArrayBetweenBounds(19, 24, $row);
-        $catagoryNode = null;
-        foreach ($fraudArray as $data) {
-            // Works fine for victim stuff
-            if ($this->TitleInArray($this->titlesArray[$titleCount], $this->catagoryArray)) { // basically checks if it a new catagory
-                $newCatagoryNode = $this->doc->createElement("CrimeCatagory");
+        $fraudArray = $this->_extractItemsFromArrayBetweenBounds(19, 24, $row);
+
+        $areaNode = $this->_populateCountryCrimeData($areaNode, $fraudArray, 16);
+
+        return $areaNode;
+    }
+
+    // Loop through the data, looking for catagories and crimes.  If catagory, we create it
+    // if crime, we append it to the current catagory. 
+    private function _populateCountryCrimeData($areaNode, $dataArray, $titleCount) {
+        foreach ($dataArray as $data) {
+            if ($this->_titleInArray($this->titlesArray[$titleCount], $this->catagoryArray)) {// Checks for catagory
+                $newCatagoryNode = $this->doc->createElement("CrimeCategory");
                 $newCatagoryNode->setAttribute("name", $this->titlesArray[$titleCount]);
                 $newCatagoryNode->setAttribute("Type", $this->crimeHeadersArray[3]);
                 $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
 
-                $catagoryNode = $newCatagoryNode;
+                $catNode = $newCatagoryNode;
             } else {
-                if ($catagoryNode != null) {
-                    $crime = $this->doc->createElement("Crime"); // for the two totals
+                // not a catagory, so adds it to the current catagory, catNode 
+                if ($catNode != null) {
+                    $crime = $this->doc->createElement("Crime");
                     $crime->setAttribute("name", $this->titlesArray[$titleCount]);
                     $text = $this->doc->createTextNode(str_replace(",", "", $data));
                     $crime->appendChild($text);
 
-                    $catagoryNode->appendChild($crime);
+                    $catNode->appendChild($crime);
                 }
             }
-            $areaNode->appendChild($catagoryNode);
+            $areaNode->appendChild($catNode);
             $titleCount++;
         }
 
         return $areaNode;
     }
 
-    public function SaveData() {
-
-        $this->doc->appendChild($this->rootNode);
-        $this->doc->save($this->xmlLocation);
-    }
-
-    public function DisplayXML() {
-        $this->doc->appendChild($this->rootNode);
-        header("Content-type: text/xml");
-        echo $this->doc->saveXML();
-    }
-
-    private function ExtractItemsFromArrayBetweenBounds($lowerBound, $upperBound, $array) {
+    // Takes in array, and creates a new array based on the upper and lower bounds of the current array
+    // useful for only getting select information from a large array
+    private function _extractItemsFromArrayBetweenBounds($lowerBound, $upperBound, $array) {
         $arrayPosition = 0;
         $newArray = array();
         foreach ($array as $data) {
@@ -256,7 +241,8 @@ class CSVToXML {
         return $newArray;
     }
 
-    private function TitleInArray($needle, $heystack) {
+    // had to write my own one, due to php's one not working as i expect it to. 
+    private function _titleInArray($needle, $heystack) {
         $cleanedNeedle = str_replace(" ", "", $needle);
         foreach ($heystack as $data) {
             $cleanedData = str_replace(" ", "", $data);
@@ -267,7 +253,7 @@ class CSVToXML {
         return false;
     }
 
-    private function RemoveEmptyArraySlots($array) {
+    private function removeEmptyArraySlots($array) {
         $newArray = array();
 
         foreach ($array as $data) {
@@ -279,7 +265,7 @@ class CSVToXML {
         return $newArray;
     }
 
-    private function CreateFurtherStatisticsNode($name, $properName, $row) {
+    private function _createFurtherStatisticsNode($name, $properName, $row) {
         $newNode = $this->doc->createElement("FurtherStatistics");
         $newNode->setAttribute("name", $name);
         $newNode->setAttribute("proper_name", $properName);
@@ -297,23 +283,22 @@ class CSVToXML {
         $newNode->appendChild($totalWithCrime);
         $newNode->appendChild($totalWithoutCrime);
 
-        $victimArray = $this->ExtractItemsFromArrayBetweenBounds(3, 18, $row);
+        $victimArray = $this->_extractItemsFromArrayBetweenBounds(3, 18, $row);
 
-        $newNode = $this->PopulateCrimeData($victimArray, $newNode, 0, $this->crimeHeadersArray[2]);
+        $newNode = $this->_populateNationalCrimeData($victimArray, $newNode, 0, $this->crimeHeadersArray[2]);
 
-        // Frad etc
-        $fraudArray = $this->ExtractItemsFromArrayBetweenBounds(19, 24, $row); // this now isn't working...
+        $fraudArray = $this->_extractItemsFromArrayBetweenBounds(19, 24, $row); // this now isn't working...
 
-        $newNode = $this->PopulateCrimeData($fraudArray, $newNode, 16, $this->crimeHeadersArray[3]);
+        $newNode = $this->_populateNationalCrimeData($fraudArray, $newNode, 16, $this->crimeHeadersArray[3]);
 
         return $newNode;
     }
 
-    private function PopulateCrimeData($array, $node, $titleCount, $type) {
+    private function _populateNationalCrimeData($array, $node, $titleCount, $type) {
         $catagoryNode = null;
         foreach ($array as $data) {
             if ($data != "..") {
-                if ($this->TitleInArray($this->titlesArray[$titleCount], $this->catagoryArray)) { // titleCount is going too far...
+                if ($this->_titleInArray($this->titlesArray[$titleCount], $this->catagoryArray)) { // titleCount is going too far...
                     $newCatagoryNode = $this->doc->createElement("CrimeCatagory");
                     $newCatagoryNode->setAttribute("name", $this->titlesArray[$titleCount]);
                     $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));

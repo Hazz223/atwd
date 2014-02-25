@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Description of PostRequestController
+ * Controller that deal with the Post request part of the project
+ * 
+ * @author hlp2-winser
+ */
+
 require_once '../Models/RegionsModel.php';
 require_once '../Models/AreasModel.php';
 require_once '../Models/CountriesModel.php';
@@ -11,14 +18,12 @@ require_once '../Entities/Crime.php';
 require_once '../Exceptions/AreaAlreadyExists.php';
 require_once '../Exceptions/InvalidCrimeData.php';
 
-$uriArray = DecodeRequestURI($_SERVER['REQUEST_URI']);
+$uriArray = DecodeRequestURI($_SERVER['REQUEST_URI']); // used to decode the url, instead of the htaccess
 
 $region = $uriArray[6];
 $newAreaName = $uriArray[7];
 $data = $uriArray[8];
 $viewType = $uriArray[9];
-
-
 
 try {
     $crimeDataAbrivated = DecodeCrimeData($data);
@@ -88,13 +93,15 @@ function DecodeRequestURI($uri) {
     return explode("/", $uri);
 }
 
-function DecodeCrimeData($data) { // h
+// finds each of the cimes in the URL, and creates an associative array based on it
+function DecodeCrimeData($data) { 
     $splitData = explode("-", $data);
     $crimeDataArray = array();
 
     foreach ($splitData as $crime) {
         $crimeArray = explode(":", $crime);
-        if(array_key_exists($crimeArray[0], $crimeDataArray)){
+        
+        if(array_key_exists($crimeArray[0], $crimeDataArray)){ // are there duplicate items in the array?
              throw new InvalidCrimeData("There are duplicate crimes in the url ['" . $crimeArray[0] . "']");
         }
         
@@ -103,11 +110,11 @@ function DecodeCrimeData($data) { // h
     return $crimeDataArray;
 }
 
+// Creates an array of crime objects.
 function CreateCrimeData($crimeDataArray) {
     $crimeConfigModel = new CrimeConfig();
 
-    $crimeArray = array(); // If catagory object, then we need to store it in here. 
-// If it's not, we need to find the catagory it belongs too, then append it to that one.
+    $crimeArray = array();
 
     foreach ($crimeDataArray as $name => $value) {
         if (!$crimeConfigModel->CheckIfCrimeCategory($name)) {
@@ -124,6 +131,8 @@ function CreateCrimeData($crimeDataArray) {
     return $crimeArray;
 }
 
+// Takes the crimedata and appends it to the correct Crime Catagory object.
+// then returns an array of crime catagory objects
 function CreateCrimeCategoryData($crimeDataArray) {
     $crimeConfigModel = new CrimeConfig();
 
@@ -141,15 +150,15 @@ function CreateCrimeCategoryData($crimeDataArray) {
     return $crimeCatArray;
 }
 
-function CheckForDuplicateInputs($crimeDataArray) {
-    $keyArray = array();
-
-    foreach ($crimeDataArray as $key => $value) {
-        
-        if (in_array($key, $keyArray)) {
-            throw new InvalidCrimeData("This crime[" . $key . "] already has data in the URL.");
-            
-        }
-        $keyArray[] = $key;
-    }
-}
+//function CheckForDuplicateInputs($crimeDataArray) {
+//    $keyArray = array();
+//
+//    foreach ($crimeDataArray as $key => $value) {
+//        
+//        if (in_array($key, $keyArray)) {
+//            throw new InvalidCrimeData("This crime[" . $key . "] already has data in the URL.");
+//            
+//        }
+//        $keyArray[] = $key;
+//    }
+//}

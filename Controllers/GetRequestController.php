@@ -1,7 +1,12 @@
 <?php
 
-// We can cache this by looking at the request, and then store it in a text file. 
-// check age of text file against the age of the XML file. If younger, serve it, if not, then delete and refresh.
+/**
+ * Description of GetRequestController
+ * The controller that gets the 'full' get request,
+ * or by region/national statistics
+ * 
+ * @author hlp2-winser
+ */
 
 require_once '../Models/RegionsModel.php';
 require_once '../Models/CountriesModel.php';
@@ -16,18 +21,21 @@ $regionModel = new RegionsModel();
 $fStatsModel = new FurtherStatisticsModel();
 $areasModel = new AreasModel();
 
-$responseXML = new DOMDocument();
+$responseXML = new DOMDocument("1.0");
 $base = $responseXML->createElement("reponse");
 
 $base->setAttribute("timestamp", date("YmdHi"));
 $crime = $responseXML->createElement("crimes");
 $crime->setAttribute("year", "6-2013");
+
 $type = $_GET["type"];
-if (isset($_GET["region"])) {
+
+if (isset($_GET["region"])) { // checks if it's a full get request, or just region
+    // either a region or a National Stat
     $givenRegionName = $_GET["region"];
 
     if ($fStatsModel->isFurtherStat($givenRegionName)) {
-        if ($cache->hasCacheFile($givenRegionName . "-cache", $type)) {
+        if ($cache->hasCacheFile($givenRegionName . "-cache", $type)) { // checks the cache
             $data = $cache->getCacheFile($givenRegionName . "-cache", $type);
             $_SESSION["data"] = $data;
             $_SESSION["type"] = $type;
@@ -54,6 +62,7 @@ if (isset($_GET["region"])) {
             }
         }
     } else {
+        // is a region
         if ($cache->hasCacheFile($givenRegionName . "-cache", $type)) {
             $data = $cache->getCacheFile($givenRegionName . "-cache", $type);
             $_SESSION["data"] = $data;
@@ -87,6 +96,7 @@ if (isset($_GET["region"])) {
         }
     }
 } else {
+    // full get request
     if ($cache->hasCacheFile("all-get", $type)) {
         $data = $cache->getCacheFile("all-get", $type);
         $_SESSION["data"] = $data;

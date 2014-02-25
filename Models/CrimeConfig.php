@@ -42,6 +42,11 @@ class CrimeConfig {
         
         return $nameNode->textContent; // returns the DataXML name!
     }
+    
+    public function GetCacheLocation(){
+        $nameNode = $this->xpath->query("cache_data_location/stored_cache_location")->item(0);
+        return $nameNode->textContent;
+    }
 
     public function GetCrimeCatagory($abName) {
         $crimeNode = $this->_getNodeOnAbName($abName);

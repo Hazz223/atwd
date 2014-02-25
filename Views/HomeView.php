@@ -319,6 +319,10 @@
                                 <td>Repo.js - Darcy Clarke</td>
                                 <td><a href="http://darcyclarke.me/dev/repojs/">http://darcyclarke.me/dev/repojs/</a></td>
                             </tr>
+                            <tr>
+                                <td>Stack Overflow: Deleting all files from a folder using php</td>
+                                <td><a href="http://stackoverflow.com/questions/4594180/deleting-all-files-from-a-folder-using-php">http://stackoverflow.com</a></td>
+                            </tr>
                         </table>
                     </div>
                 </div>
