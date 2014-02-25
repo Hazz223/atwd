@@ -3,7 +3,7 @@
 require_once 'ConfigFileCreator.php';
 $input = "data.csv"; // datafile
 
-$xmlLocation = "../Data/CrimeStats.xml";
+$xmlLocation = "../Data/CrimeStatsOld.xml";
 
 if (($handle = fopen($input, "r")) !== FALSE) {
     $dataArray = array();
@@ -29,6 +29,9 @@ if (($handle = fopen($input, "r")) !== FALSE) {
     $confCreator->CreateConfigFile(); // creates the config file.
 
     $doc = new DOMDocument("1.0");
+    
+    // need to set the validation file etc here
+    
 
     $rootNode = $doc->createElement("CrimeStats");
 
@@ -50,18 +53,25 @@ if (($handle = fopen($input, "r")) !== FALSE) {
     $actionFraudNode->setAttribute("name", "action_fraud");
     $actionFraudNode->setAttribute("proper_name", "Action Fraud");
 
-    $dataArray = RemoveEmptyArraySlots($dataArray); // does this even work?
+    $dataArray = RemoveEmptyArraySlots($dataArray); // cleans the array - removes any empty rows basically
 
 
     $rowCount = 0;
     $areaArray = array(); // need to seperate the correct regions out etc.
 
+    // plan for english function:
+    
+   // give it the dataArray - or just give it the range within the array that I'll accept?
+    // So larger than 5 but less than 75
+   
+    
+    
     foreach ($dataArray as $row) {
         $row = RemoveEmptyArraySlots($row);
         if ($rowCount > 5 && $rowCount < 75) {
-            if (isset($row[0])) {
-                if ($rowCount < 65) {
-                    if ($dataArray[$rowCount + 1][0] === "") {
+            if (isset($row[0])) { // checks to see if the data is set? If not, it'll keep cycling?
+                if ($rowCount < 65) { // english
+                    if ($dataArray[$rowCount + 1][0] === "") {  //Spots regions
                         if ($row[0] != "ENGLAND") {
                             $regionNode = $doc->createElement("Region");
                             $nonRegionName = str_replace(" Region", "", $row[0]);
@@ -151,7 +161,7 @@ if (($handle = fopen($input, "r")) !== FALSE) {
                         }
                     }
                 }
-
+                // All that was the english section.
                 if ($rowCount > 65 && $rowCount < 70) { // WALES SECTION
                     if ($dataArray[$rowCount + 1][0] === "") {
 
@@ -360,4 +370,9 @@ function CreateFurtherStatisticsNode($furtherStatsNode, $crimeHeadersArray, $tit
     $furtherStatsNode = PopulateCrimeData($fraudArray, $furtherStatsNode, $doc, 16, $titlesArray, $catagoryArray, $crimeHeadersArray[3]);
 
     return $furtherStatsNode;
+}
+
+
+function CreateCountryNodes(){
+    
 }

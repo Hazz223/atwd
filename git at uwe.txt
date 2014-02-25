@@ -1,0 +1,12 @@
+using git on UWE system:
+Look for git bash in the search
+Go to git repo. 
+
+push tfs repo to git hub with all information: git push -u https://<username>:<password>@github.com/Hazz223/<reponame>.git <branch name>
+
+Git hub also allows private projects!
+
+You can put two origins (maybe more) in the Remote part of the git config file. 
+url = <url>
+url = <url>
+Everything will now be pushed to both!

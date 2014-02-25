@@ -80,7 +80,7 @@ $("#submitCrime").click(function() {
         $("#addAreaTableContainer").removeClass("hidden");
         $("#addAreaRawContainer").removeClass("hidden");
 
-        $("#completedMessage").html("For the Region ["+regionName+"], a new Area [" + areaName + "] as been added. Please refresh the page to view the changes across the entire applcation.");
+        $("#completedMessage").html("<p>For the Region ["+regionName+"], a new Area [" + areaName + "] as been added. Please refresh the page to view the changes across the entire applcation.</p>");
 
         newAreaDataArray = new Object();
         newAreaName = "";

@@ -1,6 +1,7 @@
 <?php ?>
-
+<!DOCTYPE html>
 <html>
+    <meta charset="UTF-8">
     <head>
         <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
         <link href="Views/Resources/CSS/layout.css" rel="stylesheet">
@@ -19,6 +20,7 @@
                         <li class="nav-bar" id="add"><a href="#Add">Add</a></li>
                         <li class="nav-bar" id="delete"><a href="#Delete">Delete</a></li>
                         <li class="nav-bar" id="documentation"><a href="#Documentation">Documentation</a></li>
+                        <li class="nav-bar" id="source"><a href="#Source">Source Code</a></li>
                     </ul>
                 </div>
             </div>
@@ -40,23 +42,27 @@
                                 <div class="push"></div>
                             </div>
                         </div>
-                        <div class="chart-text data-box">
-                            <table id="totalRegionTable" class="table">
-                                <tr>
-                                    <th>
-                                        Name
-                                    </th>
-                                    <th>
-                                        Total
-                                    </th>
-                                </tr>
-                            </table>
-                        </div>
-                        <div class="chart-text data-box">
-                            <h3>Raw Data</h3>
-                            <pre id="regionTotalRaw">
+                    </div>
+                    <div class='row'>
+                        <div class='col-mid-12'>
+                            <div class="chart-text data-box">
+                                <table id="totalRegionTable" class="table">
+                                    <tr>
+                                        <th>
+                                            Name
+                                        </th>
+                                        <th>
+                                            Total
+                                        </th>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="chart-text data-box">
+                                <h3>Raw Data</h3>
+                                <pre id="regionTotalRaw">
                                 
-                            </pre>
+                                </pre>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -161,6 +167,12 @@
                     <div id="comeplted-add-area" class="chart hidden">
                         <h2>Completed</h2>
                         <div id="completedMessage"></div>
+                        <div>
+                            <p>
+                                For the changes to take affect, you need to refresh the page. Would you like to refresh the page?
+                                <button class="btn btn-success refresh-button">Refresh</button>
+                            </p>
+                        </div>
                     </div>
                     <div id="add-area-table" class="chart addResults hidden">
                         <h2 id="newAreaHeader" class="inlineHeaders"></h2><h4 id="regionHeader" class="inlineHeaders"></h4>
@@ -229,7 +241,6 @@
                         </p>
                         <div id="areaDelete" class="delete-option">
                             <p>
-
                                 <select id="deleteAreaSelect">
                                     <option>Pick an area</option>
                                     <?php
@@ -246,7 +257,10 @@
                         <h1 id="deleteHeader" class="inlineHeaders"></h1><h3 class="inlineHeaders"> has now been deleted</h3>
                         <div>
                             </br>
-                            <p>Would you like to refresh the page? </br><button id="refreshButton" class="btn btn-success">Refresh</button></p>
+                            <p>For the changes to take affect, you need to refresh the page. Would you like to refresh the page?
+                                </br>
+                                <button class="btn btn-success refresh-button">Refresh</button>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -279,7 +293,6 @@
                         <?php include "../Views/Static/index.html" ?>
                     </div>
                     <div class="chart" id="">
-                        <p>More Documentation will go here</p>
                         <h2>References</h2>
                         <table class="table">
                             <tr>
@@ -298,20 +311,33 @@
                                 <td>No7. The Past, Present & Future of Local Storage for Web Applications</td>
                                 <td><a href="http://diveintohtml5.info/storage.html">http://diveintohtml5.info/storage.html</a></td>
                             </tr>
+                            <tr>
+                                <td>Git Hub Viewer - James Dibble</td>
+                                <td><a href="https://github.com/james-dibble/AdvancedWebAssignment/blob/master/Public/script/views/documentation/index/doc.js">James dibble's project</a></td>
+                            </tr>
+                            <tr>
+                                <td>Repo.js - Darcy Clarke</td>
+                                <td><a href="http://darcyclarke.me/dev/repojs/">http://darcyclarke.me/dev/repojs/</a></td>
+                            </tr>
                         </table>
                     </div>
                 </div>
-
             </div>
+        </div>
+    </div>
+    <div class="positive standard-height" id="sourceContainer">
+        <div class="container">
             <div class="row">
-                <div class="row">
-                    <div class="col-mid-12">
-
-                        <div id="github stuff">
-                            <h1>Github stuff here!</h1>
+                <div class="col-mid-12">
+                    <div id="github stuff">
+                        <h1>Source Code</h1>
+                        <div id="repoBrowser" class="source-container"></div>
+                        <div>
+                            <h2>Download</h2>
+                            <p>You can download all of the source code here: <a href="#download">Download zip</a></p>
+                            <p>Or download the git repository here: <a href="https://github.com/Hazz223/atwd">Git Repository</a></p>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -334,6 +360,8 @@
 <script type="text/javascript" src="Views/Resources/JS/NavBar.js"></script>
 <script type="text/javascript" src="Views/Resources/JS/Search.js"></script>
 <script type="text/javascript" src="Views/Resources/JS/InitalSetup.js"></script>
+<script type="text/javascript" src="Views/Resources/JS/GitRepoDisplay.js"></script>
+<script type="text/javascript" src="Views/Resources/JS/RefreshButton.js"></script>
 <script type="text/javascript">
 
     // http://stackoverflow.com/questions/5223/length-of-javascript-object-ie-associative-array
