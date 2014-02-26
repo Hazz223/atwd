@@ -29,7 +29,7 @@ class AreasModel {
         }
 
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $totalNode = $xpath->query("cd:CrimeCatagory [@name='" . AreasModel::totalInFraudTitle . "']", $area)->item(0);
+        $totalNode = $xpath->query("CrimeCatagory [@name='" . AreasModel::totalInFraudTitle . "']", $area)->item(0);
 
         $newArea->setTotal($totalNode->getAttribute("total"));
         $newArea->setCrimeData($crimeDataArray);
@@ -39,7 +39,7 @@ class AreasModel {
 
     public function isArea($name) {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $result = $xpath->query("cd:Country/cd:Region/cd:area [@name='" . $name . "']")->item(0);
+        $result = $xpath->query("Country/Region/Area [@name='" . $name . "']")->item(0);
         return isset($result);
     }
 
@@ -83,7 +83,7 @@ class AreasModel {
         $area = $this->_getAreaNode($name);
 
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $totalNode = $xpath->query("cd:CrimeCatagory [@name='" . AreasModel::totalInFraudTitle . "']", $area)->item(0);
+        $totalNode = $xpath->query(" CrimeCatagory [@name='" . AreasModel::totalInFraudTitle . "']", $area)->item(0);
         $totalNode->setAttribute("total", $value);
         DataAccess::GetInstance()->saveXML();
     }
@@ -134,29 +134,22 @@ class AreasModel {
 
     private function _createCrimeCatagoryObject($node) {
 
-        //echo $node->getAttribute("name")."</br>";
-        
-        //var_dump($node);
-        
         $crimeCatObj = new CrimeCatagory();
 
         $crimeCatName = $node->getAttribute("name");
         $crimeCatObj->setName($node->getAttribute("name"));
         $crimeCatObj->setTotal($node->getAttribute("total"));
         $crimeCatObj->setCrimeType($node->getAttribute("type"));
-        
+
         if ($node->hasChildNodes()) {
             $crimeArray = array();
             $crimes = $node->childNodes;
-            //echo $crimes->item(0)->getAttribute("name"); // this is fucked... It doesn't udnerstand child nodes... 
-            //var_dump ($crimes);
             foreach ($crimes as $crime) {
-                echo $crime;
-//                $crimeObj = new Crime();
-//                $crimeObj->setName($crime->getAttribute("name"));
-//                $crimeObj->setValue($crime->textContent);
-//                $crimeObj->setCrimeCatagory($crimeCatName);
-//                $crimeArray[] = $crimeObj;
+                $crimeObj = new Crime();
+                $crimeObj->setName($crime->getAttribute("name"));
+                $crimeObj->setValue($crime->textContent);
+                $crimeObj->setCrimeCatagory($crimeCatName);
+                $crimeArray[] = $crimeObj;
             }
             $crimeCatObj->setCrimeList($crimeArray);
         }
@@ -166,7 +159,7 @@ class AreasModel {
 
     private function _getAreaNode($name) {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $node = $xpath->query("cd:Country/cd:Region/cd:Area [@name='" . $name . "']")->item(0); // this is returning a domtext. Instead of a node.. WHY?!
+        $node = $xpath->query("Country/Region/Area [@name='" . $name . "']")->item(0);
         if (isset($node)) {
             return $node;
         } else {

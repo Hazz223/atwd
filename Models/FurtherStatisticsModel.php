@@ -64,7 +64,7 @@ class FurtherStatisticsModel {
     public function isFurtherStat($name) {
         $cleanedName = str_replace(" ", "_", $name);
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $statNode = $xpath->query("cd:FurtherStatistics [@name='" . $cleanedName . "']")->item(0);
+        $statNode = $xpath->query("FurtherStatistics [@name='" . $cleanedName . "']")->item(0);
         return isset($statNode);
     }
 
@@ -81,7 +81,7 @@ class FurtherStatisticsModel {
         $name = str_replace(" ", "_", $name);
 
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $furtherStat = $xpath->query("cd:FurtherStatistics [@name='" . strtolower($name) . "']")->item(0);
+        $furtherStat = $xpath->query("FurtherStatistics [@name='" . strtolower($name) . "']")->item(0);
         
         if(isset($furtherStat)){
             return $furtherStat;
@@ -93,7 +93,7 @@ class FurtherStatisticsModel {
     
     private function _getTotalNode($node){
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $totalNode = $xpath->query("cd:CrimeCatagory [@name='Total recorded crime - including fraud']", $node)->item(0);
+        $totalNode = $xpath->query("CrimeCatagory [@name='Total recorded crime - including fraud']", $node)->item(0);
         
         return $totalNode;
     }
