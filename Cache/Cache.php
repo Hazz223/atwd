@@ -18,8 +18,8 @@ class Cache {
     function __construct() {
         // create the config object, and then get the data we need
         $crimeConfig = new CrimeConfig();
-        $this->xmlLocation = $crimeConfig->GetDataXMLName();
-        $this->cacheLocation = $crimeConfig->GetCacheLocation();
+        $this->xmlLocation = $crimeConfig->getDataXMLName();
+        $this->cacheLocation = $crimeConfig->getCacheLocation();
     }
 
     public function hasCacheFile($name, $type) {

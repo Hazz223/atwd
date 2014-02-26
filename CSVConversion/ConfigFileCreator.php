@@ -21,7 +21,7 @@ class ConfigFileCreator {
         $this->configLocation = $configLocation;
         $this->cacheLocation = $cacheLocation;
 
-        $this->doc = new DOMDocument();
+        $this->doc = new DOMDocument("1.0");
     }
 
     function CreateConfigFile() {

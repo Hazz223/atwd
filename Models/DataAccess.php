@@ -20,9 +20,12 @@ class DataAccess {
 
     private function __construct() {
             $crimeConf = new CrimeConfig();
-            $this->xmlFileName = $crimeConf->GetDataXMLName();
+            $this->xmlFileName = $crimeConf->getDataXMLName();
             $this->xml = new DOMDocument();
             $this->xml->load($this->xmlFileName); // gets the name from the config
+            
+            // I have a schema to validate against, but didn't have the time to 
+            // Implement it. Real shame.
     }
     
     //Creates/gets the only instance of this data

@@ -122,8 +122,8 @@ function CreateCrimeData($crimeDataArray) {
             $newCrime = new Crime();
             $newCrime->setName($crimeConfigModel->getCrimeName($name));
             $newCrime->setValue($value);
-            $newCrime->setCrimeCatagory($crimeConfigModel->GetCrimeCatagory($name));
-            $newCrime->setCrimeType($crimeConfigModel->GetCrimeType($name));
+            $newCrime->setCrimeCatagory($crimeConfigModel->getCrimeCatagory($name));
+            $newCrime->setCrimeType($crimeConfigModel->getCrimeType($name));
             $crimeArray[] = $newCrime;
         }
     }
@@ -143,7 +143,7 @@ function CreateCrimeCategoryData($crimeDataArray) {
             $newCrimeCat = new CrimeCatagory();
             $newCrimeCat->setTotal($value);
             $newCrimeCat->setName($crimeConfigModel->getCrimeName($name));
-            $newCrimeCat->setCrimeType($crimeConfigModel->GetCrimeType($name));
+            $newCrimeCat->setCrimeType($crimeConfigModel->getCrimeType($name));
             $crimeCatArray[] = $newCrimeCat;
         }
     }

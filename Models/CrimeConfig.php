@@ -52,27 +52,27 @@ class CrimeConfig {
     }
     
     // Gets the location of the overal XML data
-    public function GetDataXMLName(){
+    public function getDataXMLName(){
         $nameNode = $this->xpath->query("crime_data/stored_xml_location")->item(0); // should get the node.
         
         return $nameNode->textContent; // returns the DataXML name!
     }
     
     // Gets where the cache is being stored
-    public function GetCacheLocation(){
+    public function getCacheLocation(){
         $nameNode = $this->xpath->query("cache_data_location/stored_cache_location")->item(0);
         return $nameNode->textContent;
     }
 
     // Gets the crime catagory name based on its abbreviated name
-    public function GetCrimeCatagory($abName) {
+    public function getCrimeCatagory($abName) {
         $crimeNode = $this->_getNodeOnAbName($abName);
 
         return $crimeNode->getAttribute("crimecatagory");
     }
 
     // Gets the crime type based on the abbreviated name
-    public function GetCrimeType($abName) {
+    public function getCrimeType($abName) {
         $crimeNode = $this->_getNodeOnAbName($abName);
         return $crimeNode->getAttribute("type");
     }

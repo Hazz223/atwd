@@ -14,7 +14,7 @@ $date = $_GET["date"];
 
 $crimeConf = new CrimeConfig();
 
-$fileLastMod = filemtime($crimeConf->GetDataXMLName());
+$fileLastMod = filemtime($crimeConf->getDataXMLName());
 
 $_SESSION["result"] = ($date > $fileLastMod);
 $_SESSION["lastModified"] = $fileLastMod;
