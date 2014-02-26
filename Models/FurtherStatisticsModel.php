@@ -48,10 +48,19 @@ class FurtherStatisticsModel {
         $furtherStatObj->setTotal($total);
 
         $crimes = $furtherStatNode->getElementsByTagName("Crime");
-
-        // Creates an array - key = Crime name, value is crime value... Does this then not include crime catagories?  
+        
         $crimeStatsArray = array();
-        foreach ($crimes as $crime) {
+        
+        $crimeCatagories = $furtherStatNode->getElementsByTagName("CrimeCatagory");
+        
+        // Adds crime data to the Object
+        foreach ($crimeCatagories as $crimeCats) {
+            if(!$crimeCats->hasChildNodes()){ // need to make sure that it doesn't have children
+                $crimeStatsArray[$crimeCats->getAttribute("name")] = intval($crimeCats->getAttribute("total"));
+            }
+        }
+        
+        foreach ($crimes as $crime) { // this sorts all of the crime cats with children.
             $crimeStatsArray[$crime->getAttribute("name")] = $crime->textContent;
         }
 
