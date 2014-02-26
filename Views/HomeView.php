@@ -367,6 +367,10 @@
                                 <td>Stack Overflow: Jquery refresh reload the page on clicking a button</td>
                                 <td><a href="http://stackoverflow.com/questions/19207781/jquery-refresh-reload-the-page-on-clicking-a-button">http://stackoverflow.com</a></td>
                             </tr>
+                            <tr>
+                                <td>.htaccess information</td>
+                                <td><a href="http://httpd.apache.org/docs/current/howto/htaccess.html">http://httpd.apache.org/docs/current/howto/htaccess.html</a></td>
+                            </tr>
                             
                         </table>
                     </div>
