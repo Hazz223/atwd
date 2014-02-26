@@ -13,6 +13,7 @@
  */
 require_once 'CrimeConfig.php';
 require_once '../Exceptions/XMLDataNotFound.php';
+require_once '../Exceptions/SchemaValidationException.php';
 
 class DataAccess {
 
@@ -21,10 +22,14 @@ class DataAccess {
     private static $instance;
 
     private function __construct() {
-            $crimeConf = new CrimeConfig();
-            $this->xmlFileName = $crimeConf->GetDataXMLName();
-            $this->xml = new DOMDocument();
-            $this->xml->load($this->xmlFileName); // gets the name from the config
+        $crimeConf = new CrimeConfig();
+        $this->xmlFileName = $crimeConf->GetDataXMLName(); 
+        $this->xml = new DOMDocument();
+        $this->xml->load($this->xmlFileName); // gets the name from the config
+
+        if (! $this->xml->schemaValidate("../Data/CrimeStats.xsd")){ // Doesn't validate. 
+            throw new SchemaValidationError("CrimeStats XML failed to validate");
+        } 
     }
 
     public static function GetInstance() { // solves the issue of he file not updating fast enough

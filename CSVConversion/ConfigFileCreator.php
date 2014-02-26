@@ -76,7 +76,8 @@ class ConfigFileCreator {
         $this->rootNode->appendChild($crimeDataNode);
         $this->rootNode->appendChild($cacheDataNode);
         $this->doc->appendChild($this->rootNode);
-        $this->doc->save($this->configLocation);
+        $this->doc->save($this->configLocation);        
+       
     }
 
     private function _createCrimeXMLNode() {

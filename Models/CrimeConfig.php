@@ -1,5 +1,6 @@
 <?php
 
+require_once '../Exceptions/SchemaValidationException.php';
 class CrimeConfig {
 
     private $configXml, $xpath;
@@ -7,11 +8,20 @@ class CrimeConfig {
     public function __construct() {
         $this->configXml = new DOMDocument();
         $this->configXml->load("../Config/CrimeConfig.xml");
+        
+        if($this->configXml->schemaValidate("../Config/CrimeConfig.xsd")){ // doesn't validate
+            $this->xpath = new DOMXpath($this->configXml);
+        }
+        else{
+           throw new SchemaValidationError("CrimeConfig XML failed to validate");
+        }
+        
         $this->xpath = new DOMXpath($this->configXml);
+        
     }
 
     public function getCrimeName($abName) {
-        $crimeNode = $this->_getNodeOnAbName($abName);
+        $crimeNode = $this->_getNodeOnAbName($abName); // not returning a node
 
         return $crimeNode->getAttribute("name");
     }
@@ -38,13 +48,14 @@ class CrimeConfig {
     }
     
     public function GetDataXMLName(){
-        $nameNode = $this->xpath->query("crime_data/stored_xml_location")->item(0); // should get the node.
+       
+        $nameNode = $this->xpath->query("cd:crime_data/cd:stored_xml_location")->item(0); // should get the node.
         
-        return $nameNode->textContent; // returns the DataXML name!
+        return $nameNode->textContent; // Doesn't bloody work!
     }
     
     public function GetCacheLocation(){
-        $nameNode = $this->xpath->query("cache_data_location/stored_cache_location")->item(0);
+        $nameNode = $this->xpath->query("cd:cache_data_location/cd:stored_cache_location")->item(0);
         return $nameNode->textContent;
     }
 
@@ -82,6 +93,6 @@ class CrimeConfig {
     }
 
     private function _getNodeOnAbName($abName) {
-        return $this->xpath->query("CrimeAbriviations/Crime [@abrivated='" . $abName . "']")->item(0);
+        return $this->xpath->query("cd:CrimeAbriviations/cd:Crime [@abrivated='" . $abName . "']")->item(0);
     }
 }

@@ -52,14 +52,14 @@ class RegionsModel {
         $cleanedName = str_replace(" ", "_", $name);
         $cleanedName = strtolower($cleanedName);
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $regionNode = $xpath->query("Country/Region [@name='" . $cleanedName . "']")->item(0);
+        $regionNode = $xpath->query("cd:Country/cd:Region [@name='" . $cleanedName . "']")->item(0);
         return isset($regionNode);
     }
 
     public function getRegionsByCountry($countryName) {
         try{
             $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-            $countryNode = $xpath->query("Country [@name='" . $countryName . "']")->item(0);
+            $countryNode = $xpath->query("cd:Country [@name='" . $countryName . "']")->item(0);
         } catch (FieldNotFoundException $ex) {
             throw new FieldNotFoundException("Failed to find country with name: ".$countyName);
         }
@@ -83,7 +83,7 @@ class RegionsModel {
 
     private function _areaExists($name) {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $exists = $xpath->query("Country/Region/area [@name='" . $name . "']")->item(0);
+        $exists = $xpath->query("cd:Country/cd:Region/cd:area [@name='" . $name . "']")->item(0);
         return isset($exists);
     }
 
@@ -93,7 +93,7 @@ class RegionsModel {
         $regionTotal = 0;
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         foreach ($areas as $area) {
-            $totalNode = $xpath->query("CrimeCatagory [@name='Total recorded crime - including fraud']", $area)->item(0);
+            $totalNode = $xpath->query("cd:CrimeCatagory [@name='Total recorded crime - including fraud']", $area)->item(0);
 
             $regionTotal = $regionTotal + intval($totalNode->getAttribute("total")); // not working?
         }
@@ -104,7 +104,7 @@ class RegionsModel {
     public function _getRegionNode($regionName) {
         $name = str_replace(" ", "_", $regionName);
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $regionNode = $xpath->query("Country/Region [@name='" .strtolower($name). "']")->item(0);
+        $regionNode = $xpath->query("cd:Country/cd:Region [@name='" .strtolower($name). "']")->item(0);
         if(isset($regionNode)){
             return $regionNode;
         }

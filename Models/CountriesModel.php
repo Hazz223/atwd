@@ -75,6 +75,6 @@ class CountriesModel {
     
     private function _getCountryNode($name){
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        return $xpath->query("Country [@name='" . $name . "']")->item(0);
+        return $xpath->query("cd:Country [@name='" . $name . "']")->item(0);
     }
 }
