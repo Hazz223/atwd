@@ -198,7 +198,7 @@ class CSVToXML {
     private function _populateCountryCrimeData($areaNode, $dataArray, $titleCount) {
         foreach ($dataArray as $data) {
             $dataName = $this->_removeExtraWhiteSpace($this->titlesArray[$titleCount]);
-            
+
             if ($this->_titleInArray($dataName, $this->catagoryArray)) {// Checks for catagory
                 $newCatagoryNode = $this->doc->createElement("CrimeCategory");
                 $newCatagoryNode->setAttribute("name", $dataName);
@@ -263,6 +263,7 @@ class CSVToXML {
         return $newArray;
     }
 
+    // Creates the Further statisic node using a name, a proper name, and the row it's on
     private function _createFurtherStatisticsNode($name, $properName, $row) {
         $newNode = $this->doc->createElement("FurtherStatistics");
         $newNode->setAttribute("name", $name);
@@ -273,39 +274,42 @@ class CSVToXML {
         $totalWithCrime->setAttribute("type", "Totals");
         $totalWithCrime->setAttribute("total", str_replace(",", "", $row[1]));
 
-        $totalWithoutCrime = $this->doc->createElement("CrimeCatagory");
-        $totalWithoutCrime->setAttribute("name", $this->crimeHeadersArray[1]);
-        $totalWithoutCrime->setAttribute("type", "Totals");
-        $totalWithoutCrime->setAttribute("total", str_replace(",", "", $row[2]));
-
         $newNode->appendChild($totalWithCrime);
-        $newNode->appendChild($totalWithoutCrime);
+        
+        if ($row[2] != "..") { // need to watch out for dots
+            $totalWithoutCrime = $this->doc->createElement("CrimeCatagory");
+            $totalWithoutCrime->setAttribute("name", $this->crimeHeadersArray[1]);
+            $totalWithoutCrime->setAttribute("type", "Totals");
+            $totalWithoutCrime->setAttribute("total", str_replace(",", "", $row[2]));
+            $newNode->appendChild($totalWithoutCrime);
+        }
 
         $victimArray = $this->_extractItemsFromArrayBetweenBounds(3, 18, $row);
 
-        $newNode = $this->_populateNationalCrimeData($victimArray, $newNode, 0, $this->crimeHeadersArray[2]);
+        $newNode = $this->_populateFurtherStatisticData($victimArray, $newNode, 0, $this->crimeHeadersArray[2]);
 
-        $fraudArray = $this->_extractItemsFromArrayBetweenBounds(19, 24, $row); // this now isn't working...
+        $fraudArray = $this->_extractItemsFromArrayBetweenBounds(19, 24, $row);
 
-        $newNode = $this->_populateNationalCrimeData($fraudArray, $newNode, 16, $this->crimeHeadersArray[3]);
+        $newNode = $this->_populateFurtherStatisticData($fraudArray, $newNode, 16, $this->crimeHeadersArray[3]);
 
         return $newNode;
     }
-
-    private function _populateNationalCrimeData($array, $node, $titleCount, $type) {
+    
+    // Populates the FurtherStatistic node with it's data
+    private function _populateFurtherStatisticData($array, $node, $titleCount, $type) {
         $catagoryNode = null;
         foreach ($array as $data) {
-            if ($data != "..") {
-                if ($this->_titleInArray($this->titlesArray[$titleCount], $this->catagoryArray)) { // titleCount is going too far...
+            if ($data != "..") { // watch out for dots
+                if ($this->_titleInArray($this->titlesArray[$titleCount], $this->catagoryArray)) { // if its a catagory
                     $newCatagoryNode = $this->doc->createElement("CrimeCatagory");
-                    $newCatagoryNode->setAttribute("name", $this->titlesArray[$titleCount]);
+                    $newCatagoryNode->setAttribute("name", $this->_removeExtraWhiteSpace($this->titlesArray[$titleCount]));
                     $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
                     $newCatagoryNode->setAttribute("type", $type);
                     $catagoryNode = $newCatagoryNode;
-                } else {
+                } else { // just a crime, not a catagory
                     if ($catagoryNode != null) {
                         $crime = $this->doc->createElement("Crime");
-                        $crime->setAttribute("name", $this->titlesArray[$titleCount]);
+                        $crime->setAttribute("name", $this->_removeExtraWhiteSpace($this->titlesArray[$titleCount]));
                         $text = $this->doc->createTextNode(str_replace(",", "", $data));
                         $crime->appendChild($text);
 
@@ -323,8 +327,8 @@ class CSVToXML {
 
     private function _removeExtraWhiteSpace($data) {
         //http://stackoverflow.com/questions/1703320/remove-excess-whitespace-from-within-a-string
-        $cleanedData = preg_replace( '/\s+/', ' ', $data );
-        
+        $cleanedData = preg_replace('/\s+/', ' ', $data);
+
         return $cleanedData;
     }
 
