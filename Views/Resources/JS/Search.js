@@ -49,5 +49,7 @@ function CreateRegionCharts(region, title) {
                 title,
                 "Region Name",
                 "Total Including Fraud");
+    }).fail(function(data){
+        alert("Error Occured. Failed to search for data");
     });
 }

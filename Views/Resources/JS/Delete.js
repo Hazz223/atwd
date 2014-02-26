@@ -99,5 +99,8 @@ $(".deleteButton").click(function() {
         $("#deleteRawContainer").removeClass("hidden");
         deleteSelect = "";
 
+    }).fail(function(data){
+        // Rubbish error stuff, ran out of time
+        alert("Error occured. Failed to Delete region");
     });
 });

@@ -28,6 +28,10 @@ function PerformInitalPageSetup() {
                     console.log("Data stored is not up to date...");
                     DoCleanSetup();
                 }
+            }).fail(function(data){
+                // rubbish, but ran out of time
+                alert("Error occured. Failed to compare local data against Server data");
+                DoCleanSetup();
             });
         }
         else {
