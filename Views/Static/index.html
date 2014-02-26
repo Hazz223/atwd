@@ -1,10 +1,11 @@
 <div>
-<p>From this project, I’ve learned a lot and increased a number of my skills.</p>
 <p>
-For starters, my PHP coding has improved greatly. Originally, my PHP coding was limited to simple scripts that worked more in a functional programming paradigm. However, with this project, I decided to apply my knowledge of design patterns and techniques that I’ve used in other languages – such as OO. I’ve also learned far more about using XML within PHP. The DomDocument and XPath objects are both powerful and exceptionally useful, once you’ve gotten past the initial learning curve.  
+From this project, I’ve learned a lot and increased a number of my skills.
 </p>
 <p>
-I used two main patterns when building this project – MVC and the Singleton pattern. The former was used as the overall architecture for the project, while the latter was used to regulate the usage of the central data XML file. I found that if I used php to update the XML file, and then tried to access this new information right away, it wouldn’t appear. I decided this was probably due to instances of the XML file stored depending on the PHP object. Converting it to use the Singleton pattern meant that it was always accessing the same instance of the XML document, and so would always have the most up to date information. 
+For starters, my PHP coding has improved greatly. Originally, my PHP coding was limited to simple scripts that worked more in a functional programming paradigm. However, with this project, I decided to apply my knowledge of design patterns and techniques that I’ve used in other languages – such as OO. I’ve also learned far more about using XML within PHP. The DomDocument and XPath objects are both powerful and exceptionally useful, once you’ve gotten past the initial learning curve.  
+I used two main patterns when building this project – MVC and the Singleton pattern. The former was used as the overall architecture for the project, while the latter was used to regulate the usage of the central data XML file. I found that if I used PHP to update the XML file, and then tried to access this new information right away, it wouldn’t appear. I decided this was due to instances of the XML file stored depending on the PHP object. 
+Getting to learn about .htaccess was also very interesting, and has helped with my final year project. 
 </p>
 <p>
 The structure of the XML files as a bit confusing, and ultimately I decided on a structure that informed the structure of the data from a human perspective. Countries contain regions; regions contain areas, and so on.
@@ -16,10 +17,20 @@ I also learned several things with regards to the client side implementation –
 There were however a number of problems with the project; the main being the specification. Repeatedly I hit a “brick wall” where my proposed architecture had to be changed due to a new interpretation of the specification. This is most noticeable with the way Wales is handled. In the CSV data given, it behaves like a region but is also like a country. This lack of clarity early on meant I spent longer than I should have defining and deciding on my architecture.
 </p>
 <p>
+I also found it hard to find the time to get everything I wanted to do complete, such as the xml validation and client side errors. I’ve created an XSLT schema for both the Data and the Configuration xml files, but they currently aren’t used to check.
+</p>
+<p>
+ A list of things to note about my interpretation of the system:
+ <ul>
+ <li>Post only allows Regions to have areas added</li>
+ <li>Put Only allows the update of National Statistics and Areas</li>
+ <li>You can delete Regions and Areas</li>
+ </ul>
+</p>
+<p>
 The CSV data isn’t particularly nice either. It isn’t very consistent, and as a result made it hard to decode using a generic script. I ended up writing a very “rigid” script, that might possibly only work for this particular CSV file.
 </p>
 <p>
-Overall I enjoyed working on this project and learned a lot from it. It’s given me different view of REST Architecture, and shown RESTs potential. However, I feel the lack of clear specification holds back the project from focusing on the REST architecture, and instead focuses more on how to understand the confusing data. 
+Overall I enjoyed working on this project and learned a lot from it. It’s given me different view of REST Architecture, and shown RESTs potential. 
 </p>
 </div>
-
