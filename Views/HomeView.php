@@ -323,6 +323,10 @@
                                 <td>Stack Overflow: Deleting all files from a folder using php</td>
                                 <td><a href="http://stackoverflow.com/questions/4594180/deleting-all-files-from-a-folder-using-php">http://stackoverflow.com</a></td>
                             </tr>
+                            <tr>
+                                <td>Stack Overflow: Remove Excess White Space from WIthin a String</td>
+                                <td><a href="http://stackoverflow.com/questions/1703320/remove-excess-whitespace-from-within-a-string">http://stackoverflow.com</a></td>
+                            </tr>
                         </table>
                     </div>
                 </div>

@@ -26,7 +26,8 @@ class CSVToXML {
 
         $this->catagoryArray = array(
             "Violence against the person",
-            "Sexual offences", "Robbery",
+            "Sexual offences",
+            "Robbery",
             "Theft offences",
             "Criminal damage and arson",
             "Drug offences",
@@ -47,12 +48,7 @@ class CSVToXML {
     public function CreateConfigFile($xmlLocation, $cacheLocation) {
 
         $confCreator = new ConfigFileCreator(
-                $this->titlesArray, 
-                $this->catagoryArray, 
-                $this->crimeHeadersArray, 
-                $this->xmlLocation, 
-                $xmlLocation, 
-                $cacheLocation);
+                $this->titlesArray, $this->catagoryArray, $this->crimeHeadersArray, $this->xmlLocation, $xmlLocation, $cacheLocation);
 
         $confCreator->CreateConfigFile();
     }
@@ -201,9 +197,11 @@ class CSVToXML {
     // if crime, we append it to the current catagory. 
     private function _populateCountryCrimeData($areaNode, $dataArray, $titleCount) {
         foreach ($dataArray as $data) {
-            if ($this->_titleInArray($this->titlesArray[$titleCount], $this->catagoryArray)) {// Checks for catagory
+            $dataName = $this->_removeExtraWhiteSpace($this->titlesArray[$titleCount]);
+            
+            if ($this->_titleInArray($dataName, $this->catagoryArray)) {// Checks for catagory
                 $newCatagoryNode = $this->doc->createElement("CrimeCategory");
-                $newCatagoryNode->setAttribute("name", $this->titlesArray[$titleCount]);
+                $newCatagoryNode->setAttribute("name", $dataName);
                 $newCatagoryNode->setAttribute("Type", $this->crimeHeadersArray[3]);
                 $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
 
@@ -212,7 +210,7 @@ class CSVToXML {
                 // not a catagory, so adds it to the current catagory, catNode 
                 if ($catNode != null) {
                     $crime = $this->doc->createElement("Crime");
-                    $crime->setAttribute("name", $this->titlesArray[$titleCount]);
+                    $crime->setAttribute("name", $dataName);
                     $text = $this->doc->createTextNode(str_replace(",", "", $data));
                     $crime->appendChild($text);
 
@@ -321,6 +319,13 @@ class CSVToXML {
         }
 
         return $node;
+    }
+
+    private function _removeExtraWhiteSpace($data) {
+        //http://stackoverflow.com/questions/1703320/remove-excess-whitespace-from-within-a-string
+        $cleanedData = preg_replace( '/\s+/', ' ', $data );
+        
+        return $cleanedData;
     }
 
 }

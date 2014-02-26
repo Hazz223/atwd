@@ -33,18 +33,21 @@ class ConfigFileCreator {
         $catagory = "";
         $crimeType = $this->crimeHeadersArray[2];
         foreach ($this->titlesArray as $title) {
+            
+            $cleanedTitle = $this->_removeExtraWhiteSpace($title);
+            
             $nameNode = $this->doc->createElement("Crime");
-            $nameNode->setAttribute("name", $title);
+            $nameNode->setAttribute("name", $cleanedTitle);
 
-            if ($title === "Drug offences") {
+            if ($cleanedTitle === "Drug offences") {
                 $crimeType = $this->crimeHeadersArray[3];
             }
 
-            $nameNode->setAttribute("abrivated", $this->_getAbbrivatedName($title));
+            $nameNode->setAttribute("abrivated", $this->_getAbbrivatedName($cleanedTitle));
 
-            if ($this->_titleInArray($title, $this->catagoryArray)) {
-                $catagory = $title;
-                $nameNode->setAttribute("crimecatagory", $title);
+            if ($this->_titleInArray($cleanedTitle, $this->catagoryArray)) {
+                $catagory = $cleanedTitle;
+                $nameNode->setAttribute("crimecatagory", $cleanedTitle);
                 $nameNode->setAttribute("type", $crimeType);
                 $nameNode->setAttribute("iscrimecatagory", "true");
             } else {
@@ -131,6 +134,13 @@ class ConfigFileCreator {
             }
         }
         return false;
+    }
+    
+    private function _removeExtraWhiteSpace($data) {
+        //http://stackoverflow.com/questions/1703320/remove-excess-whitespace-from-within-a-string
+        $cleanedData = preg_replace( '/\s+/', ' ', $data );
+        
+        return $cleanedData;
     }
 
 }
