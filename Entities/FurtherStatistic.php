@@ -1,15 +1,11 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of FurtherStatistic
- *
- * @author Harry
+ * This class represents a National Statistic, which i refer to as FurtherStatisitc
+ * It contains an array of Crimes.
+ * 
+ * @author hlp2-winser
  */
 
 
