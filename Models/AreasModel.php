@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Description of AreasModel
+ * This model gives access to the Data when dealing with areas.
+ * Populates and returns Area entity objects to be used by the controller
+ * As well as other functions. 
+ * Areas contain Crime Catagories, which in turn contain Crimes
+ * @author hlp2-winser
+ */
+
 require_once 'DataAccess.php';
 require_once '../Entities/Area.php';
 require_once '../Entities/Crime.php';
@@ -7,11 +16,11 @@ require_once '../Entities/CrimeCatagory.php';
 require_once '../Exceptions/FieldNotFoundException.php';
 
 class AreasModel {
-    private $xml, $dataAccess;
 
     const totalInFraudTitle = "Total recorded crime - including fraud"; // set these so i dont have to keep refering to them.
     const totalNoFraudTitle = "Total recorded crime - excluding fraud";
 
+    // Searches for an Area by name, and returns an area object of that name.
     public function getAreaByName($name) {
 
         $area = $this->_getAreaNode($name);
@@ -37,12 +46,15 @@ class AreasModel {
         return $newArea;
     }
 
+    //  Checks if the area name given is already an area that exists.
     public function isArea($name) {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $result = $xpath->query("Country/Region/Area [@name='" . $name . "']")->item(0);
+        // xpath which gets the first node found. Usually enough to find the correct node.
+        $result = $xpath->query("Country/Region/Area [@name='" . $name . "']")->item(0); 
         return isset($result);
     }
 
+    // Adds a crime catagory to an area
     public function AddCrimeCategory(CrimeCatagory $crimeCat, $areaName) {
         $areaNode = $this->_getAreaNode($areaName);
 
@@ -59,9 +71,11 @@ class AreasModel {
         $this->_updateTotalsNodes($areaNode);
     }
 
+    // Adds a single crime to an area
     public function addCrimeToArea(Crime $crime, $areaName) {
         $areaNode = $this->_getAreaNode($areaName);
 
+        // Checks if crime exits - Yes: Updates the value, No: Creates a new Crime node
         if (!$this->_crimeExists($crime->getName(), $areaNode)) {
             $this->_createCrimeNode($crime, $areaNode);
             $this->_updateCrimeCategoryTotal($crime->getCrimeCatagory(), $areaNode);
@@ -78,8 +92,8 @@ class AreasModel {
         }
     }
 
+    // Updates the Area Total nodes based on an area name
     public function UpdateAreaTotal($name, $value) {
-
         $area = $this->_getAreaNode($name);
 
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
@@ -88,6 +102,7 @@ class AreasModel {
         DataAccess::GetInstance()->saveXML();
     }
 
+    // Removes an Area based on it's name
     public function DeleteArea($areaName) {
         $areaNode = $this->_getAreaNode($areaName);
         $parent = $areaNode->parentNode;
@@ -95,6 +110,7 @@ class AreasModel {
         DataAccess::GetInstance()->saveXML();
     }
 
+    // creates a crime Catagory node using a CrimeCatagory object and a given node
     private function _createCrimeCatagoryNode($crimeCat, $areaNode) {
         $newCatNode = DataAccess::GetInstance()->getCrimeXML()->createElement("CrimeCatagory");
         $newCatNode->setAttribute("name", $crimeCat->getName());
@@ -105,26 +121,31 @@ class AreasModel {
         DataAccess::GetInstance()->saveXML();
     }
 
+    //Creates a crime node for an node given, using a crime object
     private function _createCrimeNode(Crime $crime, $areaNode) {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
-        $catNode = $xpath->query("CrimeCatagory [@name='" . $crime->getCrimeCatagory() . "']", $areaNode)->item(0); // not finding the correct node at all
+        // Searches for the Crime Catagory Node to append it to
+        $catNode = $xpath->query("CrimeCatagory [@name='" . $crime->getCrimeCatagory() . "']", $areaNode)->item(0);
         $areaName = $areaNode->getAttribute("name");
 
+        // checks if tehre is a crime catagory for this already
         if (isset($catNode)) {
+            // There is one, and so it is appended.
             $newCrimeNode = DataAccess::GetInstance()->getCrimeXML()->createElement("Crime");
             $newCrimeNode->setAttribute("name", $crime->getName());
             $textNode = DataAccess::GetInstance()->getCrimeXML()->createTextNode($crime->getValue());
             $newCrimeNode->appendChild($textNode);
             $catNode->appendChild($newCrimeNode);
         } else {
-
+            // No crime catagory node available. Creates one
             $newCrimeCatObj = new CrimeCatagory();
             $newCrimeCatObj->setName($crime->getCrimeCatagory());
             $newCrimeCatObj->setTotal($crime->getValue());
             $newCrimeCatObj->setCrimeType($crime->getCrimeType());
-
+            
+            // Adds it to the data
             $this->AddCrimeCategory($newCrimeCatObj, $areaName);
-
+            // Sort of recursion, as it calls the function that calls this one.
             $this->addCrimeToArea($crime, $areaName);
         }
         DataAccess::GetInstance()->saveXML();
@@ -132,6 +153,8 @@ class AreasModel {
         $this->_updateTotalsNodes($areaNode);
     }
 
+    //Takes in a node and creates a crime catagory object from it. Needs to be
+    // A node that is a crime catagory
     private function _createCrimeCatagoryObject($node) {
 
         $crimeCatObj = new CrimeCatagory();
@@ -141,6 +164,7 @@ class AreasModel {
         $crimeCatObj->setTotal($node->getAttribute("total"));
         $crimeCatObj->setCrimeType($node->getAttribute("type"));
 
+        //If it has children, we create crime objects
         if ($node->hasChildNodes()) {
             $crimeArray = array();
             $crimes = $node->childNodes;
@@ -157,6 +181,8 @@ class AreasModel {
         return $crimeCatObj;
     }
 
+    // Gets the node that an area belogs too.
+    // Allows access to all of its information and Attributes etc.
     private function _getAreaNode($name) {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $node = $xpath->query("Country/Region/Area [@name='" . $name . "']")->item(0);
@@ -167,13 +193,15 @@ class AreasModel {
         }
     }
 
+    //Quick boolean to check if a crime catagory exists
     private function _crimeCategoryExists($crimeCatName, $areaNode) {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $node = $xpath->query("CrimeCatagory [@name='" . $crimeCatName . "']", $areaNode)->item(0);
 
         return isset($node);
     }
-
+    
+    //Quick boolean to check if a crime exists
     private function _crimeExists($crimeName, $areaNode) {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $exists = $xpath->query("CrimeCatagory/Crime [@name='" . $crimeName . "']", $areaNode)->item(0);
@@ -181,13 +209,15 @@ class AreasModel {
         return isset($exists);
     }
 
+    // gets a crime node based on a name and an area node
     private function _getCrimeNode($crimeName, $areaNode) {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $node = $xpath->query("CrimeCatagory/Crime [@name='" . $crimeName . "']", $areaNode)->item(0);
 
         return $node;
     }
-
+    
+    // gets a crime catagory node based on a crime catagory name and an area node
     private function _getCrimeCategoryNode($crimeCatagoryName, $areaNode) {
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $node = $xpath->query("CrimeCatagory [@name='" . $crimeCatagoryName . "']", $areaNode)->item(0);
@@ -195,6 +225,8 @@ class AreasModel {
         return $node;
     }
 
+    //Cycles through all the named Crime catagory children, and adds them up. Stores the Total 
+    // As an Attribute
     private function _updateCrimeCategoryTotal($crimeCatagoryName, $areaNode) {
         $crimeCatNode = $this->_getCrimeCategoryNode($crimeCatagoryName, $areaNode);
 
@@ -210,6 +242,7 @@ class AreasModel {
         DataAccess::GetInstance()->saveXML(); // save the changes
     }
 
+    //This updates the Fraud and No fraud nodes with all the data contained within the area node
     private function _updateTotalsNodes($areaNode) {
         if ($this->_crimeCategoryExists(AreasModel::totalInFraudTitle, $areaNode)) {
             $crimeCats = $areaNode->getElementsByTagName("CrimeCatagory");
@@ -239,10 +272,12 @@ class AreasModel {
         } else {
             $this->_createTotalsNodes($areaNode);
 
-            $this->_updateTotalsNodes($areaNode); // recursion!
+            // Recursion so that it updates the nodes once it's created the nodes
+            $this->_updateTotalsNodes($areaNode);
         }
     }
 
+    // Creates the total nodes needed for an areas crime data
     private function _createTotalsNodes($areaNode) {
         $totalInFraud = new CrimeCatagory();
 

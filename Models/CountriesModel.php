@@ -1,9 +1,11 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Description of CountriesModel
+ * Model that allows access to Country information from the XML data
+ * Mostly returns Country objects
+ * 
+ * @author hlp2-winser
  */
 
 require_once 'DataAccess.php';
@@ -11,7 +13,8 @@ require_once 'RegionsModel.php';
 require_once '../Entities/Country.php';
 
 class CountriesModel {
-    
+    // Returns an array of all Countries in the data
+    // Each item in the array is a country object
     function getAllCountries(){
         $regionModel = new RegionsModel();
         
@@ -28,9 +31,13 @@ class CountriesModel {
             
             $total = 0;
             $regionNames = array();
+            // Store region names, which is lighter than 
+            // storing multiple region objects.
+            // Region names can be used with the Region model to actually get
+            // There full information
             foreach($allRegions as $region){
                 if($region->getCountry() === $countryName ){
-                    $total = $total + $region->getTotal(); // should get the total for the country
+                    $total = $total + $region->getTotal();
                     $regionNames[] = $region->getName();
                 }
             }
@@ -42,7 +49,7 @@ class CountriesModel {
         
         return $countryList;
     }
-   
+   // Get a country by the name given
     public function getCountryByName($countryName){
         $regionModel = new RegionsModel();
         
@@ -59,7 +66,7 @@ class CountriesModel {
         $countryTotal = 0;
         foreach($regions as $region){
             $regionNamesList[] = $region->getName();
-            $countryTotal = $countryTotal + $region->getTotal(); // setting over the total. Bug!!
+            $countryTotal = $countryTotal + $region->getTotal();
         }
 
         $countryObj->setRegionNames($regionNamesList);
@@ -68,11 +75,13 @@ class CountriesModel {
         return $countryObj;
     }
     
+    //Quick function to check if the country name given is actually a country
     public function isCountry($name){
         $countryNode = $this->_getCountryNode($name);
         return isset($countryNode);
     }
     
+    //Gets a country node based on the name given.
     private function _getCountryNode($name){
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         return $xpath->query("Country [@name='" . $name . "']")->item(0);

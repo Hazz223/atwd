@@ -8,7 +8,7 @@
  */
 
 // This only works with areas and national stats
-// This doesn't work with wales.
+// This doesn't work with wales??
 
 require_once '../Models/AreasModel.php';
 require_once '../Models/FurtherStatisticsModel.php';
