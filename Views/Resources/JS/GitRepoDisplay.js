@@ -1,3 +1,11 @@
+/**
+ * Description of GetRepoDisplay
+ * Script for displaying the Git Hub Repository on the page.
+ * Given to me by James Dibble, who found it elsewhere
+ *
+ * @author hlp2-winser
+ */
+
 
 // Used from James Dibble's project with his permission.
 // Location: https://github.com/james-dibble/AdvancedWebAssignment/blob/master/Public/script/views/documentation/index/doc.js

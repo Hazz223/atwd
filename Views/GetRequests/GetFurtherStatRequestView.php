@@ -1,6 +1,13 @@
 <?php
 
-$furtherStat = $_SESSION["fStat"];
+/**
+ * Description of GetFutherStatRequestView
+ * The view just for Futher statis information
+ * 
+ * @author hlp2-winser
+ */
+
+$furtherStat = $_SESSION["fStat"]; // further statistic object
 $type = $_SESSION["type"];
 $cache = new Cache();
 
@@ -21,8 +28,9 @@ if ($type === "xml") {
     $base->appendChild($crime);
     $responseXML->appendChild($base);
 
+    // Create new cache file
     $cache->createCacheFile($furtherStat->getName()."-cache", $responseXML, $type);
-    header("Content-type: text/xml");
+    header("Content-type: text/xml"); // content type needed
     echo $responseXML->saveXML();
 }
 else{
@@ -35,10 +43,11 @@ else{
 
     $base = array();
     $base["response"] = $dataArray;
-    header("Content-type: application/json");
-    $fullJson = json_encode($base, JSON_PRETTY_PRINT);
+    header("Content-type: application/json"); // content type needed
+    $fullJson = json_encode($base, JSON_PRETTY_PRINT); // pretty is the pretty print
     
-    $cache->createCacheFile($furtherStat->getName()."-cache", $fullJson, $type);
+    // creates the cache file
+    $cache->createCacheFile($furtherStat->getName()."-cache", $fullJson, $type); 
     echo $fullJson;
 }
 

@@ -1,6 +1,13 @@
+/**
+ * Description of Delete
+ * Script for sending a request to the Server to delete a region or area
+ *
+ * @author hlp2-winser
+ */
+
 deleteSelect = "";
 
-
+// Which catagory to delete - Area or Region
 $("#deleteCatagorySelectButton").click(function() {
     deleteSelect = $("#deleteCatagorySelect :selected").val();
 
@@ -10,9 +17,11 @@ $("#deleteCatagorySelectButton").click(function() {
     $("#deleteText").addClass("hidden");
     $("#deleteTableContainer").addClass("hidden");
     $("#deleteRawContainer").addClass("hidden");
-
-    $("#deleteTable tbody").html("<tr><th>Crime Name</th><th>Value</th></tr>"); // really don't like this...
     
+    // Resetting the table
+    $("#deleteTable tbody").html("<tr><th>Crime Name</th><th>Value</th></tr>");
+    
+    // Displays the appriprate drop down based on what was selected 
     switch (deleteSelect) {
         case "Region":
             $("#regionDelete").fadeIn("fast");
@@ -25,6 +34,7 @@ $("#deleteCatagorySelectButton").click(function() {
     }
 });
 
+// The delete function - this sends of the request to the server 
 $(".deleteButton").click(function() {
     var deleteValue = "";
     var title = "";
@@ -41,21 +51,29 @@ $(".deleteButton").click(function() {
             alert("failed!");
             break;
     }
-
+    
+    // The json request to the Delete part of the website
     $.getJSON("crimes/6-2013/delete/" + deleteValue + "/json", function(data) {
+        // Used for expanding the delete area on the page
+        // http://stackoverflow.com/questions/4965004/jquery-animate-height-toggle
         $("#deleteContainer").slideDown(function() {
             $(this).animate({height: 1000}, 200);
         });
-
+        
+        //Display raw information
         $("#deleteRaw").html(JSON.stringify(data, null, 4));
 
+        // extra data from json response
         var area = data.response.crimes.area;
         var region = data.response.crimes.region;
-
-        if (typeof area !== 'undefined') { // due to differnt responses based on if you're deleteing an area or a region
+        
+        // Different responses if you're deleting a region or an area
+        // This if statement deals with this.
+        if (typeof area !== 'undefined') { 
             var areaTotal = data.response.crimes.area.total;
             var areadeleted = data.response.crimes.area.deleted;
-
+            
+            // Put data into a table
             $.each(areadeleted, function() {
                 $("#deleteTable tr:last").after("<tr><td>" + this.id + "</td><td>" + this.total + "</td></tr>");
             });
@@ -66,14 +84,15 @@ $(".deleteButton").click(function() {
         if (typeof region !== 'undefined') {
             var regionTotal = data.response.crimes.region.total;
             var regionDeleted = data.response.crimes.region.deleted;
-
+            
+            // put data into a table
             $.each(regionDeleted, function() {
                 $("#deleteTable tr:last").after("<tr><td>" + this.id + "</td><td>" + this.total + "</td></tr>");
             });
 
             $("#deleteTable tr:last").after("<tr><th>Total</td><th>" + regionTotal + "</td></tr>");
         }
-
+        // display completion stuff
         $("#deleteHeader").html(title);
         $("#deleteText").removeClass("hidden");
         $("#deleteTableContainer").removeClass("hidden");

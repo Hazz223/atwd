@@ -1,15 +1,21 @@
 <?php
+/**
+ * Description of PostRequestView
+ * View for the Post requests. 
+ * @author hlp2-winser
+ */
 
-$area = $_SESSION["area"];
-$region = $_SESSION["region"];
+$area = $_SESSION["area"]; // area object
+$region = $_SESSION["region"]; // region object
 $type = $_SESSION["type"];
-$englandTotal = $_SESSION["englandTotal"];
-$combinedTotal = $_SESSION["combinedTotal"];
+
+$englandTotal = $_SESSION["englandTotal"]; // int
+$combinedTotal = $_SESSION["combinedTotal"]; // int
 
 if ($type === "xml") {
-    $responseXML = new DOMDocument();
+    $responseXML = new DOMDocument("1.0");
     $base = $responseXML->createElement("reponse");
-    $base->setAttribute("timestamp", time());
+    $base->setAttribute("timestamp", time()); // unix time
     $crimeDataNode = $responseXML->createElement("crimes");
     $crimeDataNode->setAttribute("year", "6-2013");
 
@@ -21,10 +27,11 @@ if ($type === "xml") {
     $areaNode->setAttribute("name", $area->getProperName());
     $areaNode->setAttribute("total", $area->getTotal());
 
+    // foreach crime catagory contained inside an area
     foreach ($area->getCrimeData() as $crimeCats) {
         if ($crimeCats->getCrimeType() != "Total") {
             $crimeList = $crimeCats->getCrimeList();
-            if (isset($crimeList)) {
+            if (isset($crimeList)) { // if it has a crimes
                 foreach ($crimeList as $crime) {
                     $crimeNode = $responseXML->createElement("recorded");
                     $crimeNode->setAttribute("id", $crime->getName());
@@ -32,7 +39,7 @@ if ($type === "xml") {
 
                     $areaNode->appendChild($crimeNode);
                 }
-            } else {
+            } else { // just append the crime catagory
                 $crimeCatNode = $responseXML->createElement("recorded");
                 $crimeCatNode->setAttribute("id", $crimeCats->getProperName());
                 $crimeCatNode->setAttribute("total", $crimeCats->getTotal());
@@ -57,20 +64,20 @@ if ($type === "xml") {
     
     $base->appendChild($crimeDataNode);
     $responseXML->appendChild($base);
-    header("Content-type: text/xml");
+    header("Content-type: text/xml"); // content type needed for correct output
     echo $responseXML->saveXML();
 } else {
    
     $addedArray = array();
-    foreach ($area->getCrimeData() as $crimeCat) {
+    foreach ($area->getCrimeData() as $crimeCat) { // crime catagory list
         if ($crimeCat->getCrimeType() != "Total") {
             $crimeList = $crimeCat->getCrimeList();
             if (count($crimeList) > 0) {
-                foreach ($crimeList as $crime) {
+                foreach ($crimeList as $crime) { // if crimes, create that information
                     $array = array("id" => $crime->getName(), "total" => $crime->getValue());
                     $addedArray[] = $array;
                 }
-            } else {
+            } else { // just continue as normal if no crimes available
                 $array = array("id" => $crimeCat->getName(), "total" => $crimeCat->getTotal());
                 $addedArray[] = $array;
             }
@@ -83,12 +90,12 @@ if ($type === "xml") {
     $crimesData["region"] = array("id" => $region->getProperName(), "total" => $region->getTotal(), "area" => $areaArray);
 
     $dataArray = array();
-    $dataArray["timestamp"] = time();
+    $dataArray["timestamp"] = time(); // unix time
     $dataArray["crimes"] = $crimesData;
 
     $base = array();
     $base["response"] = $dataArray;
-    header("Content-type: application/json");
-    echo json_encode($base, JSON_PRETTY_PRINT);
+    header("Content-type: application/json"); // content type needed
+    echo json_encode($base, JSON_PRETTY_PRINT); // pretty print is pretty
 }
 

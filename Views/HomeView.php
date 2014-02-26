@@ -1,6 +1,23 @@
-<?php ?>
+<?php
+/**
+ * Description of HomeView
+ * This is the main client view
+ * Uses Region objects and crime objects from the controller 
+ * to populate drop downs - hence why a refresh is needed after an add and delete
+ * 
+ * @author hlp2-winser
+ */
+?>
 <!DOCTYPE html>
 <html>
+    <!-- /**
+ * Description of index
+ * This is the main client view
+ * Uses Region objects and crime objects from the controller 
+ * to populate drop downs - hence why a refresh is needed after an add and delete
+ * 
+ * @author hlp2-winser
+ */ -->
     <meta charset="UTF-8">
     <head>
         <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
@@ -290,7 +307,10 @@
 
                     <div class="chart">
                         <h1>Documentation</h1>
-                        <?php include "../Views/Static/index.html" ?>
+                        <?php
+                        // Gets the documentation from here. this can also be found at the url specified in marking scheme
+                        include "../Views/Static/index.html"
+                        ?>
                     </div>
                     <div class="chart" id="">
                         <h2>References</h2>
@@ -300,8 +320,16 @@
                                 <th>Link</th>
                             </tr>
                             <tr>
+                                <td>Bootstrap - Template</td>
+                                <td><a href="http://getbootstrap.com/examples/starter-template/">http://getbootstrap.com/examples/starter-template/</a></td>
+                            </tr>
+                            <tr>
                                 <td>Bootstrap - Footer</td>
                                 <td><a href="http://getbootstrap.com/examples/sticky-footer/">http://getbootstrap.com/examples/sticky-footer/</a></td>
+                            </tr>
+                            <tr>
+                                <td>JQuery Library</td>
+                                <td><a href="http://jquery.com/">http://jquery.com/</a></td>
                             </tr>
                             <tr>
                                 <td>Length of Javascript Object (ie. Associative Array)</td>
@@ -327,6 +355,19 @@
                                 <td>Stack Overflow: Remove Excess White Space from WIthin a String</td>
                                 <td><a href="http://stackoverflow.com/questions/1703320/remove-excess-whitespace-from-within-a-string">http://stackoverflow.com</a></td>
                             </tr>
+                            <tr>
+                                <td>Stack Overflow: JQuery Animate Height Toggle</td>
+                                <td><a href="http://stackoverflow.com/questions/4965004/jquery-animate-height-toggle">http://stackoverflow.com</a></td>
+                            </tr>
+                            <tr>
+                                <td>Stack Overflow: In JQuery is there a way for slidedown method to scroll the page down too</td>
+                                <td><a href="http://stackoverflow.com/questions/472930/in-jquery-is-there-way-for-slidedown-method-to-scroll-the-page-down-too">http://stackoverflow.com</a></td>
+                            </tr>
+                            <tr>
+                                <td>Stack Overflow: Jquery refresh reload the page on clicking a button</td>
+                                <td><a href="http://stackoverflow.com/questions/19207781/jquery-refresh-reload-the-page-on-clicking-a-button">http://stackoverflow.com</a></td>
+                            </tr>
+                            
                         </table>
                     </div>
                 </div>

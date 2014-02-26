@@ -1,7 +1,10 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Description of ErrorDecode
+ * This was going to be implemented and display the errors recieved. However I
+ * ran out of time to work on this, and as such it never came to be. The start 
+ * is here though. 
+ * 
+ * @author hlp2-winser
  */
 
 
@@ -17,6 +20,8 @@ function CheckForError(data) {
 }
 
 function DecodeErrorMessage(data) {
+
+// Coould never get it parse the xml
 
 //    alert($.parseXML(data)); // returning null
 //    var errorCode= xml.find("error[code]");
@@ -38,6 +43,6 @@ function DecodeErrorMessage(data) {
     }
     else
     {
-        console.log("We cool");
+        console.log("No error");
     }
 }

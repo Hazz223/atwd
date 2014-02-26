@@ -1,7 +1,14 @@
 <?php
 
-$old = $_SESSION["old"];
-$new = $_SESSION["new"];
+/**
+ * Description of PutRequestView
+ * View for the Put request for both xml and JSON
+ * 
+ * @author hlp2-winser
+ */
+
+$old = $_SESSION["old"]; // Could be either an area or a Further Stats
+$new = $_SESSION["new"]; // Could be either an area or a Further Stats
 $type = $_SESSION["type"];
 
 if ($type === "xml") {
@@ -20,7 +27,7 @@ if ($type === "xml") {
     $base->appendChild($crime);
     $responseXML->appendChild($base);
 
-    header("Content-type: text/xml");
+    header("Content-type: text/xml"); // content type needed
     echo $responseXML->saveXML();
 } else { 
     $crimesData = array("year" => "6-2013");
@@ -34,7 +41,7 @@ if ($type === "xml") {
     $base = array();
     $base["response"] = $dataArray;
     header("Content-type: application/json");
-    echo json_encode($base,JSON_PRETTY_PRINT);
+    echo json_encode($base,JSON_PRETTY_PRINT); // pretty print makes json pretty
 }
 
 

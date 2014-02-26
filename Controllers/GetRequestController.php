@@ -35,7 +35,7 @@ if (isset($_GET["region"])) { // checks if it's a full get request, or just regi
     $givenRegionName = $_GET["region"];
 
     if ($fStatsModel->isFurtherStat($givenRegionName)) {
-        if ($cache->hasCacheFile($givenRegionName . "-cache", $type)) { // checks the cache
+        if ($cache->hasCacheFile($givenRegionName . "-cache", $type)) { // check for the cache
             $data = $cache->getCacheFile($givenRegionName . "-cache", $type);
             $_SESSION["data"] = $data;
             $_SESSION["type"] = $type;

@@ -1,11 +1,19 @@
 <?php
+/**
+ * Description of DeleteAreaView
+ * Displays the view for deleting an area
+ *
+ * @author hlp2-winser
+ */
 
-$area = $_SESSION["area"];
-$englandTotal = $_SESSION["englandTotal"];
-$combinedTotal = $_SESSION["combinedTotal"];
+$area = $_SESSION["area"]; // area object
+$englandTotal = $_SESSION["englandTotal"]; // int total
+$combinedTotal = $_SESSION["combinedTotal"]; // int total
 $type = $_SESSION["type"];
+
 if ($type === "xml") {
-    $responseXML = new DOMDocument();
+    // Create the intial part of the xml
+    $responseXML = new DOMDocument("1.0");
     $base = $responseXML->createElement("reponse");
     $base->setAttribute("timestamp", time());
     $crimeDataNode = $responseXML->createElement("crimes");
@@ -14,7 +22,8 @@ if ($type === "xml") {
     $areaNode = $responseXML->createElement("area");
     $areaNode->setAttribute("name", $area->getProperName());
     $areaNode->setAttribute("total", $area->getTotal());
-
+    
+    // Populate the deleted information
     foreach ($area->getCrimeData() as $crimeCats) {
         if ($crimeCats->getCrimeType() != "Total") {
             $crimeList = $crimeCats->getCrimeList();
@@ -35,7 +44,8 @@ if ($type === "xml") {
             }
         }
     }
-
+    
+    //append the area information, as well as the country totals etc
     $crimeDataNode->appendChild($areaNode);
 
     $englandTotalNode = $responseXML->createElement("england");
@@ -49,15 +59,16 @@ if ($type === "xml") {
 
     $base->appendChild($crimeDataNode);
     $responseXML->appendChild($base);
-    header("Content-type: text/xml");
+    header("Content-type: text/xml"); // output the correct content type
     echo $responseXML->saveXML();
 } else {
 
+    // Create the data array, which then becomes the json
     $deletedArray = array();
-    foreach ($area->getCrimeData() as $crimeCat) {
+    foreach ($area->getCrimeData() as $crimeCat) { // each crime cat
         if ($crimeCat->getCrimeType() != "Total") {
             $crimeList = $crimeCat->getCrimeList();
-            if (count($crimeList) > 0) {
+            if (count($crimeList) > 0) { // Crime catagory might not have crimes associated with it. So we just output this catagory
                 foreach ($crimeList as $crime) {
                     $array = array("id" => $crime->getName(), "total" => $crime->getValue());
                     $deletedArray[] = $array;
@@ -71,7 +82,7 @@ if ($type === "xml") {
 
 
     $crimesData = array("year" => "6-2013");
-    $crimesData["area"] = array("id" => $area->getProperName(), "total" => $area->getTotal(), "deleted" => $deletedArray);
+    $crimesData["area"] = array("id" => $area->getProperName(), "total" => $area->getTotal(), "deleted" => $deletedArray); // storing the data
 
     $dataArray = array();
     $dataArray["timestamp"] = time();
@@ -80,6 +91,6 @@ if ($type === "xml") {
 
     $base = array();
     $base["response"] = $dataArray;
-    header("Content-type: application/json");
-    echo json_encode($base, JSON_PRETTY_PRINT);
+    header("Content-type: application/json"); // content type needed
+    echo json_encode($base, JSON_PRETTY_PRINT); // pretty print makes it look pretty.
 }

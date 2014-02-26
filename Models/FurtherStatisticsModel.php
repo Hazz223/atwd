@@ -1,25 +1,22 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of FurtherStatisticsModel
+ * Model for accessing the FurtherStatistic data in the XML data
  *
- * @author Harry
+ * @author hlp2-winser
  */
 require_once 'DataAccess.php';
 require_once '../Entities/FurtherStatistic.php';
 
 class FurtherStatisticsModel {
 
+    // returns a list of FurtherStatistic objects
     public function getAllFurtherStatistics() {
         $newFStatsList = array();
         $fStats = DataAccess::GetInstance()->getCrimeXML()->getElementsByTagName("FurtherStatistics");
 
+        // This never creates all of the crime data? Why?
         foreach ($fStats as $fStat) {
             $newFurtherStat = new FurtherStatistic();
 
@@ -36,6 +33,7 @@ class FurtherStatisticsModel {
         return $newFStatsList;
     }
 
+    // returns a FurtherStatistic based on the name
     public function getFurtherStatisticsByName($name) {
 
         $furtherStatNode = $this->_findFurtherStatNode($name);
@@ -46,11 +44,12 @@ class FurtherStatisticsModel {
         $furtherStatObj->setProperName($furtherStatNode->getAttribute("proper_name"));
         
         $totalNode = $this->_getTotalNode($furtherStatNode);
-        $total = intval($totalNode->getAttribute("total"));
+        $total = intval($totalNode->getAttribute("total")); // comes through as text - needs to be converted to an int
         $furtherStatObj->setTotal($total);
 
         $crimes = $furtherStatNode->getElementsByTagName("Crime");
 
+        // Creates an array - key = Crime name, value is crime value... Does this then not include crime catagories?  
         $crimeStatsArray = array();
         foreach ($crimes as $crime) {
             $crimeStatsArray[$crime->getAttribute("name")] = $crime->textContent;
@@ -61,13 +60,15 @@ class FurtherStatisticsModel {
         return $furtherStatObj;
     }
 
+    // quick check to see if this further statistic exists.
     public function isFurtherStat($name) {
         $cleanedName = str_replace(" ", "_", $name);
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $statNode = $xpath->query("FurtherStatistics [@name='" . $cleanedName . "']")->item(0);
         return isset($statNode);
     }
-
+    
+    // Updates the total node of further stat
     public function updateTotal($name, $data) {
         $furtherStatNode = $this->_findFurtherStatNode($name);
         
@@ -77,6 +78,7 @@ class FurtherStatisticsModel {
         DataAccess::GetInstance()->saveXML();
     }
 
+    // Finds a further stat node using Xpath
     private function _findFurtherStatNode($name) {
         $name = str_replace(" ", "_", $name);
 
@@ -91,6 +93,7 @@ class FurtherStatisticsModel {
         }
     }
     
+    // Gets the total node for a Further Stat
     private function _getTotalNode($node){
         $xpath = new DOMXpath(DataAccess::GetInstance()->getCrimeXML());
         $totalNode = $xpath->query("CrimeCatagory [@name='Total recorded crime - including fraud']", $node)->item(0);

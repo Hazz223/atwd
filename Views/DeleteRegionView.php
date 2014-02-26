@@ -1,15 +1,22 @@
 <?php
+/**
+ * Description of DeleteRegionView
+ * Displays the information for deleting a region.
+ * Very similar to the Area view one.
+ *
+ * @author hlp2-winser
+ */
 
-$region = $_SESSION["region"];
-$areaList = $_SESSION["areaList"];
-$englandTotal = $_SESSION["englandTotal"];
-$combinedTotal = $_SESSION["combinedTotal"];
+$region = $_SESSION["region"]; // region object
+$areaList = $_SESSION["areaList"]; // list of area objects
+$englandTotal = $_SESSION["englandTotal"]; // int
+$combinedTotal = $_SESSION["combinedTotal"]; // int
 $type = $_SESSION["type"];
 
 if ($type === "xml") {
     $responseXML = new DOMDocument();
     $base = $responseXML->createElement("reponse");
-    $base->setAttribute("timestamp", time());
+    $base->setAttribute("timestamp", time()); // unix time
     $crimeDataNode = $responseXML->createElement("crimes");
     $crimeDataNode->setAttribute("year", "6-2013");
 
@@ -17,7 +24,7 @@ if ($type === "xml") {
     $regionNode->setAttribute("name", $region->getProperName());
     $regionNode->setAttribute("total", $region->getTotal());
 
-    foreach ($areaList as $area) {
+    foreach ($areaList as $area) { // goes through each area, and states that it was deleted
         $areaNode = $responseXML->createElement("deleted");
         $areaNode->setAttribute("id", $area->getProperName());
         $areaNode->setAttribute("total", $area->getTotal());
@@ -27,6 +34,7 @@ if ($type === "xml") {
 
     $crimeDataNode->appendChild($regionNode);
 
+    // Adds the extra bits of information - country total etc
     $englandTotalNode = $responseXML->createElement("england");
     $englandTotalNode->setAttribute("total", $englandTotal);
 
@@ -38,28 +46,29 @@ if ($type === "xml") {
 
     $base->appendChild($crimeDataNode);
     $responseXML->appendChild($base);
-    header("Content-type: text/xml");
-    echo $responseXML->saveXML();
+    header("Content-type: text/xml"); // content type needed
+    echo $responseXML->saveXML(); // outputs it to screen
 } else {
 
     $deletedArray = array();
 
-    foreach ($areaList as $area) {
+    foreach ($areaList as $area) { // creates array for areas deleted
         $array = array("id" => $area->getProperName(), "total" => $area->getTotal());
         $deletedArray[] = $array;
     }
 
     $crimesData = array("year" => "6-2013");
+    // region array for region information, includes area stuff
     $crimesData["region"] = array("id" => $region->getProperName(), "total" => $region->getTotal(), "deleted" => $deletedArray);
 
     $dataArray = array();
-    $dataArray["timestamp"] = time();
+    $dataArray["timestamp"] = time(); // unix time
 
     $dataArray["crimes"] = $crimesData;
 
     $base = array();
     $base["response"] = $dataArray;
     header("Content-type: application/json");
-    echo json_encode($base, JSON_PRETTY_PRINT);
+    echo json_encode($base, JSON_PRETTY_PRINT); // pretty print looks pretty
 }
 
