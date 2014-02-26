@@ -316,10 +316,6 @@
                                 <td><a href="https://github.com/james-dibble/AdvancedWebAssignment/blob/master/Public/script/views/documentation/index/doc.js">James dibble's project</a></td>
                             </tr>
                             <tr>
-                                <td>James Dibble - Help with XML validation</td>
-                                <td>James dibble helped with creating the correct XML schema and validation of XML against the schema</td>
-                            </tr>
-                            <tr>
                                 <td>Repo.js - Darcy Clarke</td>
                                 <td><a href="http://darcyclarke.me/dev/repojs/">http://darcyclarke.me/dev/repojs/</a></td>
                             </tr>
@@ -331,19 +327,6 @@
                                 <td>Stack Overflow: Remove Excess White Space from WIthin a String</td>
                                 <td><a href="http://stackoverflow.com/questions/1703320/remove-excess-whitespace-from-within-a-string">http://stackoverflow.com</a></td>
                             </tr>
-                            <tr>
-                                <td>Schema Generator</td>
-                                <td><a href="http://www.freeformatter.com/xsd-generator.html">http://www.freeformatter.com/xsd-generator.html</a></td>
-                            </tr>
-                            <tr>
-                                <td>PHP Manuel</td>
-                                <td><a href="http://www.php.net/manual/en/">http://www.php.net/manual/en/</a></td>
-                            </tr>
-                            <tr>
-                                <td>Generate XML Namespace with PHP Dom</td>
-                                <td><a href="http://stackoverflow.com/questions/9082032/generate-xml-namespace-with-php-dom">http://stackoverflow.com/questions/9082032/generate-xml-namespace-with-php-dom</a></td>
-                            </tr>
-                            
                         </table>
                     </div>
                 </div>

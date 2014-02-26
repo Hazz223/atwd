@@ -26,6 +26,6 @@ if (($handle = fopen($input, "r")) !== FALSE) {
     $converter->CreateFurtherStatistics();
     
     $converter->DisplayXML();
-    //$converter->SaveData();
+    $converter->SaveData();
 }
 ?>

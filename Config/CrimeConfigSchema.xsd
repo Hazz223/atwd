@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="Config">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="CrimeAbriviations"/>
+        <xs:element ref="crime_data"/>
+        <xs:element ref="cache_data_location"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CrimeAbriviations">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="Crime"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Crime">
+    <xs:complexType>
+      <xs:attribute name="abrivated" use="required" type="xs:NCName"/>
+      <xs:attribute name="crimecatagory" use="required"/>
+      <xs:attribute name="iscrimecatagory" use="required" type="xs:boolean"/>
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="type" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="crime_data">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="stored_xml_location"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="stored_xml_location" type="xs:string"/>
+  <xs:element name="cache_data_location">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="stored_cache_location"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="stored_cache_location" type="xs:string"/>
+</xs:schema>

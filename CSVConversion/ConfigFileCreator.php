@@ -11,7 +11,7 @@
 class ConfigFileCreator {
 
     private $titlesArray, $catagoryArray, $crimeHeadersArray, $xmlLocation, $configLocation;
-    private $cacheLocation, $doc, $rootNode;
+    private $cacheLocation, $doc;
 
     function __construct($titlesArray, $catagoryArray, $crimeHeadersArray, $xmlLocation, $configLocation, $cacheLocation) {
         $this->titlesArray = $titlesArray;
@@ -21,31 +21,22 @@ class ConfigFileCreator {
         $this->configLocation = $configLocation;
         $this->cacheLocation = $cacheLocation;
 
-        $this->doc = new DOMDocument("1.0");
-        $this->doc->formatOutput = true;
-
-        //http://stackoverflow.com/questions/9082032/generate-xml-namespace-with-php-dom
-
-        $this->rootNode = $this->doc->appendChild(
-                $this->doc->createElementNS(
-                        $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Config/', 'cd:Config'));
-
-        $this->rootNode->setAttributeNS(
-                'http://www.w3.org/2001/XMLSchema-instance', 'xsi:schemaLocation', 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Config/ ./CrimeConfig.xsd');
+        $this->doc = new DOMDocument();
     }
 
     function CreateConfigFile() {
 
-        $abrivNode = $this->doc->createElementNS(
-                $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Config/', 'cd:CrimeAbriviations');
+
+        $rootNode = $this->doc->createElement("Config");
+
+        $abrivNode = $this->doc->createElement("CrimeAbriviations");
         $catagory = "";
         $crimeType = $this->crimeHeadersArray[2];
         foreach ($this->titlesArray as $title) {
-
+            
             $cleanedTitle = $this->_removeExtraWhiteSpace($title);
-
-            $nameNode = $this->doc->createElementNS(
-                    $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Config/', 'cd:Crime');
+            
+            $nameNode = $this->doc->createElement("Crime");
             $nameNode->setAttribute("name", $cleanedTitle);
 
             if ($cleanedTitle === "Drug offences") {
@@ -72,34 +63,27 @@ class ConfigFileCreator {
         $crimeDataNode = $this->_createCrimeXMLNode();
         $cacheDataNode = $this->_createCacheNode();
 
-        $this->rootNode->appendChild($abrivNode);
-        $this->rootNode->appendChild($crimeDataNode);
-        $this->rootNode->appendChild($cacheDataNode);
-        $this->doc->appendChild($this->rootNode);
+        $rootNode->appendChild($abrivNode);
+        $rootNode->appendChild($crimeDataNode);
+        $rootNode->appendChild($cacheDataNode);
+        $this->doc->appendChild($rootNode);
         $this->doc->save($this->configLocation);
     }
 
     private function _createCrimeXMLNode() {
-        $crimeDataNode = $this->doc->createElementNS(
-                $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Config/', 'cd:crime_data');
-        $textNode = $this->doc->createElementNS(
-                $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Config/', 'cd:stored_xml_location');
+        $crimeDataNode = $this->doc->createElement("crime_data");
+        $textNode = $this->doc->createElement("stored_xml_location");
 
         $text = $this->doc->createTextNode($this->xmlLocation);
         $textNode->appendChild($text);
         $crimeDataNode->appendChild($textNode);
-
+        
         return $crimeDataNode;
     }
 
     private function _createCacheNode() {
-        $cacheDataNode = $this->doc->createElementNS(
-                $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Config/', 'cd:cache_data_location');
-
-
-        $cacheDataText = $this->doc->createElementNS(
-                $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Config/', 'cd:stored_cache_location');
-        
+        $cacheDataNode = $this->doc->createElement("cache_data_location");
+        $cacheDataText = $this->doc->createElement("stored_cache_location");
 
         $cacheText = $this->doc->createTextNode($this->cacheLocation);
         $cacheDataText->appendChild($cacheText);
@@ -151,11 +135,11 @@ class ConfigFileCreator {
         }
         return false;
     }
-
+    
     private function _removeExtraWhiteSpace($data) {
         //http://stackoverflow.com/questions/1703320/remove-excess-whitespace-from-within-a-string
-        $cleanedData = preg_replace('/\s+/', ' ', $data);
-
+        $cleanedData = preg_replace( '/\s+/', ' ', $data );
+        
         return $cleanedData;
     }
 
