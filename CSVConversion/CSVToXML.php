@@ -40,7 +40,16 @@ class CSVToXML {
         $this->dataArray = $this->removeEmptyArraySlots($this->dataArray);
 
         $this->doc = new DOMDocument("1.0"); // need to put in the XML validation stuff
-        $this->rootNode = $this->doc->createElement("CrimeStats");
+        $this->doc->formatOutput = true;
+
+        //http://stackoverflow.com/questions/9082032/generate-xml-namespace-with-php-dom
+        
+        $this->rootNode = $this->doc->appendChild(
+                $this->doc->createElementNS(
+                        $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Data/', 'cd:CrimeStats'));
+
+        $this->rootNode->setAttributeNS(
+                'http://www.w3.org/2001/XMLSchema-instance', 'xsi:schemaLocation', 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Data/ ./CrimeStats.xsd');
 
         $this->xmlLocation = $location;
     }
@@ -90,7 +99,8 @@ class CSVToXML {
     }
 
     private function _createCountryNode($name, $properName, $lowerBound, $upperBound) {
-        $countryNode = $this->doc->createElement("Country");
+        $countryNode = $this->doc->createElementNS(
+                $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Data/', 'cd:Country');
         $countryNode->setAttribute("name", $name);
         $countryNode->setAttribute("proper_name", $properName);
 
@@ -141,7 +151,8 @@ class CSVToXML {
             $regionName = "Wales";
         }
 
-        $regionNode = $this->doc->createElement("Region");
+        $regionNode = $this->doc->createElementNS(
+                $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Data/', 'cd:Region');
         $nonRegionName = str_replace(" Region", "", $regionName); // requirements show them without the term region. 
 
         $withUnderscores = str_replace(" ", "_", $nonRegionName);
@@ -160,21 +171,26 @@ class CSVToXML {
 
         // Creates a new area node, then returns it.
 
-        $areaNode = $this->doc->createElement("Area");
+        $areaNode = $this->doc->createElementNS(
+                $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Data/', 'cd:Area');
         $withUnderscores = str_replace(" ", "_", $row[0]);
         $areaNode->setAttribute("name", strtolower($withUnderscores));
         $areaNode->setAttribute("proper_name", $row[0]);
 
 
-        $crimeTypeTotal = $this->doc->createElement("CrimeType"); // for the two totals
+        $crimeTypeTotal = $this->doc->createElementNS(
+                $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Data/', 'cd:CrimeType');
+        ; // for the two totals
         $crimeTypeTotal->setAttribute("name", "Totals");
 
-        $totalWithCrime = $this->doc->createElement("CrimeCatagory");
+        $totalWithCrime = $this->doc->createElementNS(
+                $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Data/', 'cd:CrimeCatagory');
         $totalWithCrime->setAttribute("name", $this->crimeHeadersArray[0]);
         $totalWithCrime->setAttribute("type", "Totals");
         $totalWithCrime->setAttribute("total", str_replace(",", "", $row[1]));
 
-        $totalWithoutCrime = $this->doc->createElement("CrimeCatagory");
+        $totalWithoutCrime = $this->doc->createElementNS(
+                $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Data/', 'cd:CrimeCatagory');
         $totalWithoutCrime->setAttribute("name", $this->crimeHeadersArray[1]);
         $totalWithoutCrime->setAttribute("type", "Totals");
         $totalWithoutCrime->setAttribute("total", str_replace(",", "", $row[2]));
@@ -198,9 +214,10 @@ class CSVToXML {
     private function _populateCountryCrimeData($areaNode, $dataArray, $titleCount) {
         foreach ($dataArray as $data) {
             $dataName = $this->_removeExtraWhiteSpace($this->titlesArray[$titleCount]);
-            
+
             if ($this->_titleInArray($dataName, $this->catagoryArray)) {// Checks for catagory
-                $newCatagoryNode = $this->doc->createElement("CrimeCategory");
+                $newCatagoryNode = $this->doc->createElementNS(
+                        $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Data/', 'cd:CrimeCatagory');
                 $newCatagoryNode->setAttribute("name", $dataName);
                 $newCatagoryNode->setAttribute("Type", $this->crimeHeadersArray[3]);
                 $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
@@ -209,7 +226,8 @@ class CSVToXML {
             } else {
                 // not a catagory, so adds it to the current catagory, catNode 
                 if ($catNode != null) {
-                    $crime = $this->doc->createElement("Crime");
+                    $crime = $this->doc->createElementNS(
+                            $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Data/', 'cd:Crime');
                     $crime->setAttribute("name", $dataName);
                     $text = $this->doc->createTextNode(str_replace(",", "", $data));
                     $crime->appendChild($text);
@@ -264,16 +282,23 @@ class CSVToXML {
     }
 
     private function _createFurtherStatisticsNode($name, $properName, $row) {
-        $newNode = $this->doc->createElement("FurtherStatistics");
+        $newNode = $this->doc->createElementNS(
+                $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Data/', 'cd:FurtherStatistics');
+        ;
+
         $newNode->setAttribute("name", $name);
         $newNode->setAttribute("proper_name", $properName);
 
-        $totalWithCrime = $this->doc->createElement("CrimeCatagory");
+        $totalWithCrime = $this->doc->createElementNS(
+                $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Data/', 'cd:CrimeCatagory');
+        ;
+
         $totalWithCrime->setAttribute("name", $this->crimeHeadersArray[0]);
         $totalWithCrime->setAttribute("type", "Totals");
         $totalWithCrime->setAttribute("total", str_replace(",", "", $row[1]));
 
-        $totalWithoutCrime = $this->doc->createElement("CrimeCatagory");
+        $totalWithoutCrime = $this->doc->createElementNS(
+                $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Data/', 'cd:CrimeCatagory');
         $totalWithoutCrime->setAttribute("name", $this->crimeHeadersArray[1]);
         $totalWithoutCrime->setAttribute("type", "Totals");
         $totalWithoutCrime->setAttribute("total", str_replace(",", "", $row[2]));
@@ -297,14 +322,17 @@ class CSVToXML {
         foreach ($array as $data) {
             if ($data != "..") {
                 if ($this->_titleInArray($this->titlesArray[$titleCount], $this->catagoryArray)) { // titleCount is going too far...
-                    $newCatagoryNode = $this->doc->createElement("CrimeCatagory");
+                    $newCatagoryNode = $this->doc->createElementNS(
+                            $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Data/', 'cd:CrimeCatagory');
                     $newCatagoryNode->setAttribute("name", $this->titlesArray[$titleCount]);
                     $newCatagoryNode->setAttribute("total", str_replace(",", "", $data));
                     $newCatagoryNode->setAttribute("type", $type);
                     $catagoryNode = $newCatagoryNode;
                 } else {
                     if ($catagoryNode != null) {
-                        $crime = $this->doc->createElement("Crime");
+                        $crime = $this->doc->createElementNS(
+                                $cd = 'http://www.cems.uwe.ac.uk/~hlp2-winser/atwd/Data/', 
+                                'cd:Crime');
                         $crime->setAttribute("name", $this->titlesArray[$titleCount]);
                         $text = $this->doc->createTextNode(str_replace(",", "", $data));
                         $crime->appendChild($text);
@@ -323,8 +351,8 @@ class CSVToXML {
 
     private function _removeExtraWhiteSpace($data) {
         //http://stackoverflow.com/questions/1703320/remove-excess-whitespace-from-within-a-string
-        $cleanedData = preg_replace( '/\s+/', ' ', $data );
-        
+        $cleanedData = preg_replace('/\s+/', ' ', $data);
+
         return $cleanedData;
     }
 
