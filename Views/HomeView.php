@@ -399,6 +399,10 @@
                                     <td>Google Charts</td>
                                     <td><a href="https://developers.google.com/chart/">https://developers.google.com/chart/</a></td>
                                 </tr>
+                                <tr>
+                                    <td>Stack Overflow: How can i create download link in html</td>
+                                    <td><a href="http://stackoverflow.com/questions/2793751/how-can-i-create-download-link-in-html">http://stackoverflow.com/questions/2793751/how-can-i-create-download-link-in-html</a></td>
+                                </tr>
                             </table>
                         </div>
                     </div>
@@ -415,7 +419,8 @@
                         <div id="repoBrowser" class="source-container"></div>
                         <div>
                             <h2>Download</h2>
-                            <p>You can download all of the source code here: <a href="crimes/doc/SourceCodeDownload.zip">Download zip</a></p>
+                            <!--http://stackoverflow.com/questions/2793751/how-can-i-create-download-link-in-html -->
+                            <p>You can download all of the source code here: <a href="crimes/doc/SourceCodeDownload.zip"  download="atwd-project-hlp2-Winser">Download zip</a></p>
                             <p>Or download the git repository here: <a href="https://github.com/Hazz223/atwd">Git Repository</a></p>
                         </div>
                     </div>
