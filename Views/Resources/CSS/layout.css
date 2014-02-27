@@ -91,3 +91,8 @@ and open the template in the editor.
     overflow-y: scroll;
     height: 600px;
 }
+
+.refernce-box{
+    overflow-y: scroll;
+    height: 900px;
+}

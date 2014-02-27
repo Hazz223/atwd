@@ -17,7 +17,7 @@ $cache = new Cache(); // cache used to store the response
 
 if ($type === "xml") {
     $responseXML = new DOMDocument();
-    $base = $responseXML->createElement("reponse");
+    $base = $responseXML->createElement("response");
 
     $base->setAttribute("timestamp", time());
     $crime = $responseXML->createElement("crimes");
@@ -36,6 +36,14 @@ if ($type === "xml") {
         }
     }
 
+    // All the Further Statis information for the request
+    foreach ($fStats as $stat) {
+        $statNode = $responseXML->createElement("national");
+        $statNode->setAttribute("id", $stat->getProperName());
+        $statNode->setAttribute("total", $stat->getTotal());
+        $crime->appendChild($statNode);
+    }
+
     // All the country information 
     foreach ($countries as $country) {
         $name = $country->getName();
@@ -45,19 +53,13 @@ if ($type === "xml") {
         $crime->appendChild($countryNode);
     }
 
-    // All the Further Statis information for the request
-    foreach ($fStats as $stat) {
-        $statNode = $responseXML->createElement("national");
-        $statNode->setAttribute("id", $stat->getProperName());
-        $statNode->setAttribute("total", $stat->getTotal());
-        $crime->appendChild($statNode);
-    }
+
 
     $base->appendChild($crime);
     $responseXML->appendChild($base);
 
     // creates the new cache file for the request - this is controlled in the controller
-    $cache->createCacheFile("all-get", $responseXML, $type); 
+    $cache->createCacheFile("all-get", $responseXML, $type);
 
 
     header("Content-type: text/xml"); // content type needed
@@ -87,8 +89,12 @@ if ($type === "xml") {
     $crimeData["national"] = $fStatArray;
 
     // All of the country information
+    $countryArray = array();
+    
+    
     foreach ($countries as $country) {
-        $crimeData[strtolower($country->getName())] = $country->getTotal();
+        $crimeData[strtolower($country->getName())] = array("total"=> $country->getTotal());
+       
     }
     $dataArray["crimes"] = $crimeData;
 
@@ -97,7 +103,6 @@ if ($type === "xml") {
 
     header("Content-type: application/json"); // content type is needed
     $fullJson = json_encode($base, JSON_PRETTY_PRINT); // pretty print is pretty
-
     // creates the new cache file for the request - this is controlled in the controller
     $cache->createCacheFile("all-get", $fullJson, $type);
     echo $fullJson;

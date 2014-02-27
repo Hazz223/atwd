@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * Description of Error 501
+ * Used to display a url error
+ * All errrors are displayed as XML
+ *
+ * @author hlp2-winser
+ */
 
 $responseXML = new DOMDocument();
 $base = $responseXML->createElement("reponse");

@@ -331,7 +331,5 @@ class CSVToXML {
 
         return $cleanedData;
     }
-
 }
-
 ?>

@@ -13,7 +13,7 @@ $type = $_SESSION["type"];
 
 if ($type === "xml") {
     $responseXML = new DOMDocument();
-    $base = $responseXML->createElement("reponse");
+    $base = $responseXML->createElement("response");
     $base->setAttribute("timestamp", time());
     $crime = $responseXML->createElement("crimes");
     $crime->setAttribute("year", "6-2013");

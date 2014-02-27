@@ -17,10 +17,10 @@ $("#deleteCatagorySelectButton").click(function() {
     $("#deleteText").addClass("hidden");
     $("#deleteTableContainer").addClass("hidden");
     $("#deleteRawContainer").addClass("hidden");
-    
+
     // Resetting the table
     $("#deleteTable tbody").html("<tr><th>Crime Name</th><th>Value</th></tr>");
-    
+
     // Displays the appriprate drop down based on what was selected 
     switch (deleteSelect) {
         case "Region":
@@ -51,7 +51,7 @@ $(".deleteButton").click(function() {
             alert("failed!");
             break;
     }
-    
+
     // The json request to the Delete part of the website
     $.getJSON("crimes/6-2013/delete/" + deleteValue + "/json", function(data) {
         // Used for expanding the delete area on the page
@@ -59,37 +59,41 @@ $(".deleteButton").click(function() {
         $("#deleteContainer").slideDown(function() {
             $(this).animate({height: 1000}, 200);
         });
-        
+
         //Display raw information
         $("#deleteRaw").html(JSON.stringify(data, null, 4));
 
         // extra data from json response
         var area = data.response.crimes.area;
         var region = data.response.crimes.region;
-        
+
         // Different responses if you're deleting a region or an area
         // This if statement deals with this.
-        if (typeof area !== 'undefined') { 
+        if (typeof area !== 'undefined') {
             var areaTotal = data.response.crimes.area.total;
             var areadeleted = data.response.crimes.area.deleted;
-            
+
             // Put data into a table
             $.each(areadeleted, function() {
+                //http://stackoverflow.com/questions/171027/add-table-row-in-jquery
                 $("#deleteTable tr:last").after("<tr><td>" + this.id + "</td><td>" + this.total + "</td></tr>");
             });
-
+            
+            //http://stackoverflow.com/questions/171027/add-table-row-in-jquery
             $("#deleteTable tr:last").after("<tr><th>Total</td><th>" + areaTotal + "</td></tr>");
         }
 
         if (typeof region !== 'undefined') {
             var regionTotal = data.response.crimes.region.total;
             var regionDeleted = data.response.crimes.region.deleted;
-            
+
             // put data into a table
             $.each(regionDeleted, function() {
+                //http://stackoverflow.com/questions/171027/add-table-row-in-jquery
                 $("#deleteTable tr:last").after("<tr><td>" + this.id + "</td><td>" + this.total + "</td></tr>");
             });
-
+            
+            //http://stackoverflow.com/questions/171027/add-table-row-in-jquery
             $("#deleteTable tr:last").after("<tr><th>Total</td><th>" + regionTotal + "</td></tr>");
         }
         // display completion stuff
@@ -99,7 +103,7 @@ $(".deleteButton").click(function() {
         $("#deleteRawContainer").removeClass("hidden");
         deleteSelect = "";
 
-    }).fail(function(data){
+    }).fail(function(data) {
         // Rubbish error stuff, ran out of time
         alert("Error occured. Failed to Delete region");
     });

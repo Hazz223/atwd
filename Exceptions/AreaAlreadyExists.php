@@ -9,7 +9,7 @@ class AreaAlreadyExists extends Exception{
     
     public function __construct($message) {
         
-        parent::__construct($message, 601);
+        parent::__construct($message, 603);
     }
     
     public function __toString() {

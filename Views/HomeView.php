@@ -304,7 +304,6 @@
         <div class="container">
             <div class="row">
                 <div class="col-mid-12">
-
                     <div class="chart">
                         <h1>Documentation</h1>
                         <?php
@@ -312,67 +311,96 @@
                         include "../Views/Static/index.html"
                         ?>
                     </div>
-                    <div class="chart" id="">
+                    <div class="chart ">
                         <h2>References</h2>
-                        <table class="table">
-                            <tr>
-                                <th>Resource</th>
-                                <th>Link</th>
-                            </tr>
-                            <tr>
-                                <td>Bootstrap - Template</td>
-                                <td><a href="http://getbootstrap.com/examples/starter-template/">http://getbootstrap.com/examples/starter-template/</a></td>
-                            </tr>
-                            <tr>
-                                <td>Bootstrap - Footer</td>
-                                <td><a href="http://getbootstrap.com/examples/sticky-footer/">http://getbootstrap.com/examples/sticky-footer/</a></td>
-                            </tr>
-                            <tr>
-                                <td>JQuery Library</td>
-                                <td><a href="http://jquery.com/">http://jquery.com/</a></td>
-                            </tr>
-                            <tr>
-                                <td>Length of Javascript Object (ie. Associative Array)</td>
-                                <td><a href="http://stackoverflow.com/questions/5223/length-of-javascript-object-ie-associative-array">http://stackoverflow.com/questions/5223/length-of-javascript-object-ie-associative-array</a></td>
-                            </tr>
-                            <tr>
-                                <td>No7. The Past, Present & Future of Local Storage for Web Applications</td>
-                                <td><a href="http://diveintohtml5.info/storage.html">http://diveintohtml5.info/storage.html</a></td>
-                            </tr>
-                            <tr>
-                                <td>Git Hub Viewer - James Dibble</td>
-                                <td><a href="https://github.com/james-dibble/AdvancedWebAssignment/blob/master/Public/script/views/documentation/index/doc.js">James dibble's project</a></td>
-                            </tr>
-                            <tr>
-                                <td>Repo.js - Darcy Clarke</td>
-                                <td><a href="http://darcyclarke.me/dev/repojs/">http://darcyclarke.me/dev/repojs/</a></td>
-                            </tr>
-                            <tr>
-                                <td>Stack Overflow: Deleting all files from a folder using php</td>
-                                <td><a href="http://stackoverflow.com/questions/4594180/deleting-all-files-from-a-folder-using-php">http://stackoverflow.com</a></td>
-                            </tr>
-                            <tr>
-                                <td>Stack Overflow: Remove Excess White Space from WIthin a String</td>
-                                <td><a href="http://stackoverflow.com/questions/1703320/remove-excess-whitespace-from-within-a-string">http://stackoverflow.com</a></td>
-                            </tr>
-                            <tr>
-                                <td>Stack Overflow: JQuery Animate Height Toggle</td>
-                                <td><a href="http://stackoverflow.com/questions/4965004/jquery-animate-height-toggle">http://stackoverflow.com</a></td>
-                            </tr>
-                            <tr>
-                                <td>Stack Overflow: In JQuery is there a way for slidedown method to scroll the page down too</td>
-                                <td><a href="http://stackoverflow.com/questions/472930/in-jquery-is-there-way-for-slidedown-method-to-scroll-the-page-down-too">http://stackoverflow.com</a></td>
-                            </tr>
-                            <tr>
-                                <td>Stack Overflow: Jquery refresh reload the page on clicking a button</td>
-                                <td><a href="http://stackoverflow.com/questions/19207781/jquery-refresh-reload-the-page-on-clicking-a-button">http://stackoverflow.com</a></td>
-                            </tr>
-                            <tr>
-                                <td>.htaccess information</td>
-                                <td><a href="http://httpd.apache.org/docs/current/howto/htaccess.html">http://httpd.apache.org/docs/current/howto/htaccess.html</a></td>
-                            </tr>
-                            
-                        </table>
+                        <div class="refernce-box">
+                            <table class="table ">
+                                <tr>
+                                    <th>Resource</th>
+                                    <th>Link</th>
+                                </tr>
+                                <tr>
+                                    <td>Bootstrap - Template</td>
+                                    <td><a href="http://getbootstrap.com/examples/starter-template/">http://getbootstrap.com/examples/starter-template/</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Bootstrap - Footer</td>
+                                    <td><a href="http://getbootstrap.com/examples/sticky-footer/">http://getbootstrap.com/examples/sticky-footer/</a></td>
+                                </tr>
+                                <tr>
+                                    <td>JQuery Library</td>
+                                    <td><a href="http://jquery.com/">http://jquery.com/</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Length of Javascript Object (ie. Associative Array)</td>
+                                    <td><a href="http://stackoverflow.com/questions/5223/length-of-javascript-object-ie-associative-array">http://stackoverflow.com/questions/5223/length-of-javascript-object-ie-associative-array</a></td>
+                                </tr>
+                                <tr>
+                                    <td>No7. The Past, Present & Future of Local Storage for Web Applications</td>
+                                    <td><a href="http://diveintohtml5.info/storage.html">http://diveintohtml5.info/storage.html</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Git Hub Viewer - James Dibble</td>
+                                    <td><a href="https://github.com/james-dibble/AdvancedWebAssignment/blob/master/Public/script/views/documentation/index/doc.js">James dibble's project</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Repo.js - Darcy Clarke</td>
+                                    <td><a href="http://darcyclarke.me/dev/repojs/">http://darcyclarke.me/dev/repojs/</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Stack Overflow: Deleting all files from a folder using php</td>
+                                    <td><a href="http://stackoverflow.com/questions/4594180/deleting-all-files-from-a-folder-using-php">http://stackoverflow.com</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Stack Overflow: Remove Excess White Space from WIthin a String</td>
+                                    <td><a href="http://stackoverflow.com/questions/1703320/remove-excess-whitespace-from-within-a-string">http://stackoverflow.com</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Stack Overflow: JQuery Animate Height Toggle</td>
+                                    <td><a href="http://stackoverflow.com/questions/4965004/jquery-animate-height-toggle">http://stackoverflow.com</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Stack Overflow: In JQuery is there a way for slidedown method to scroll the page down too</td>
+                                    <td><a href="http://stackoverflow.com/questions/472930/in-jquery-is-there-way-for-slidedown-method-to-scroll-the-page-down-too">http://stackoverflow.com</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Stack Overflow: Jquery refresh reload the page on clicking a button</td>
+                                    <td><a href="http://stackoverflow.com/questions/19207781/jquery-refresh-reload-the-page-on-clicking-a-button">http://stackoverflow.com</a></td>
+                                </tr>
+                                <tr>
+                                    <td>.htaccess information</td>
+                                    <td><a href="http://httpd.apache.org/docs/current/howto/htaccess.html">http://httpd.apache.org/docs/current/howto/htaccess.html</a></td>
+                                </tr>
+                                <tr>
+                                    <td>James Dibble - Help with XML validation</td>
+                                    <td>James dibble helped with creating the correct XML schema and validation of XML against the schema</td>
+                                </tr>
+                                <tr>
+                                    <td>Schema Generator</td>                               
+                                    <td><a href="http://www.freeformatter.com/xsd-generator.html">http://www.freeformatter.com/xsd-generator.html</a></td>
+                                </tr>
+                                <tr>
+                                    <td>PHP Manuel</td>
+                                    <td><a href="http://www.php.net/manual/en/">http://www.php.net/manual/en/</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Generate XML Namespace with PHP Dom</td>
+                                    <td><a href="http://stackoverflow.com/questions/9082032/generate-xml-namespace-with-php-dom">http://stackoverflow.com/</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Stack Overflow: Add table to row in jquery</td>
+                                    <td><a href="http://stackoverflow.com/questions/171027/add-table-row-in-jquery">http://stackoverflow.com</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Stack Overflow: JQuery Animate Height Toggle</td>
+                                    <td><a href="http://stackoverflow.com/questions/4965004/jquery-animate-height-toggle">http://stackoverflow.com</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Google Charts</td>
+                                    <td><a href="https://developers.google.com/chart/">https://developers.google.com/chart/</a></td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -399,7 +427,7 @@
 <div id="footer" class="footer"> <!-- http://getbootstrap.com/examples/sticky-footer/ -->
     <div class="container">
         <div class="footer">
-            <p class="text-muted">Place sticky footer content here.</p>
+            <p class="text-muted">Created by Harry Winser (hlp2-winser, 10016143)</p>
         </div>
     </div>
 </div>

@@ -14,13 +14,13 @@ $type = $_SESSION["type"];
 if ($type === "xml") {
     // Create the intial part of the xml
     $responseXML = new DOMDocument("1.0");
-    $base = $responseXML->createElement("reponse");
+    $base = $responseXML->createElement("response");
     $base->setAttribute("timestamp", time());
     $crimeDataNode = $responseXML->createElement("crimes");
     $crimeDataNode->setAttribute("year", "6-2013");
 
     $areaNode = $responseXML->createElement("area");
-    $areaNode->setAttribute("name", $area->getProperName());
+    $areaNode->setAttribute("name", strtolower($area->getProperName()));
     $areaNode->setAttribute("total", $area->getTotal());
     
     // Populate the deleted information
@@ -80,10 +80,12 @@ if ($type === "xml") {
         }
     }
 
-
     $crimesData = array("year" => "6-2013");
-    $crimesData["area"] = array("id" => $area->getProperName(), "total" => $area->getTotal(), "deleted" => $deletedArray); // storing the data
-
+    $crimesData["area"] = array("id" => strtolower($area->getProperName()), "total" => $area->getTotal(), "deleted" => $deletedArray); // storing the data
+    
+    $crimesData["england"] = array("total"=> $englandTotal); 
+    $crimesData["england_wales"] = array("total"=> $combinedTotal); 
+    
     $dataArray = array();
     $dataArray["timestamp"] = time();
 

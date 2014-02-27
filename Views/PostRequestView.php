@@ -14,7 +14,7 @@ $combinedTotal = $_SESSION["combinedTotal"]; // int
 
 if ($type === "xml") {
     $responseXML = new DOMDocument("1.0");
-    $base = $responseXML->createElement("reponse");
+    $base = $responseXML->createElement("response");
     $base->setAttribute("timestamp", time()); // unix time
     $crimeDataNode = $responseXML->createElement("crimes");
     $crimeDataNode->setAttribute("year", "6-2013");
@@ -24,7 +24,7 @@ if ($type === "xml") {
     $regionNode->setAttribute("total", $region->getTotal());
 
     $areaNode = $responseXML->createElement("area");
-    $areaNode->setAttribute("name", $area->getProperName());
+    $areaNode->setAttribute("name", strtolower($area->getProperName()));
     $areaNode->setAttribute("total", $area->getTotal());
 
     // foreach crime catagory contained inside an area
@@ -84,11 +84,13 @@ if ($type === "xml") {
         }
     }
 
-
     $crimesData = array("year" => "6-2013");
-    $areaArray = array("id" => $area->getProperName(), "total" => $area->getTotal(), "recorded" => $addedArray);
+    $areaArray = array("id" => strtolower($area->getProperName()), "total" => $area->getTotal(), "recorded" => $addedArray);
     $crimesData["region"] = array("id" => $region->getProperName(), "total" => $region->getTotal(), "area" => $areaArray);
 
+    $crimesData["england"] = array("total"=> $englandTotal); 
+    $crimesData["england_wales"] = array("total"=> $combinedTotal); 
+    
     $dataArray = array();
     $dataArray["timestamp"] = time(); // unix time
     $dataArray["crimes"] = $crimesData;

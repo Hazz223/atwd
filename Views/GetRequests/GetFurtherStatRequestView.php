@@ -13,7 +13,7 @@ $cache = new Cache();
 
 if ($type === "xml") {
     $responseXML = new DOMDocument();
-    $base = $responseXML->createElement("reponse");
+    $base = $responseXML->createElement("response");
 
     $base->setAttribute("timestamp", date("YmdHi"));
     $crime = $responseXML->createElement("crimes");

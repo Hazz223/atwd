@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Description of ErrorView
+ * Used for displaying errors from the code
+ *
+ * @author hlp2-winser
+ */
 $errorMessage = $_SESSION["errorMessage"];
 $errorCode = $_SESSION["errorCode"];
 

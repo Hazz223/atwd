@@ -58,8 +58,8 @@ try {
 
     $england = $countryModel->getCountryByName("ENGLAND");
     $wales = $countryModel->getCountryByName("WALES");
-    $combinedTotal = $wales->getTotal() + $england->getTotal();
-
+    $combinedTotal = intval($wales->getTotal()) + intval($england->getTotal());
+    
     $_SESSION["englandTotal"] = $england->getTotal();
     $_SESSION["combinedTotal"] = $combinedTotal;
     $_SESSION["type"] = $viewType;
@@ -149,16 +149,3 @@ function CreateCrimeCategoryData($crimeDataArray) {
     }
     return $crimeCatArray;
 }
-
-//function CheckForDuplicateInputs($crimeDataArray) {
-//    $keyArray = array();
-//
-//    foreach ($crimeDataArray as $key => $value) {
-//        
-//        if (in_array($key, $keyArray)) {
-//            throw new InvalidCrimeData("This crime[" . $key . "] already has data in the URL.");
-//            
-//        }
-//        $keyArray[] = $key;
-//    }
-//}

@@ -14,8 +14,8 @@ $combinedTotal = $_SESSION["combinedTotal"]; // int
 $type = $_SESSION["type"];
 
 if ($type === "xml") {
-    $responseXML = new DOMDocument();
-    $base = $responseXML->createElement("reponse");
+    $responseXML = new DOMDocument("1.0");
+    $base = $responseXML->createElement("response");
     $base->setAttribute("timestamp", time()); // unix time
     $crimeDataNode = $responseXML->createElement("crimes");
     $crimeDataNode->setAttribute("year", "6-2013");
