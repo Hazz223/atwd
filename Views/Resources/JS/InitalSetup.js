@@ -97,11 +97,11 @@ function FromLocalStore(data) {
     // the json objects are in the charts.js
     var englandObj = new Object();
     englandObj.id = "England";
-    englandObj.total = data.response.crimes.england;
+    englandObj.total = data.response.crimes.england.total;
 
     var walesObj = new Object();
     walesObj.id = "Wales";
-    walesObj.total = data.response.crimes.wales;
+    walesObj.total = data.response.crimes.wales.total;
 
     var countryArray = new Array(englandObj, walesObj);
 

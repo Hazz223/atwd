@@ -415,7 +415,7 @@
                         <div id="repoBrowser" class="source-container"></div>
                         <div>
                             <h2>Download</h2>
-                            <p>You can download all of the source code here: <a href="#download">Download zip</a></p>
+                            <p>You can download all of the source code here: <a href="crimes/doc/SourceCodeDownload.zip">Download zip</a></p>
                             <p>Or download the git repository here: <a href="https://github.com/Hazz223/atwd">Git Repository</a></p>
                         </div>
                     </div>

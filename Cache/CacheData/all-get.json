@@ -1,0 +1,62 @@
+{
+    "response": {
+        "timestamp": 1393504222,
+        "crimes": {
+            "year": "6-2013",
+            "region": [
+                {
+                    "id": "North East",
+                    "total": 138982
+                },
+                {
+                    "id": "North West",
+                    "total": 444423
+                },
+                {
+                    "id": "Yorkshire and Humber",
+                    "total": 356370
+                },
+                {
+                    "id": "East Midlands",
+                    "total": 261294
+                },
+                {
+                    "id": "West Midlands",
+                    "total": 318640
+                },
+                {
+                    "id": "East of England",
+                    "total": 309296
+                },
+                {
+                    "id": "London",
+                    "total": 750185
+                },
+                {
+                    "id": "South East",
+                    "total": 480596
+                },
+                {
+                    "id": "South West",
+                    "total": 284930
+                }
+            ],
+            "national": [
+                {
+                    "id": "British Transport Police",
+                    "total": 51970
+                },
+                {
+                    "id": "Action Fraud",
+                    "total": 150389
+                }
+            ],
+            "england": {
+                "total": 3344716
+            },
+            "wales": {
+                "total": 154711
+            }
+        }
+    }
+}

@@ -16,3 +16,5 @@ RewriteRule ^crimes/6-2013/put/([a-zA-Z_]*):([0-9]*)/(xml|json)$ /~hlp2-winser/a
 RewriteRule ^crimes/6-2013/post/([a-zA-Z_]*)/([a-zA-Z_]*)/(([a-zA-Z_]*):([0-9]*-))*([a-zA-Z_]*):([0-9]*)/(xml|json)$ /~hlp2-winser/atwd/Controllers/PostRequestController\.php? [NC,L]
 # This is for the documentation
 RewriteRule ^crimes/doc/index.html$ /~hlp2-winser/atwd/Views/Static/index.html? [NC,L] 
+#download link
+RewriteRule ^crimes/doc/SourceCodeDownload.zip$ /~hlp2-winser/atwd/SourceCode/atwd-master.zip? [NC,L] 
